@@ -41,6 +41,9 @@ ByteOffice/
 │   ├── feedback.css
 │   ├── workspaces.css
 │   ├── command-tray.css
+│   ├── redesign.css
+│   ├── redesign-world.css
+│   ├── redesign-motion.css
 │   └── robot/
 │       ├── physical-boxes.css
 │       ├── actions.css
@@ -64,6 +67,14 @@ ByteOffice/
 │       └── bindings.js
 └── assets/
 ```
+
+## Redesign layers
+
+The gameplay-first redesign is deliberately layered after the original styles so the existing engine and animation timing remain intact:
+
+- `css/redesign.css` — layout, hierarchy, compact mission/editor shell, unified theme.
+- `css/redesign-world.css` — factory diorama, conveyors, physical memory presentation, command modules, targeting focus, home world, roadmap, result polish.
+- `css/redesign-motion.css` — camera/game-feel polish, active instruction feedback, current-checkpoint and success/failure motion.
 
 ## Editing Byte
 
