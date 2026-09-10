@@ -6,6 +6,10 @@
   const BYTEBOT_SOURCE=String.raw`package byteoffice;
 
 public final class ByteBot {
+    private int currentSourceLine = -1;
+
+    public void __byteOfficeSourceLine(int line) { currentSourceLine = line; }
+
     private static native int nTake(int line);
     private static native int nSend(int line);
     private static native int nCopyTo(int slot, int line);
@@ -21,27 +25,6 @@ public final class ByteBot {
     private static native int nMemorySize(int line);
     private static native boolean nIsEmpty(int slot, int line);
 
-    private static int sourceLine() {
-        // Capture the Java stack at the native call boundary. CheerpJ's
-        // Thread.getStackTrace() can omit the caller while dispatching a
-        // native method, whereas Throwable captures the current Java frame
-        // and preserves javac's LineNumberTable entries.
-        StackTraceElement[] trace = new Throwable().getStackTrace();
-        for (StackTraceElement element : trace) {
-            String name = element.getClassName();
-            String file = element.getFileName();
-            // CheerpJ can expose the default-package class name differently,
-            // but the compiler still records the Java source file on the
-            // Program stack frame. Use only that JVM metadata.
-            if (name.equals("Program") || name.endsWith(".Program") ||
-                "Program.java".equals(file)) {
-                int line = element.getLineNumber();
-                return line > 0 ? line : -1;
-            }
-        }
-        return -1;
-    }
-
     private static void check(int code) {
         switch (code) {
             case 0: return;
@@ -56,21 +39,21 @@ public final class ByteBot {
         }
     }
 
-    public void take() { check(nTake(sourceLine())); }
-    public void send() { check(nSend(sourceLine())); }
-    public void copyTo(int slot) { check(nCopyTo(slot, sourceLine())); }
-    public void copyFrom(int slot) { check(nCopyFrom(slot, sourceLine())); }
-    public void place(int slot) { check(nPlace(slot, sourceLine())); }
-    public void pick(int slot) { check(nPick(slot, sourceLine())); }
-    public void add(int slot) { check(nAdd(slot, sourceLine())); }
-    public void subtract(int slot) { check(nSubtract(slot, sourceLine())); }
+    public void take() { check(nTake(currentSourceLine)); }
+    public void send() { check(nSend(currentSourceLine)); }
+    public void copyTo(int slot) { check(nCopyTo(slot, currentSourceLine)); }
+    public void copyFrom(int slot) { check(nCopyFrom(slot, currentSourceLine)); }
+    public void place(int slot) { check(nPlace(slot, currentSourceLine)); }
+    public void pick(int slot) { check(nPick(slot, currentSourceLine)); }
+    public void add(int slot) { check(nAdd(slot, currentSourceLine)); }
+    public void subtract(int slot) { check(nSubtract(slot, currentSourceLine)); }
 
-    public boolean hasNext() { return nHasNext(sourceLine()); }
-    public boolean isZero() { return nIsZero(sourceLine()); }
-    public boolean isNegative() { return nIsNegative(sourceLine()); }
-    public boolean isHolding() { return nIsHolding(sourceLine()); }
-    public int memorySize() { return nMemorySize(sourceLine()); }
-    public boolean isEmpty(int slot) { return nIsEmpty(slot, sourceLine()); }
+    public boolean hasNext() { return nHasNext(currentSourceLine); }
+    public boolean isZero() { return nIsZero(currentSourceLine); }
+    public boolean isNegative() { return nIsNegative(currentSourceLine); }
+    public boolean isHolding() { return nIsHolding(currentSourceLine); }
+    public int memorySize() { return nMemorySize(currentSourceLine); }
+    public boolean isEmpty(int slot) { return nIsEmpty(slot, currentSourceLine); }
 }
 `;
 
@@ -127,6 +110,38 @@ public final class GameRunner {
   }
   function assignSource(source){ program=[{op:'JAVA',source:String(source)}]; }
   function sourceLines(){ return sourceFromProgram().split(/\r?\n/); }
+  function instrumentJavaSource(source){
+    const methods='take|send|copyTo|copyFrom|place|pick|add|subtract|hasNext|isZero|isNegative|isHolding|memorySize|isEmpty';
+    const call=new RegExp('\\bbot\\s*\\.\\s*(?:'+methods+')\\s*\\(','y');
+    let blockComment=false;
+    return source.split(/(\r?\n)/).map((part,index,parts)=>{
+      if(/^\r?\n$/.test(part)) return part;
+      const lineNumber=parts.slice(0,index).filter(x=>/^\r?\n$/.test(x)).length+1;
+      let out='',i=0,stringQuote='';
+      while(i<part.length){
+        if(blockComment){
+          const end=part.indexOf('*/',i);
+          if(end<0){out+=part.slice(i);return out;}
+          out+=part.slice(i,end+2);i=end+2;blockComment=false;continue;
+        }
+        const ch=part[i];
+        if(stringQuote){
+          out+=ch;i++;
+          if(ch==='\\'&&i<part.length){out+=part[i++];continue;}
+          if(ch===stringQuote) stringQuote='';
+          continue;
+        }
+        if(ch==='"'||ch==="'"){stringQuote=ch;out+=ch;i++;continue;}
+        if(ch==='/'&&part[i+1]==='/'){out+=part.slice(i);break;}
+        if(ch==='/'&&part[i+1]==='*'){out+='/*';i+=2;blockComment=true;continue;}
+        call.lastIndex=i;
+        const match=call.exec(part);
+        if(match){out+='bot.__byteOfficeSourceLine('+lineNumber+'); '+match[0];i=call.lastIndex;continue;}
+        out+=ch;i++;
+      }
+      return out;
+    }).join('');
+  }
   function botCallCount(){
     const m=sourceFromProgram().match(/\bbot\s*\.\s*(?:take|send|copyTo|copyFrom|place|pick|add|subtract)\s*\(/g);
     return m ? m.length : 0;
@@ -459,7 +474,7 @@ public final class GameRunner {
     await ensureJavaRuntime();
     updateJavaStatus('Compiling Program.java…','loading');
     els.footer.textContent='Compiling your Java source inside the browser…';
-    mountSources(source);
+    mountSources(instrumentJavaSource(source));
     const exit=await cheerpjRunMain(
       'com.sun.tools.javac.Main',
       '/app/java/tools.jar:/files/',
