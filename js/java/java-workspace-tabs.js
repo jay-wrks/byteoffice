@@ -56,12 +56,20 @@
     const currentAnswer=typeof answerMode!=='undefined' && answerMode;
     const current=typeof workspaceIndex==='number'?workspaceIndex:0;
     const showAnswer=typeof settings!=='undefined' && !!settings.showAnswers;
+    const signature=`${currentAnswer?'answer':current}|${showAnswer?'answers-on':'answers-off'}`;
+
+    if(bar.dataset.workspaceSignature===signature){
+      setJavaAnswerControls(currentAnswer);
+      return;
+    }
+
     const html=[
       tabMarkup('0','Program A.java',!currentAnswer&&current===0),
       tabMarkup('1','Program B.java',!currentAnswer&&current===1)
     ];
     if(showAnswer) html.push(tabMarkup('answer','Answer.java',currentAnswer,'answer-ide-tab'));
     bar.innerHTML=html.join('');
+    bar.dataset.workspaceSignature=signature;
     bar.querySelectorAll('[data-ide-workspace]').forEach(tab=>{
       tab.addEventListener('click',()=>window.switchWorkspace(tab.dataset.ideWorkspace));
     });
@@ -84,8 +92,6 @@
   function returnToDraft(target){
     target=Math.max(0,Math.min(1,parseInt(target,10)||0));
     if(typeof answerMode!=='undefined' && answerMode){
-      // Reloading the current level is the safest way to leave Answer mode:
-      // it restores the saved Java draft and also clears the Java undo/redo stacks.
       if(typeof loadLevel==='function') loadLevel(levelIndex);
       if(target!==workspaceIndex && typeof originalSwitchWorkspace==='function') originalSwitchWorkspace(target);
       setJavaAnswerControls(false);
@@ -111,8 +117,6 @@
   };
 
   window.saveSettings=function(){
-    // If Show solution is switched off while Answer.java is open, restore the
-    // saved player draft before the normal settings code re-renders the editor.
     if(typeof answerMode!=='undefined' && answerMode && typeof settings!=='undefined' && !settings.showAnswers){
       if(typeof loadLevel==='function') loadLevel(levelIndex);
     }
