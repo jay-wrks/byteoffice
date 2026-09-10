@@ -84,7 +84,7 @@
       <div class="byte-ide-tabbar"><div class="byte-ide-tab active" id="ideFileTab"><span>Program.java</span><i class="dirty" aria-hidden="true"></i></div></div>
       <div class="byte-ide-breadcrumb"><span>ByteOffice</span><i>›</i><span>src</span><i>›</i><span>Program.java</span><i>›</i><b>program(ByteBot bot)</b></div>
       <div class="byte-monaco-wrap"><div id="byteMonaco" class="byte-monaco"></div><div id="byteIdeLoading" class="byte-ide-loading">Loading Java IDE…</div></div>
-      <div class="byte-ide-status"><span>ByteOffice Java IDE</span><span id="ideCursor">Ln 1, Col 1</span><span>Spaces: 4</span><span>UTF-8</span><span>Java 8</span></div>
+      <div class="byte-ide-status"><span>ByteOffice Java IDE</span><span id="ideTiming" title="Compilation and execution timings">Compile — · Run —</span><span id="ideCursor">Ln 1, Col 1</span><span>Spaces: 4</span><span>UTF-8</span><span>Java 8</span></div>
     </div>`;
   }
 

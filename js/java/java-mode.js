@@ -99,6 +99,9 @@ public final class GameRunner {
   let headless=false;
   let activeJavaLine=-1;
   let runtimeMessage='Java JVM not loaded';
+  let lastCompileMs=null;
+  let lastRunMs=null;
+  let runStartedAt=null;
   let editTimer=null;
   const javaUndo=[];
   const javaRedo=[];
@@ -164,6 +167,20 @@ public final class GameRunner {
     if(el){ el.textContent=text; el.dataset.kind=kind; }
   }
 
+  function formatDuration(ms){
+    if(!Number.isFinite(ms)) return '—';
+    return ms<1000 ? `${Math.round(ms)} ms` : `${(ms/1000).toFixed(2)} s`;
+  }
+
+  function updateTimingStatus(phase=''){
+    const el=document.querySelector('#ideTiming');
+    if(!el) return;
+    const compile=phase==='compile'?'Compile …':`Compile ${formatDuration(lastCompileMs)}`;
+    const run=phase==='run'?'Run …':`Run ${formatDuration(lastRunMs)}`;
+    el.textContent=`${compile} · ${run}`;
+    el.title=`Last compile: ${formatDuration(lastCompileMs)} · Last run: ${formatDuration(lastRunMs)}`;
+  }
+
   function highlightJavaLine(line){
     activeJavaLine=Number.isFinite(+line)?+line:-1;
     const gutter=document.querySelector('#javaLineNumbers');
@@ -196,6 +213,7 @@ public final class GameRunner {
     </div>`;
     const ta=document.querySelector('#javaEditor');
     ta.value=source;
+    updateTimingStatus();
     updateLineNumbers();
     ta.addEventListener('scroll',()=>{ const g=document.querySelector('#javaLineNumbers'); if(g)g.scrollTop=ta.scrollTop; });
     ta.addEventListener('keydown',e=>{
@@ -418,7 +436,9 @@ public final class GameRunner {
 
   async function compileCurrentSource(force=false){
     const source=sourceFromProgram();
-    if(!force && compiledSource===source) return true;
+    if(!force && compiledSource===source){ updateTimingStatus(); return true; }
+    const startedAt=performance.now();
+    updateTimingStatus('compile');
     await ensureJavaRuntime();
     updateJavaStatus('Compiling Program.java…','loading');
     els.footer.textContent='Compiling your Java source inside the browser…';
@@ -430,12 +450,16 @@ public final class GameRunner {
       '/str/byteoffice/ByteBot.java','/str/byteoffice/GameRunner.java','/str/Program.java'
     );
     if(exit!==0){
+      lastCompileMs=performance.now()-startedAt;
+      updateTimingStatus();
       compiledSource=null;
       updateJavaStatus('Compile error','error');
       setStatus('COMPILE ERROR','error');
       els.footer.textContent='Java compilation failed. Fix the compiler errors shown by the JVM and build again.';
       return false;
     }
+    lastCompileMs=performance.now()-startedAt;
+    updateTimingStatus();
     compiledSource=source;
     updateJavaStatus('Compiled · Java 8','ready');
     els.footer.textContent='Java compiled successfully. Ready to run ByteBot.';
@@ -444,6 +468,7 @@ public final class GameRunner {
 
   async function finishExecution(exitCode){
     if(!execution) return;
+    if(runStartedAt!==null){ lastRunMs=performance.now()-runStartedAt; runStartedAt=null; updateTimingStatus(); }
     const wasCancelled=execution.cancelled;
     execution.task=null;
     running=false;
@@ -491,10 +516,13 @@ public final class GameRunner {
     running=mode==='run';
     setStatus(mode==='run'?'WORKING':'STEP','working');
     updateJavaStatus('Program running','working');
+    runStartedAt=performance.now();
+    updateTimingStatus('run');
     const task=cheerpjRunMain('byteoffice.GameRunner','/files');
     execution.task=task;
     task.then(finishExecution).catch(err=>{
       if(execution?.cancelled) return;
+      if(runStartedAt!==null){ lastRunMs=performance.now()-runStartedAt; runStartedAt=null; updateTimingStatus(); }
       running=false; setStatus('JAVA ERROR','error'); updateJavaStatus('Java exception','error');
       els.footer.textContent='Java execution failed: '+(err?.message||String(err));
     });
