@@ -201,6 +201,8 @@
 
     editor.onDidChangeModelContent(()=>{
       window.stopRun?.();
+      window.ByteOfficeExecutionHighlight?.clear?.();
+      window.highlightLine?.(-1);
       const value=model.getValue();syncToLegacy(value);structuralMarkers(monaco,value);window.ByteOfficeIDE?.clearExecution?.();
     });
     editor.onDidChangeCursorPosition(e=>{const el=document.querySelector('#ideCursor');if(el)el.textContent=`Ln ${e.position.lineNumber}, Col ${e.position.column}`;});
