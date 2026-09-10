@@ -274,7 +274,7 @@ public final class GameRunner {
     saveWorkspace(false); stopRun(); workspaceIndex=next;
     const bucket=workspaceBucket(level().id); bucket.active=workspaceIndex;
     program=(bucket.slots[workspaceIndex]||[]).map(x=>({...x}));
-    if(!program.some(x=>x?.op==='JAVA')) assignSource(starterSource());
+    if(!program.some(x=>x?.op==='JAVA' && typeof x.source==='string' && x.source.trim())) assignSource(starterSource());
     javaUndo.length=0; javaRedo.length=0; compiledSource=null; activeJavaLine=-1;
     renderProgram(); resetMachine(false); refreshWorkspaceTabs(); saveWorkspace();
     els.footer.textContent=`Java worktree ${String.fromCharCode(65+workspaceIndex)} loaded. Changes save automatically.`;
@@ -583,7 +583,7 @@ public final class GameRunner {
       oldLoadLevel(index);
       const bucket=workspaceBucket(level().id);
       const slot=bucket.slots[workspaceIndex]||[];
-      if(!slot.some(x=>x?.op==='JAVA')){
+      if(!slot.some(x=>x?.op==='JAVA' && typeof x.source==='string' && x.source.trim())){
         assignSource(starterSource()); bucket.slots[workspaceIndex]=cloneProgram(); saveWorkspace(false); renderProgram(); resetMachine(false);
       }
       renderPalette(); refreshWorkspaceTabs();
