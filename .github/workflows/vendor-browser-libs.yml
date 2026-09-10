@@ -33,6 +33,12 @@ jobs:
           cp -R .vendor-tmp/node_modules/monaco-editor/dev/vs libs/monaco/vs
           cp .vendor-tmp/node_modules/monaco-editor/LICENSE libs/monaco/LICENSE
 
+          # Monaco's AMD loader contains a sourceMappingURL that points at the
+          # optional min-maps package tree, which we intentionally do not ship.
+          # Strip source-map comments from vendored JS so Firefox does not make
+          # pointless 404 requests in local/offline builds.
+          find libs/monaco/vs -type f -name '*.js' -exec sed -i '/^[[:space:]]*\/\/[#@][[:space:]]*sourceMappingURL=/d' {} +
+
           cp .vendor-tmp/node_modules/@fontsource/libre-franklin/files/libre-franklin-latin-500-normal.woff2 libs/fonts/
           cp .vendor-tmp/node_modules/@fontsource/libre-franklin/files/libre-franklin-latin-600-normal.woff2 libs/fonts/
           cp .vendor-tmp/node_modules/@fontsource/libre-franklin/files/libre-franklin-latin-700-normal.woff2 libs/fonts/
