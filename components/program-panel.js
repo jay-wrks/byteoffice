@@ -11,13 +11,6 @@ window.ByteOfficeComponents.programPanel = String.raw`
 <button class="clear-btn" id="clearBtn">Reset Code</button>
 </div>
 </div>
-<div aria-label="Programs for this level" class="workspace-switcher">
-<div class="workspace-tabs" role="tablist">
-<button aria-selected="true" class="workspace-tab active" data-workspace="0" role="tab"><b>A</b><span>Solution 1</span></button>
-<button aria-selected="false" class="workspace-tab" data-workspace="1" role="tab"><b>B</b><span>Solution 2</span></button>
-<button aria-selected="false" class="workspace-tab answer-tab" data-workspace="answer" hidden role="tab"><b>✓</b><span>Answer</span></button>
-</div>
-</div>
 <div class="editor-toolbar java-editor-toolbar">
 <button id="undoBtn" title="Undo source edit">↶ Undo</button>
 <button id="redoBtn" title="Redo source edit">↷ Redo</button>
