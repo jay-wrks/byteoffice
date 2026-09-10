@@ -3,7 +3,7 @@
 
   // Monaco is vendored into the repository so the IDE does not depend on a CDN.
   const MONACO='libs/monaco/vs';
-  let editor=null, model=null, textarea=null, decorations=[], loading=null;
+  let editor=null, model=null, textarea=null, decorations=[], loading=null, pendingExecutionLine=-1;
 
   function overflowHost(){
     let host=document.querySelector('#byteMonacoOverflowHost');
@@ -194,12 +194,19 @@
       revealLine(line){editor.revealLineInCenterIfOutsideViewport(line);},
       highlightLine(line){
         const n=Number(line), count=model?.getLineCount?.()||0;
-        if(!Number.isInteger(n)||n<1||n>count) return;
+        if(!Number.isInteger(n)||n<1){ return; }
+        if(!editor||!model||!count){ pendingExecutionLine=n; return; }
+        if(n>count) return;
         decorations=editor.deltaDecorations(decorations,[{range:new monaco.Range(n,1,n,1),options:{isWholeLine:true,className:'byte-active-exec-line',glyphMarginClassName:'byte-active-exec-glyph'}}]);
         editor.revealLineInCenterIfOutsideViewport(n);
       },
       clearExecution(){decorations=editor.deltaDecorations(decorations,[]);}
     };
+    if(pendingExecutionLine>0){
+      const line=pendingExecutionLine;
+      pendingExecutionLine=-1;
+      requestAnimationFrame(()=>window.ByteOfficeIDE?.highlightLine(line));
+    }
   }
 
   const oldRender=window.renderProgram;

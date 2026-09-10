@@ -23,14 +23,25 @@ public final class ByteBot {
 
     private static int sourceLine() {
         StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+        int fallback = -1;
         for (StackTraceElement element : trace) {
             String name = element.getClassName();
             if (name.equals("Program") || name.endsWith(".Program")) {
                 int line = element.getLineNumber();
                 return line > 0 ? line : -1;
             }
+            // Some CheerpJ builds omit the default-package Program name from
+            // the stack. Keep the first real application frame as a fallback,
+            // but never use ByteBot, Thread, or reflection wrapper frames.
+            if (fallback < 1 && !name.equals(ByteBot.class.getName()) &&
+                !name.equals(Thread.class.getName()) &&
+                !name.startsWith("java.lang.reflect.") &&
+                !name.startsWith("sun.reflect.") &&
+                element.getLineNumber() > 0) {
+                fallback = element.getLineNumber();
+            }
         }
-        return -1;
+        return fallback;
     }
 
     private static void check(int code) {
