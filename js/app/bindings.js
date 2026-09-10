@@ -7,14 +7,16 @@ document.addEventListener('click',e=>{
 },true);
 
 $("#runBtn").addEventListener("click",startRun);
-$("#stepBtn").addEventListener("click",async()=>{ stopRun(); await stepOnce(); });
+// Java execution remains alive between F10/STEP presses. Each press releases
+// exactly one physical ByteBot action instead of restarting Program.java.
+$("#stepBtn").addEventListener("click",async()=>{ await stepOnce(); });
 $("#pauseBtn").addEventListener("click",pause); $("#resetBtn").addEventListener("click",()=>{ if(!animating) resetMachine(); });
-$("#clearBtn").addEventListener("click",()=>{ if(animating) return; commitEdit(); stopRun(); program=[]; selectedRow=null; renderProgram(); resetMachine(); });
+$("#clearBtn").addEventListener("click",()=>{ if(animating) return; commitEdit(); stopRun(); program=[]; selectedRow=null; renderProgram(); resetMachine(); saveWorkspace(); });
 els.undo.addEventListener("click",undoEdit); els.redo.addEventListener("click",redoEdit);
-els.compact.addEventListener("click",()=>{compactProgram=!compactProgram;renderProgram();});
+els.compact.addEventListener("click",()=>{ if(window.ByteOfficeJava?.format) window.ByteOfficeJava.format(); else renderProgram(); });
 $("#homeBtn").addEventListener("click",()=>goHome());
 $("#levelBtn").addEventListener("click",()=>openRoadmap('game')); $("#dashboardBtn").addEventListener("click",showDashboard); $("#achievementsBtn").addEventListener("click",showAchievements); $("#helpBtn").addEventListener("click",showHelp); $("#hintBtn").addEventListener("click",showHint);
-$("#testBtn").addEventListener("click",()=>{metaStore.usedTestLab=true;saveMeta();showTestLab();}); $("#analyzeBtn").addEventListener("click",analyzeProgram); $("#shareBtn").addEventListener("click",showShare); $("#copyAnswerBtn").addEventListener("click",copyAnswerToDraft);
+$("#testBtn").addEventListener("click",()=>{metaStore.usedTestLab=true;saveMeta();showTestLab();}); $("#analyzeBtn").addEventListener("click",analyzeProgram); $("#shareBtn").addEventListener("click",showShare); $("#copyAnswerBtn").addEventListener("click",()=>{});
 $("#modalClose").addEventListener("click",()=>closeModal());
 els.modal.addEventListener("click",e=>{if(e.target===els.modal){ if(currentPage==='map'&&els.modal.classList.contains('roadmap-modal')) closeRoadmapRoute(); else closeModal(); }});
 $("#soundBtn").addEventListener("click",e=>{settings.sfx=!settings.sfx;saveSettings();e.currentTarget.textContent=settings.sfx?'🔊':'🔇';});
@@ -26,21 +28,19 @@ $("#homeSettingsClose").addEventListener("click",()=>{const p=$("#homeSettingsPa
 els.workspaceTabs.forEach(tab=>tab.addEventListener("click",()=>switchWorkspace(tab.dataset.workspace)));
 if(els.commandTrayToggle) els.commandTrayToggle.addEventListener("click",()=>{
   const next=!els.commandTray?.classList.contains("collapsed");
-  setCommandTrayCollapsed(next,{remember:!answerMode});
+  setCommandTrayCollapsed(next,{remember:true});
 });
 setCommandTrayCollapsed(draftCommandTrayCollapsed,{remember:false});
 window.addEventListener("keydown",e=>{
   const typing=/INPUT|TEXTAREA/.test(document.activeElement.tagName);
-  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"&&!typing){e.preventDefault();e.shiftKey?redoEdit():undoEdit();return;}
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"&&!typing){e.preventDefault();undoEdit();return;}
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="y"&&!typing){e.preventDefault();redoEdit();return;}
   if(e.code==="Space" && !typing){ e.preventDefault(); running?pause():startRun(); }
-  if(e.key==="F9" && !typing){e.preventDefault();running?pause():startRun();}
-  if(e.key==="F10" && !typing){e.preventDefault();stopRun();stepOnce();}
-  if(e.key==="F8" && !typing && selectedRow!==null){e.preventDefault();toggleBreakpoint(selectedRow);}
-  if(e.key==="Escape" && !typing && running){e.preventDefault();pause();}
+  if(e.key==="F9"){e.preventDefault();running?pause():startRun();}
+  if(e.key==="F10"){e.preventDefault();stepOnce();}
+  if(e.key==="Escape" && running){e.preventDefault();pause();}
 });
-window.addEventListener("resize",()=>{ if(!animating) placeWorkerHome(true); drawJumpArrows(); });
-els.list.addEventListener("scroll",()=>requestAnimationFrame(drawJumpArrows));
+window.addEventListener("resize",()=>{ if(!animating) placeWorkerHome(true); });
 
 // Do not initialize the processing floor at boot. The game is loaded only
 // after Resume or an explicit level selection from the roadmap.
