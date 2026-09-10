@@ -2,6 +2,15 @@ window.ByteOfficeComponents = window.ByteOfficeComponents || {};
 window.ByteOfficeComponents.home = String.raw`
 <section aria-label="Byte Office main menu" class="home-screen" id="homeScreen">
 <div aria-hidden="true" class="home-backdrop-grid"></div>
+<div aria-hidden="true" class="home-world">
+<div class="home-wall-panel panel-a"><i></i><i></i><i></i></div>
+<div class="home-wall-panel panel-b"><i></i><i></i></div>
+<div class="home-pipe pipe-a"></div>
+<div class="home-pipe pipe-b"></div>
+<div class="home-status-lamp"><i></i><span>OFFICE ONLINE</span></div>
+<div class="home-mini-conveyor"><i></i><i></i><i></i><b>12</b></div>
+<div class="home-floor-glow"></div>
+</div>
 <div class="home-desk">
 <div class="home-brand-row">
 <div class="home-brand-mark">B</div>
@@ -29,7 +38,7 @@ window.ByteOfficeComponents.home = String.raw`
 <label class="setting-row"><span><b>Unlock all levels</b><small>Open every roadmap assignment without changing completion progress</small></span><input id="unlockLevelsToggle" type="checkbox"/><i></i></label>
 <label class="setting-row"><span><b>Show answers</b><small>Show the exact read-only command solution beside your two drafts</small></span><input id="answersToggle" type="checkbox"/><i></i></label>
 </div>
-<div class="home-meta"><span id="homeCompletion">0 / 50 assignments cleared</span><span>Autosave enabled</span></div>
+<div class="home-meta"><span id="homeCompletion">0 / 50 assignments cleared</span><span>Autosave enabled · Byte station synced</span></div>
 </div>
 </div>
 </section>
