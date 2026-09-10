@@ -7,7 +7,7 @@ window.ByteOfficeComponents.programPanel = String.raw`
 <h2>Java Program</h2>
 </div>
 <div class="java-header-actions">
-<span class="java-version-badge">Java 17</span>
+<span class="java-version-badge">Java 8</span>
 <button class="clear-btn" id="clearBtn">Reset Code</button>
 </div>
 </div>
