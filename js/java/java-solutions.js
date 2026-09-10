@@ -1,9 +1,15 @@
 (function(){
   'use strict';
 
+  function trimBlankLines(value){
+    return String(value).replace(/^\s*\n/,'').replace(/\n\s*$/,'');
+  }
+
   function solution(body,helpers=''){
-    const helperBlock=helpers.trim() ? `\n${helpers.trim()}\n` : '';
-    return `import byteoffice.ByteBot;\n\npublic class Program {\n    public void program(ByteBot bot) {\n${body.trim()}\n    }${helperBlock}\n}\n`;
+    const formattedBody=trimBlankLines(body);
+    const formattedHelpers=trimBlankLines(helpers);
+    const helperBlock=formattedHelpers ? `\n${formattedHelpers}\n` : '';
+    return `import byteoffice.ByteBot;\n\npublic class Program {\n    public void program(ByteBot bot) {\n${formattedBody}\n    }${helperBlock}\n}\n`;
   }
 
   const S={
