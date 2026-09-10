@@ -286,31 +286,45 @@ public final class GameRunner {
     const answerTab=document.querySelector('.answer-tab'); if(answerTab) answerTab.hidden=true;
   };
 
+  function showJavaApiDetails(item){
+    showModal(`<div class="java-api-detail">
+      <div class="java-api-detail-kicker">BYTEBOT API</div>
+      <h2><code>${escapeHtml(item.signature)}</code></h2>
+      <p class="java-api-detail-summary">${escapeHtml(item.summary)}</p>
+      <div class="java-api-detail-grid">
+        <div><span>RETURNS</span><strong>${escapeHtml(item.returns)}</strong></div>
+        <div><span>CHANGES</span><strong>${escapeHtml(item.changes)}</strong></div>
+      </div>
+      <h3>What it does</h3>
+      <p>${escapeHtml(item.detail)}</p>
+      <h3>Rules</h3>
+      <p>${escapeHtml(item.rules)}</p>
+      <div class="java-api-detail-example"><span>EXAMPLE</span><code>${escapeHtml(item.example)}</code></div>
+      <button type="button" class="modal-primary" id="javaApiDetailClose">Close API details</button>
+    </div>`);
+    document.querySelector('#javaApiDetailClose')?.addEventListener('click',()=>closeModal(),{once:true});
+  }
+
   window.renderPalette=function(){
     if(!els.palette) return;
     const methods=[
-      ['bot.take()','Take the next INPUT box into Byte\'s hands. Returns void.'],
-      ['bot.send()','Move the held box to OUTPUT. Returns void.'],
-      ['bot.copyTo(slot)','Copy the held box to a floor slot; Byte keeps holding it.'],
-      ['bot.copyFrom(slot)','Copy a floor box into Byte\'s hands.'],
-      ['bot.place(slot)','Move the held box onto a floor slot; hands become empty.'],
-      ['bot.pick(slot)','Move a floor box into Byte\'s hands; that slot becomes empty.'],
-      ['bot.add(slot)','Add a floor value to the held value without exposing either value.'],
-      ['bot.subtract(slot)','Subtract a floor value from the held value.'],
-      ['bot.hasNext()','Safe boolean: whether INPUT still has a box.'],
-      ['bot.isZero()','Safe boolean test for the currently held value.'],
-      ['bot.isNegative()','Safe boolean test for the currently held value.'],
-      ['bot.isHolding()','Whether Byte currently holds a box.'],
-      ['bot.memorySize()','Number of physical floor slots in this level.'],
-      ['bot.isEmpty(slot)','Whether a physical floor slot is empty.']
+      {signature:'bot.take()',summary:'Take the next box from INPUT.',returns:'void',changes:'INPUT → hands',detail:'Moves the first box in the INPUT queue into Byte\'s hands. Java never receives the number itself.',rules:'INPUT must contain a box and Byte\'s hands must be empty.',example:'bot.take();'},
+      {signature:'bot.send()',summary:'Send the held box to OUTPUT.',returns:'void',changes:'hands → OUTPUT',detail:'Moves the box in Byte\'s hands to the OUTBOX. The level checks the value against the expected answer.',rules:'Byte must be holding a box.',example:'bot.send();'},
+      {signature:'bot.copyTo(slot)',summary:'Copy the held box into floor memory.',returns:'void',changes:'hands + memory[slot]',detail:'Copies the held box to a numbered floor-memory slot while Byte keeps holding the original box.',rules:'The slot must exist and Byte must be holding a box.',example:'bot.copyTo(0);'},
+      {signature:'bot.copyFrom(slot)',summary:'Copy a floor box into Byte\'s hands.',returns:'void',changes:'memory[slot] + hands',detail:'Copies a box from floor memory into Byte\'s hands. The source slot keeps its box.',rules:'The slot must exist, contain a box, and Byte\'s hands must be empty.',example:'bot.copyFrom(0);'},
+      {signature:'bot.place(slot)',summary:'Put the held box into floor memory.',returns:'void',changes:'hands → memory[slot]',detail:'Moves the held box onto a floor-memory slot and leaves Byte\'s hands empty.',rules:'The slot must exist, be empty, and Byte must be holding a box.',example:'bot.place(0);'},
+      {signature:'bot.pick(slot)',summary:'Pick a box up from floor memory.',returns:'void',changes:'memory[slot] → hands',detail:'Removes the box from a floor-memory slot and puts it into Byte\'s hands.',rules:'The slot must exist, contain a box, and Byte\'s hands must be empty.',example:'bot.pick(0);'},
+      {signature:'bot.add(slot)',summary:'Add a floor value to the held value.',returns:'void',changes:'hands value',detail:'Performs physical addition using the held box and the box in floor memory. Neither number is returned to Java.',rules:'The slot must contain a box and Byte must be holding a box.',example:'bot.add(0);'},
+      {signature:'bot.subtract(slot)',summary:'Subtract a floor value from the held value.',returns:'void',changes:'hands value',detail:'Performs physical subtraction: held value minus the value in floor memory. The numeric values remain hidden from Java.',rules:'The slot must contain a box and Byte must be holding a box.',example:'bot.subtract(0);'},
+      {signature:'bot.hasNext()',summary:'Check whether INPUT still has a box.',returns:'boolean',changes:'nothing',detail:'Returns true while INPUT contains at least one box, making it useful for loops.',rules:'Safe to call at any time; it does not move Byte or expose a value.',example:'while (bot.hasNext()) { ... }'},
+      {signature:'bot.isZero()',summary:'Check whether the held value is zero.',returns:'boolean',changes:'nothing',detail:'Tests the physical box currently in Byte\'s hands without returning its number to Java.',rules:'Returns false when Byte is not holding a box.',example:'if (bot.isZero()) { bot.send(); }'},
+      {signature:'bot.isNegative()',summary:'Check whether the held value is negative.',returns:'boolean',changes:'nothing',detail:'Tests the sign of the box currently in Byte\'s hands without exposing its numeric value.',rules:'Returns false when Byte is not holding a box.',example:'if (bot.isNegative()) { ... }'},
+      {signature:'bot.isHolding()',summary:'Check whether Byte has a box in hand.',returns:'boolean',changes:'nothing',detail:'Reports whether Byte currently holds a box. It is useful before send, copy, place, add, or subtract.',rules:'Safe to call at any time.',example:'if (bot.isHolding()) { bot.send(); }'},
+      {signature:'bot.memorySize()',summary:'Get the number of floor-memory slots.',returns:'int',changes:'nothing',detail:'Returns the number of physical memory slots available on the current level.',rules:'Slot indexes run from 0 through memorySize() - 1.',example:'for (int slot = 0; slot < bot.memorySize(); slot++) { ... }'},
+      {signature:'bot.isEmpty(slot)',summary:'Check whether a floor slot is empty.',returns:'boolean',changes:'nothing',detail:'Reports whether the selected floor-memory slot currently has no box.',rules:'The slot must exist; it does not move or expose any box value.',example:'if (!bot.isEmpty(0)) { bot.pick(0); }'}
     ];
-    els.palette.innerHTML=methods.map(([sig,desc])=>`<button type="button" class="command-card java-api-card" data-java-snippet="${escapeHtml(sig)}"><strong>${escapeHtml(sig)}</strong><span>${escapeHtml(desc)}</span></button>`).join('');
-    els.palette.querySelectorAll('[data-java-snippet]').forEach(btn=>btn.addEventListener('click',()=>{
-      const ta=document.querySelector('#javaEditor'); if(!ta) return;
-      const snippet=btn.dataset.javaSnippet+';';
-      const start=ta.selectionStart,end=ta.selectionEnd;
-      ta.setRangeText(snippet,start,end,'end'); ta.focus(); ta.dispatchEvent(new Event('input',{bubbles:true}));
-    }));
+    els.palette.innerHTML=methods.map((item,index)=>`<button type="button" class="command-card java-api-card" data-java-api="${index}"><strong>${escapeHtml(item.signature)}</strong><span>${escapeHtml(item.summary)}</span></button>`).join('');
+    els.palette.querySelectorAll('[data-java-api]').forEach(btn=>btn.addEventListener('click',()=>showJavaApiDetails(methods[Number(btn.dataset.javaApi)])));
   };
 
   window.refreshWorkspaceTabs=function(){

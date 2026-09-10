@@ -28,6 +28,20 @@
 .java-api-card strong{font:800 11px/1.25 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace!important;letter-spacing:0!important;text-transform:none!important;overflow-wrap:anywhere}
 .java-api-card span{font-size:9px!important;line-height:1.35!important;opacity:.78}
 .java-api-card:hover{transform:translateY(-1px)}
+.java-api-detail{display:flex;flex-direction:column;gap:12px}
+.java-api-detail-kicker{font:800 10px/1 "DM Mono",monospace;letter-spacing:.18em;color:#8d3f34}
+.java-api-detail h2{margin:0;font:29px/1.1 "Special Elite",serif;color:#292720}
+.java-api-detail h2 code{font:inherit;color:#8d3f34}
+.java-api-detail-summary{margin:0;font-size:14px;line-height:1.45;color:#5f584a}
+.java-api-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.java-api-detail-grid>div{display:flex;flex-direction:column;gap:5px;padding:10px;background:#ddd0ad;border:1px solid #a1967c}
+.java-api-detail-grid span,.java-api-detail-example span{font:800 9px/1 "DM Mono",monospace;letter-spacing:.12em;color:#776c58}
+.java-api-detail-grid strong{font:700 12px/1.3 "DM Mono",monospace;color:#302d26}
+.java-api-detail h3{margin:3px 0 -5px;font:800 11px/1 "DM Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#776c58}
+.java-api-detail>p:not(.java-api-detail-summary){margin:0;font:14px/1.5 "Special Elite",serif;color:#3f3a31}
+.java-api-detail-example{display:flex;flex-direction:column;gap:8px;padding:12px;background:#fff2cd;border:1px dashed #8f8267}
+.java-api-detail-example code{font:13px/1.45 "DM Mono",monospace;color:#8d3f34;white-space:pre-wrap}
+.java-api-detail #javaApiDetailClose{align-self:flex-start;margin-top:2px}
 .java-api-tray.collapsed .java-api-palette,.java-api-tray.collapsed .tray-subtitle{display:none!important}
 .java-api-tray.collapsed{max-height:none}
 .java-program-panel.answer-mode .java-editor{pointer-events:auto;opacity:1}
