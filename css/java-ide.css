@@ -36,6 +36,7 @@
 .java-program-panel .monaco-editor,.java-program-panel .monaco-editor-background,.java-program-panel .monaco-editor .margin{background:#262723!important}
 .java-program-panel .monaco-editor,.java-program-panel .monaco-editor *{pointer-events:auto}
 .java-program-panel .monaco-editor .suggest-widget,.java-program-panel .monaco-editor .monaco-hover,.java-program-panel .monaco-editor .parameter-hints-widget,.java-program-panel .monaco-editor .find-widget{border:1px solid #655f50!important;box-shadow:5px 6px 0 rgba(10,11,9,.42)!important;border-radius:3px!important}
+.monaco-editor .overflowingContentWidgets,.monaco-editor .suggest-widget,.monaco-editor .monaco-hover,.monaco-editor .parameter-hints-widget,.monaco-editor .find-widget{z-index:10000!important}
 .java-program-panel .monaco-editor .suggest-widget .monaco-list-row.focused{outline:1px solid #a34939!important}
 .monaco-editor .byte-active-exec-line{background:rgba(191,155,78,.14)!important;box-shadow:inset 3px 0 #bf9b4e}.monaco-editor .byte-active-exec-glyph{background:#bf9b4e;border:2px solid #443b26;border-radius:50%;width:8px!important;height:8px!important;margin-left:4px;margin-top:6px;box-shadow:0 0 6px rgba(191,155,78,.65)}
 

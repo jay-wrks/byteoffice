@@ -148,6 +148,9 @@
 
     editor=monaco.editor.create(mount,{
       model,theme:'byteoffice-darcula',readOnly:false,domReadOnly:false,automaticLayout:true,fontSize:13,fontFamily:'DM Mono, Menlo, Monaco, Consolas, monospace',fontLigatures:false,
+      // Portal Monaco widgets so autocomplete and hover cards cannot be
+      // clipped or painted underneath the neighboring floor panel.
+      fixedOverflowWidgets:true,overflowWidgetsDomNode:document.body,
       lineHeight:21,letterSpacing:.1,tabSize:4,insertSpaces:true,detectIndentation:false,wordWrap:'off',smoothScrolling:true,
       minimap:{enabled:true,side:'right',showSlider:'mouseover',scale:1},scrollBeyondLastLine:false,padding:{top:10,bottom:18},
       folding:true,foldingHighlight:true,showFoldingControls:'mouseover',bracketPairColorization:{enabled:true},guides:{bracketPairs:true,indentation:true,highlightActiveIndentation:true},
