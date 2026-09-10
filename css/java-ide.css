@@ -16,10 +16,11 @@
 .java-editor-toolbar button{height:29px!important;min-width:29px!important;border:1px solid #20221e!important;border-radius:3px!important;background:#55584e!important;color:#ece2c7!important;font:700 10px "Libre Franklin",sans-serif!important;padding:0 9px!important;box-shadow:0 2px 0 #20221e!important;letter-spacing:.02em!important}
 .java-editor-toolbar button:hover{background:#696d60!important;color:#fff5db!important}.java-editor-toolbar button:active{transform:translateY(1px)!important;box-shadow:0 1px 0 #20221e!important}
 .java-editor-toolbar .editor-tip{display:none!important}
+.java-actions-after-tray{position:relative;display:flex;justify-content:flex-end;align-items:center;min-height:36px;padding:4px 8px;background:#343730;border-top:2px solid #242620;z-index:40}
 .java-action-menu-wrap{position:relative;z-index:40}
 .java-action-menu-button{display:inline-flex!important;align-items:center;justify-content:center;gap:6px;min-width:70px!important;background:#6b705f!important;color:#fff0d0!important}
 .java-action-menu-button svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
-.java-action-menu{position:absolute;top:calc(100% + 7px);left:0;width:210px;padding:9px;background:#262923;border:2px solid #11140f;box-shadow:6px 7px 0 rgba(10,11,9,.45);z-index:1000}
+.java-action-menu{position:absolute;bottom:calc(100% + 7px);right:0;width:210px;padding:9px;background:#262923;border:2px solid #11140f;box-shadow:6px 7px 0 rgba(10,11,9,.45);z-index:1000}
 .java-action-menu[hidden]{display:none!important}
 .java-action-menu-title{padding:2px 4px 8px;color:#c9b980;font:800 9px/1 "DM Mono",monospace;letter-spacing:.14em}
 .java-action-menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
