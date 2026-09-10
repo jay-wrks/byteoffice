@@ -8,7 +8,7 @@
 public final class ByteBot {
     private int currentSourceLine = -1;
 
-    public void __byteOfficeSourceLine(int line) { currentSourceLine = line; }
+    public ByteBot __byteOfficeSourceLine(int line) { currentSourceLine = line; return this; }
 
     private static native int nTake(int line);
     private static native int nSend(int line);
@@ -144,7 +144,13 @@ public final class GameRunner {
         if(ch==='/'&&part[i+1]==='*'){out+='/*';i+=2;blockComment=true;continue;}
         call.lastIndex=i;
         const match=call.exec(part);
-        if(match){out+=match[1]+'.__byteOfficeSourceLine('+lineNumber+'); '+match[0];i=call.lastIndex;continue;}
+        if(match){
+          const receiverText=match[1];
+          const methodStart=match[0].indexOf('.',receiverText.length)+1;
+          out+=receiverText+'.__byteOfficeSourceLine('+lineNumber+')'+match[0].slice(methodStart);
+          i=call.lastIndex;
+          continue;
+        }
         out+=ch;i++;
       }
       return out;
