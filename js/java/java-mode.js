@@ -25,7 +25,12 @@ public final class ByteBot {
         StackTraceElement[] trace = Thread.currentThread().getStackTrace();
         for (StackTraceElement element : trace) {
             String name = element.getClassName();
-            if (name.equals("Program") || name.endsWith(".Program")) {
+            String file = element.getFileName();
+            // CheerpJ can expose the default-package class name differently,
+            // but the compiler still records the Java source file on the
+            // Program stack frame. Use only that JVM metadata.
+            if (name.equals("Program") || name.endsWith(".Program") ||
+                "Program.java".equals(file)) {
                 int line = element.getLineNumber();
                 return line > 0 ? line : -1;
             }
