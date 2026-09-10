@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Byte Office — Learn Coding by Running the Machine</title>
+  <title>Byte Office — Learn Java by Running the Machine</title>
   <link rel="stylesheet" href="css/core.css" />
   <link rel="stylesheet" href="css/robot/physical-boxes.css" />
   <link rel="stylesheet" href="css/robot/actions.css" />
@@ -18,11 +18,12 @@
   <link rel="stylesheet" href="css/feedback.css" />
   <link rel="stylesheet" href="css/workspaces.css" />
   <link rel="stylesheet" href="css/command-tray.css" />
+  <link rel="stylesheet" href="css/java-mode.css" />
+  <script src="https://cjrtnc.leaningtech.com/4.3/loader.js"></script>
 </head>
 <body>
   <div id="byteOfficeRoot"></div>
 
-  <!-- Split HTML components. Classic scripts work from file:// without a server. -->
   <script src="components/home.js"></script>
   <script src="components/roadmap.js"></script>
   <script src="components/page-curtain.js"></script>
@@ -34,7 +35,7 @@
   <script src="components/modal.js"></script>
   <script src="js/render-components.js"></script>
 
-  <!-- Game code: deliberately ordered classic scripts. -->
+  <!-- Existing physical machine/animation pipeline. Java mode reuses it. -->
   <script src="js/data/levels.js"></script>
   <script src="js/core/engine.js"></script>
   <script src="js/app/state.js"></script>
@@ -44,6 +45,9 @@
   <script src="js/app/runner-feedback.js"></script>
   <script src="js/app/settings-audio-navigation.js"></script>
   <script src="js/app/progression-ui.js"></script>
+
+  <!-- Full Java source mode. Must load after legacy helpers and before bindings. -->
+  <script src="js/java/java-mode.js"></script>
   <script src="js/app/bindings.js"></script>
 </body>
 </html>
