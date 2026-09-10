@@ -147,7 +147,7 @@ public final class GameRunner {
         if(match){
           const receiverText=match[1];
           const methodStart=match[0].indexOf('.',receiverText.length)+1;
-          out+=receiverText+'.__byteOfficeSourceLine('+lineNumber+')'+match[0].slice(methodStart);
+          out+=receiverText+'.__byteOfficeSourceLine('+lineNumber+').'+match[0].slice(methodStart);
           i=call.lastIndex;
           continue;
         }
