@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Byte Office — Learn Coding by Running the Machine</title>
+  <link rel="stylesheet" href="css/core.css" />
+  <link rel="stylesheet" href="css/robot/physical-boxes.css" />
+  <link rel="stylesheet" href="css/robot/actions.css" />
+  <link rel="stylesheet" href="css/robot/body.css" />
+  <link rel="stylesheet" href="css/robot/locomotion.css" />
+  <link rel="stylesheet" href="css/robot/carry-system.css" />
+  <link rel="stylesheet" href="css/editor.css" />
+  <link rel="stylesheet" href="css/screens.css" />
+  <link rel="stylesheet" href="css/robot/materials.css" />
+  <link rel="stylesheet" href="css/robot/expressions.css" />
+  <link rel="stylesheet" href="css/factory.css" />
+  <link rel="stylesheet" href="css/feedback.css" />
+  <link rel="stylesheet" href="css/workspaces.css" />
+  <link rel="stylesheet" href="css/command-tray.css" />
+</head>
+<body>
+  <div id="byteOfficeRoot"></div>
+
+  <!-- Split HTML components. Classic scripts work from file:// without a server. -->
+  <script src="components/home.js"></script>
+  <script src="components/roadmap.js"></script>
+  <script src="components/page-curtain.js"></script>
+  <script src="components/game-shell.js"></script>
+  <script src="components/mission-panel.js"></script>
+  <script src="components/factory-panel.js"></script>
+  <script src="components/robot.js"></script>
+  <script src="components/program-panel.js"></script>
+  <script src="components/modal.js"></script>
+  <script src="js/render-components.js"></script>
+
+  <!-- Game code: deliberately ordered classic scripts. -->
+  <script src="js/data/levels.js"></script>
+  <script src="js/core/engine.js"></script>
+  <script src="js/app/state.js"></script>
+  <script src="js/app/editor.js"></script>
+  <script src="js/app/scene.js"></script>
+  <script src="js/app/robot-actions.js"></script>
+  <script src="js/app/runner-feedback.js"></script>
+  <script src="js/app/settings-audio-navigation.js"></script>
+  <script src="js/app/progression-ui.js"></script>
+  <script src="js/app/bindings.js"></script>
+</body>
+</html>

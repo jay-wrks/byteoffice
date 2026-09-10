@@ -1,0 +1,37 @@
+/* v2.3 — immediate OUTBOX verdict feedback */
+.outbox-zone .boxes{position:relative}
+.output-error-flash{animation:outboxErrorFlash .64s cubic-bezier(.2,.75,.2,1) both}
+.output-success-flash{animation:outboxSuccessFlash .9s cubic-bezier(.2,.75,.2,1) both}
+.wrong-output-box{z-index:8;animation:wrongBoxHit .72s cubic-bezier(.16,.84,.32,1) both!important;box-shadow:0 0 0 3px #8b3532,0 8px 18px #4b161633!important}
+.robot-wrap.wrong-output-recoil{animation:byteWrongRecoil .68s cubic-bezier(.2,.8,.25,1) both}
+.robot-wrap.wrong-output-recoil .robot-antenna{animation:byteAlarmAntenna .16s ease-in-out infinite alternate}
+.robot-wrap.wrong-output-recoil .robot-belly-light{animation:byteAlarmLight .18s steps(2,end) infinite}
+.robot-wrap.level-success-celebration{animation:byteVictoryHop .88s cubic-bezier(.2,.8,.25,1) both}
+.robot-wrap.level-success-celebration .robot-arm.left-arm{animation:byteVictoryArmL .42s ease-in-out 2 alternate!important}
+.robot-wrap.level-success-celebration .robot-arm.right-arm{animation:byteVictoryArmR .42s ease-in-out 2 alternate!important}
+.robot-wrap.level-success-celebration .robot .eye{animation:none!important;transform:scaleY(.55) scaleX(1.22)!important}
+
+.result-burst{position:absolute;width:1px;height:1px;z-index:90;pointer-events:none;opacity:0;transform:scale(.72);transition:opacity .16s ease,transform .22s cubic-bezier(.2,.9,.2,1)}
+.result-burst.show{opacity:1;transform:scale(1)}
+.result-burst.leave{opacity:0;transform:scale(1.12)}
+.result-burst .result-ring{position:absolute;left:0;top:0;width:58px;height:58px;border:4px solid currentColor;border-radius:50%;transform:translate(-50%,-50%) scale(.3);opacity:.75;animation:resultRing .68s cubic-bezier(.15,.78,.25,1) forwards}
+.result-burst .result-badge{position:absolute;left:0;top:-45px;min-width:36px;height:36px;padding:0 8px;display:grid;place-items:center;transform:translate(-50%,-50%);border-radius:10px;background:#f4ead5;border:3px solid currentColor;font:900 23px/1 monospace;box-shadow:0 4px 0 #2b272366;color:inherit}
+.result-burst.error{color:#9f3d38}.result-burst.success{color:#3c8062}
+.result-burst>i{position:absolute;left:-3px;top:-3px;width:7px;height:14px;border-radius:2px;background:currentColor;transform-origin:50% 4px;--a:calc(var(--i)*36deg);animation:resultParticle .72s cubic-bezier(.14,.8,.22,1) forwards;transform:rotate(var(--a)) translateY(-18px) scale(.3)}
+.result-burst.success>i:nth-of-type(3n+1){border-radius:50%;width:8px;height:8px}
+
+@keyframes wrongBoxHit{0%{transform:translate3d(0,0,0) rotate(0)}18%{transform:translate3d(-6px,0,0) rotate(-2deg)}36%{transform:translate3d(6px,0,0) rotate(2deg)}54%{transform:translate3d(-4px,0,0) rotate(-1deg)}72%{transform:translate3d(3px,0,0) rotate(1deg)}100%{transform:none}}
+@keyframes outboxErrorFlash{0%,100%{filter:none}22%{filter:drop-shadow(0 0 8px #a3423d)}45%{filter:drop-shadow(0 0 2px #a3423d)}}
+@keyframes outboxSuccessFlash{0%,100%{filter:none}28%{filter:drop-shadow(0 0 10px #4d9b74)}58%{filter:drop-shadow(0 0 3px #4d9b74)}}
+@keyframes byteWrongRecoil{0%{translate:0 0;rotate:0deg}18%{translate:-9px -2px;rotate:-5deg}38%{translate:5px 1px;rotate:3deg}62%{translate:-3px 0;rotate:-1deg}100%{translate:0 0;rotate:0deg}}
+@keyframes byteAlarmAntenna{from{transform:rotate(-12deg)}to{transform:rotate(12deg)}}
+@keyframes byteAlarmLight{0%,49%{background:#e75c55;box-shadow:0 0 8px #e75c55}50%,100%{background:#f3bd63;box-shadow:0 0 4px #f3bd6388}}
+@keyframes byteVictoryHop{0%{translate:0 0;rotate:0}22%{translate:0 -14px;rotate:-3deg}42%{translate:0 0;rotate:2deg}63%{translate:0 -8px;rotate:3deg}82%{translate:0 0;rotate:-1deg}100%{translate:0 0;rotate:0}}
+@keyframes byteVictoryArmL{from{transform:rotate(-18deg)!important}to{transform:rotate(58deg)!important}}
+@keyframes byteVictoryArmR{from{transform:rotate(18deg)!important}to{transform:rotate(-58deg)!important}}
+@keyframes resultRing{0%{transform:translate(-50%,-50%) scale(.28);opacity:.9}100%{transform:translate(-50%,-50%) scale(1.65);opacity:0}}
+@keyframes resultParticle{0%{opacity:0;transform:rotate(var(--a)) translateY(-18px) scale(.3)}20%{opacity:1}100%{opacity:0;transform:rotate(var(--a)) translateY(-62px) scale(1) rotate(55deg)}}
+
+@media (prefers-reduced-motion:reduce){.wrong-output-box,.robot-wrap.wrong-output-recoil,.robot-wrap.level-success-celebration,.result-burst .result-ring,.result-burst>i{animation:none!important}}
+
+

@@ -1,0 +1,322 @@
+/* v1.6 — mechanically coupled locomotion + persistent two-claw carrying.
+   The payload is part of the robot's carry rig: no idle movement, only tiny
+   inertial motion while footsteps are actually occurring. */
+
+/* Standing carry: both manipulators remain visibly locked around the payload. */
+.robot-wrap[data-grip="held"] .held-card.has-value{
+  animation:none!important;
+  translate:0 0!important;
+  rotate:0deg!important;
+  transition:left .16s cubic-bezier(.2,.75,.2,1),top .16s cubic-bezier(.2,.75,.2,1)!important;
+}
+
+/* Grip geometry is facing-aware.  The near/far arm angles are deliberately
+   asymmetric so the claws read as supporting opposite edges, not posing. */
+.robot-wrap[data-facing="right"][data-grip="held"] .left-arm{transform:rotate(-55deg) scaleY(1.10)!important}
+.robot-wrap[data-facing="right"][data-grip="held"] .right-arm{transform:rotate(-77deg) scaleY(1.18)!important}
+.robot-wrap[data-facing="left"][data-grip="held"] .left-arm{transform:rotate(-55deg) scaleY(1.10)!important}
+.robot-wrap[data-facing="left"][data-grip="held"] .right-arm{transform:rotate(-77deg) scaleY(1.18)!important}
+
+/* Walking is a sequence of meaningful mechanical phases: heel plant, weight
+   transfer, toe-off, swing, next plant.  Reverse animation on the other leg
+   makes each footfall alternate instead of both legs simply waving. */
+.robot-wrap.walking .left-leg{
+  animation:robotStepV16 var(--walk-ms,285ms) linear infinite!important;
+  transform-origin:50% 4px!important;
+}
+.robot-wrap.walking .right-leg{
+  animation:robotStepV16 var(--walk-ms,285ms) linear infinite reverse!important;
+  transform-origin:50% 4px!important;
+}
+@keyframes robotStepV16{
+  0%   {transform:rotate(10deg) translateY(0)}
+  18%  {transform:rotate(5deg) translateY(1px)}
+  36%  {transform:rotate(-5deg) translateY(0)}
+  50%  {transform:rotate(-14deg) translateY(-3px)}
+  68%  {transform:rotate(-6deg) translateY(-5px)}
+  84%  {transform:rotate(5deg) translateY(-1px)}
+  100% {transform:rotate(10deg) translateY(0)}
+}
+
+/* Feet themselves articulate at toe-off and flatten on contact. */
+.robot-wrap.walking .left-leg .robot-foot{
+  animation:robotFootV16 var(--walk-ms,285ms) linear infinite!important;
+  transform-origin:70% 50%!important;
+}
+.robot-wrap.walking .right-leg .robot-foot{
+  animation:robotFootV16 var(--walk-ms,285ms) linear infinite reverse!important;
+  transform-origin:70% 50%!important;
+}
+@keyframes robotFootV16{
+  0%,18%,100%{transform:rotate(0deg) translateY(0)}
+  36%{transform:rotate(-4deg) translateY(0)}
+  55%,68%{transform:rotate(8deg) translateY(-1px)}
+  84%{transform:rotate(2deg) translateY(0)}
+}
+
+/* Suspension reacts to alternate foot loading.  The head counter-rotates to
+   keep Byte's gaze stable, giving the motion weight without cartoon bouncing. */
+.robot-wrap.walking .robot-body{
+  animation:robotSuspensionV16 var(--walk-ms,285ms) linear infinite!important;
+}
+.robot-wrap.walking .robot-head{
+  animation:robotHeadStabilizeV16 var(--walk-ms,285ms) linear infinite!important;
+}
+.robot-wrap.walking .robot-shadow{
+  animation:robotShadowV16 calc(var(--walk-ms,285ms)/2) ease-in-out infinite!important;
+}
+@keyframes robotSuspensionV16{
+  0%,100%{translate:0 0;rotate:-.7deg}
+  25%{translate:0 -1px;rotate:.8deg}
+  50%{translate:0 0;rotate:.7deg}
+  75%{translate:0 -1px;rotate:-.8deg}
+}
+@keyframes robotHeadStabilizeV16{
+  0%,100%{translate:0 0;rotate:.7deg}
+  25%{translate:0 -1px;rotate:-.8deg}
+  50%{translate:0 0;rotate:-.7deg}
+  75%{translate:0 -1px;rotate:.8deg}
+}
+@keyframes robotShadowV16{
+  0%,100%{transform:scaleX(1);opacity:.52}
+  50%{transform:scaleX(.94);opacity:.46}
+}
+
+/* Empty travel uses reciprocal arm swing. */
+.robot-wrap.walking:not(.carrying) .left-arm{
+  animation:robotFreeArmV16 var(--walk-ms,285ms) ease-in-out infinite reverse!important;
+}
+.robot-wrap.walking:not(.carrying) .right-arm{
+  animation:robotFreeArmV16 var(--walk-ms,285ms) ease-in-out infinite!important;
+}
+@keyframes robotFreeArmV16{
+  0%,100%{transform:rotate(15deg)}
+  50%{transform:rotate(-17deg)}
+}
+
+/* Loaded travel: arms DO NOT swing.  They act like a rigid two-arm gripper.
+   Both arm suspension and payload inertia share exactly the same cadence. */
+.robot-wrap.walking.carrying .left-arm{
+  animation:carryLeftLinkedV16 var(--carry-ms,310ms) linear infinite!important;
+}
+.robot-wrap.walking.carrying .right-arm{
+  animation:carryRightLinkedV16 var(--carry-ms,310ms) linear infinite!important;
+}
+.robot-wrap.walking.carrying .held-card.has-value{
+  animation:carryPayloadInertiaV16 var(--carry-ms,310ms) linear infinite!important;
+  transform-origin:50% 50%!important;
+}
+@keyframes carryLeftLinkedV16{
+  0%,100%{transform:rotate(-55deg) scaleY(1.10)}
+  25%{transform:rotate(-54deg) scaleY(1.105)}
+  50%{transform:rotate(-55.7deg) scaleY(1.10)}
+  75%{transform:rotate(-54.6deg) scaleY(1.105)}
+}
+@keyframes carryRightLinkedV16{
+  0%,100%{transform:rotate(-77deg) scaleY(1.18)}
+  25%{transform:rotate(-76deg) scaleY(1.185)}
+  50%{transform:rotate(-77.7deg) scaleY(1.18)}
+  75%{transform:rotate(-76.6deg) scaleY(1.185)}
+}
+@keyframes carryPayloadInertiaV16{
+  0%,100%{translate:0 0;rotate:0deg}
+  18%{translate:.35px -.45px;rotate:.18deg}
+  36%{translate:-.25px -.8px;rotate:-.20deg}
+  50%{translate:0 -.25px;rotate:0deg}
+  68%{translate:.25px -.8px;rotate:.20deg}
+  84%{translate:-.35px -.45px;rotate:-.18deg}
+}
+
+/* The claw fingers stay closed around the payload for the entire loaded walk. */
+.robot-wrap.walking.carrying .robot-claw i{transform:rotate(2deg)!important}
+.robot-wrap.walking.carrying .robot-claw b{transform:rotate(-2deg)!important}
+
+/* A stopped robot must be perfectly stable: no leftover gait, suspension or
+   payload inertia after the walking class is removed. */
+.robot-wrap:not(.walking)[data-grip="held"] .robot-body,
+.robot-wrap:not(.walking)[data-grip="held"] .robot-head,
+.robot-wrap:not(.walking)[data-grip="held"] .held-card.has-value{
+  animation:none!important;
+}
+
+/* v1.7 — target-authoritative manipulation direction.
+   game.js determines facing from the actual source/destination rectangle.
+   Keep wrapper state authoritative even if another action animation touches
+   .worker transforms later: the arms and body must always face the real box. */
+.robot-wrap[data-facing="left"] .robot{transform:scaleX(-1)!important}
+.robot-wrap[data-facing="right"] .robot{transform:scaleX(1)!important}
+
+/* Conveyor contact is resolved in robot-local forward space. Once the whole
+   robot is mirrored by data-facing, these exact same joint angles point both
+   claws toward the physical box on either side. */
+.robot-wrap[data-grip="side"] .left-arm{transform:rotate(-61deg) scaleY(1.10)!important}
+.robot-wrap[data-grip="side"] .right-arm{transform:rotate(-38deg) scaleY(1.08)!important}
+
+/* v1.8 — floor-speed-coupled gait / no foot skating.
+   The wrapper is the chassis. During stance, the planted leg counter-translates
+   by --plant-px while the chassis advances. The opposite leg is exactly half a
+   gait cycle out of phase. JS derives --walk-ms from actual world travel speed. */
+.robot-wrap.walking .left-leg,
+.robot-wrap.walking .right-leg{
+  animation:robotGroundStepV18 var(--walk-ms,300ms) linear infinite!important;
+  transform-origin:50% 4px!important;
+}
+.robot-wrap.walking .right-leg{
+  animation-delay:calc(-1 * var(--half-walk-ms,150ms))!important;
+}
+
+@keyframes robotGroundStepV18{
+  /* touchdown: foot is slightly ahead */
+  0%   {transform:translateX(calc(var(--plant-px,20px) * .50)) translateY(0) rotate(7deg)}
+  /* stance: foot remains on the same floor point while body passes over it */
+  18%  {transform:translateX(calc(var(--plant-px,20px) * .15)) translateY(1px) rotate(3deg)}
+  38%  {transform:translateX(calc(var(--plant-px,20px) * -.40)) translateY(1px) rotate(-5deg)}
+  46%  {transform:translateX(calc(var(--plant-px,20px) * -.55)) translateY(0) rotate(-9deg)}
+  /* toe-off + swing: foot leaves floor and moves forward */
+  58%  {transform:translateX(calc(var(--plant-px,20px) * -.20)) translateY(-6px) rotate(-10deg)}
+  74%  {transform:translateX(calc(var(--plant-px,20px) * .28)) translateY(-8px) rotate(3deg)}
+  90%  {transform:translateX(calc(var(--plant-px,20px) * .52)) translateY(-3px) rotate(8deg)}
+  100% {transform:translateX(calc(var(--plant-px,20px) * .50)) translateY(0) rotate(7deg)}
+}
+
+/* Foot articulation follows ground phase rather than running its own rhythm. */
+.robot-wrap.walking .left-leg .robot-foot,
+.robot-wrap.walking .right-leg .robot-foot{
+  animation:robotGroundFootV18 var(--walk-ms,300ms) linear infinite!important;
+  transform-origin:72% 55%!important;
+}
+.robot-wrap.walking .right-leg .robot-foot{
+  animation-delay:calc(-1 * var(--half-walk-ms,150ms))!important;
+}
+@keyframes robotGroundFootV18{
+  0%,18%,38%{transform:rotate(0deg) translateY(0)}
+  46%{transform:rotate(6deg) translateY(0)}
+  58%{transform:rotate(11deg) translateY(-1px)}
+  74%{transform:rotate(2deg) translateY(-1px)}
+  90%,100%{transform:rotate(0deg) translateY(0)}
+}
+
+/* Chassis suspension is locked to the same gait clock. */
+.robot-wrap.walking .robot-body{
+  animation:robotChassisV18 var(--walk-ms,300ms) linear infinite!important;
+}
+.robot-wrap.walking .robot-head{
+  animation:robotHeadV18 var(--walk-ms,300ms) linear infinite!important;
+}
+@keyframes robotChassisV18{
+  0%,50%,100%{translate:0 0;rotate:0deg}
+  24%{translate:0 -1px;rotate:.65deg}
+  74%{translate:0 -1px;rotate:-.65deg}
+}
+@keyframes robotHeadV18{
+  0%,50%,100%{translate:0 0;rotate:0deg}
+  24%{translate:0 -.6px;rotate:-.45deg}
+  74%{translate:0 -.6px;rotate:.45deg}
+}
+
+/* Loaded payload is coupled to foot impacts. It moves only while walking and
+   remains perfectly rigid when Byte stops (existing held-state rule below). */
+.robot-wrap.walking.carrying .held-card.has-value{
+  animation:carryGroundInertiaV18 var(--walk-ms,300ms) linear infinite!important;
+}
+.robot-wrap.walking.carrying .left-arm{
+  animation:carryGroundLeftV18 var(--walk-ms,300ms) linear infinite!important;
+}
+.robot-wrap.walking.carrying .right-arm{
+  animation:carryGroundRightV18 var(--walk-ms,300ms) linear infinite!important;
+}
+@keyframes carryGroundInertiaV18{
+  0%,50%,100%{translate:0 0;rotate:0deg}
+  7%{translate:-.35px -.55px;rotate:-.16deg}
+  17%{translate:.18px -.16px;rotate:.08deg}
+  57%{translate:-.35px -.55px;rotate:.16deg}
+  67%{translate:.18px -.16px;rotate:-.08deg}
+}
+@keyframes carryGroundLeftV18{
+  0%,50%,100%{transform:rotate(-55deg) scaleY(1.10)}
+  7%,57%{transform:rotate(-54.6deg) scaleY(1.105)}
+  17%,67%{transform:rotate(-55.2deg) scaleY(1.10)}
+}
+@keyframes carryGroundRightV18{
+  0%,50%,100%{transform:rotate(-77deg) scaleY(1.18)}
+  7%,57%{transform:rotate(-76.6deg) scaleY(1.185)}
+  17%,67%{transform:rotate(-77.2deg) scaleY(1.18)}
+}
+
+/* Absolutely no locomotion residue while standing. */
+.robot-wrap:not(.walking) .robot-leg,
+.robot-wrap:not(.walking) .robot-foot,
+.robot-wrap:not(.walking) .robot-body,
+.robot-wrap:not(.walking) .robot-head{
+  animation:none!important;
+}
+
+/* v1.9 — centered two-hand carry cradle.
+   Direction only affects reaching/travel. Once a box belongs to Byte it is
+   pulled into a fixed, centered position in front of the torso and stays there
+   while standing or walking. */
+.robot-wrap{
+  --carry-center-x:29px;
+  --carry-center-y:78px;
+}
+
+/* Override the old facing-dependent payload coordinates from v1.5-v1.8. */
+.robot-wrap[data-facing="right"],
+.robot-wrap[data-facing="left"]{
+  --held-front-x:var(--carry-center-x)!important;
+  --held-front-y:var(--carry-center-y)!important;
+}
+.robot-wrap .held-card,
+.robot-wrap[data-grip="held"] .held-card,
+.robot-wrap.walking.carrying .held-card,
+.robot-wrap.reaching .held-card,
+.robot-wrap.placing .held-card,
+.robot-wrap.copying .held-card{
+  left:var(--carry-center-x)!important;
+  top:var(--carry-center-y)!important;
+}
+
+/* A normal carry is a centered cradle: both arms converge symmetrically on
+   opposite box edges. Mirroring the robot for travel does not move the box. */
+.robot-wrap[data-grip="held"] .left-arm,
+.robot-wrap.walking.carrying .left-arm{
+  transform:rotate(-28deg) scaleY(1.02)!important;
+}
+.robot-wrap[data-grip="held"] .right-arm,
+.robot-wrap.walking.carrying .right-arm{
+  transform:rotate(28deg) scaleY(1.02)!important;
+}
+
+/* Keep the same centered grip during the ground-coupled gait. The tiny joint
+   compliance matches payload inertia but never turns into an arm swing. */
+.robot-wrap.walking.carrying .left-arm{
+  animation:carryCenteredLeftV19 var(--walk-ms,300ms) linear infinite!important;
+}
+.robot-wrap.walking.carrying .right-arm{
+  animation:carryCenteredRightV19 var(--walk-ms,300ms) linear infinite!important;
+}
+@keyframes carryCenteredLeftV19{
+  0%,50%,100%{transform:rotate(-28deg) scaleY(1.02)}
+  7%,57%{transform:rotate(-27.6deg) scaleY(1.025)}
+  17%,67%{transform:rotate(-28.2deg) scaleY(1.02)}
+}
+@keyframes carryCenteredRightV19{
+  0%,50%,100%{transform:rotate(28deg) scaleY(1.02)}
+  7%,57%{transform:rotate(27.6deg) scaleY(1.025)}
+  17%,67%{transform:rotate(28.2deg) scaleY(1.02)}
+}
+
+/* Standing with a payload is perfectly rigid and centered. */
+.robot-wrap:not(.walking)[data-grip="held"] .held-card.has-value{
+  animation:none!important;
+  translate:0 0!important;
+  rotate:0deg!important;
+}
+
+@media(max-width:760px){
+  .robot-wrap{
+    --carry-center-x:29px;
+    --carry-center-y:78px;
+  }
+}
+

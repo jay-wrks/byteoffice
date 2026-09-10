@@ -1,0 +1,132 @@
+/* v2.4.1 — BYTE visual material pass.
+   Visual-only overrides: animation geometry, grip states, box paths and timing
+   remain untouched.  BYTE now uses matte office/craft materials instead of
+   shiny metal gradients so he belongs in the paper/cardboard factory world. */
+.robot-wrap{
+  filter:drop-shadow(0 3px 0 #3b392f38)!important;
+}
+.robot-head{
+  background:#e7ddc4!important;
+  border-color:#4e4a40!important;
+  box-shadow:inset 0 0 0 2px #f1e8d2,0 2px 0 #69635455!important;
+  border-radius:19px 19px 16px 16px!important;
+}
+.robot-head:after{
+  background:#8f8775!important;
+  border-color:#4e4a40!important;
+  box-shadow:none!important;
+}
+.robot-antenna{
+  background:#8b816d!important;
+  border-color:#4e4a40!important;
+  box-shadow:none!important;
+}
+.robot-antenna i{
+  background:#c98d4e!important;
+  border-color:#4e4a40!important;
+  box-shadow:0 0 0 2px #e8c58b44!important;
+}
+.robot-ear{
+  background:#b6aa90!important;
+  border-color:#4e4a40!important;
+  box-shadow:inset 0 2px #d8ceb6!important;
+}
+.robot-face-screen{
+  background:#343832!important;
+  border-color:#55584e!important;
+  box-shadow:inset 0 0 0 2px #252822!important;
+  border-radius:9px!important;
+}
+.robot .eye{
+  background:#b8d4a8!important;
+  box-shadow:none!important;
+}
+.robot .mouth{
+  border-bottom-color:#b8d4a8!important;
+  opacity:.9!important;
+}
+.robot-cheek{
+  background:#b97969!important;
+  box-shadow:none!important;
+  opacity:.55!important;
+}
+.robot-body{
+  background:#d7c9a8!important;
+  border-color:#4e4a40!important;
+  box-shadow:inset 0 0 0 2px #eadfc5,0 3px 0 #6a645544!important;
+  border-radius:13px 13px 16px 16px!important;
+}
+.robot-neck{
+  background:#8f8775!important;
+  border-color:#4e4a40!important;
+}
+.robot-chest-screen{
+  background:#3c4038!important;
+  border-color:#55584e!important;
+  box-shadow:inset 0 0 0 2px #2b2e28!important;
+  border-radius:5px!important;
+}
+.robot-chest-screen i,.robot-chest-screen b,.robot-chest-screen em{
+  background:#9caf8d!important;
+  box-shadow:none!important;
+}
+.robot-belly-light{
+  background:#c98d4e!important;
+  border-color:#625a49!important;
+  box-shadow:none!important;
+}
+.robot-side-bolt{
+  background:#8d826e!important;
+  border-color:#5a5346!important;
+}
+.robot-arm{
+  background:#cdbf9d!important;
+  border-color:#4e4a40!important;
+  box-shadow:inset 0 0 0 2px #ded2b7!important;
+}
+.robot-arm .arm-joint{
+  background:#8f826a!important;
+  border-color:#4e4a40!important;
+  box-shadow:none!important;
+}
+.robot-arm .robot-claw{
+  background:#a79a80!important;
+  border-color:#4e4a40!important;
+  box-shadow:none!important;
+}
+.robot-claw i,.robot-claw b{
+  background:#b7a98d!important;
+  border-color:#4e4a40!important;
+}
+.robot-leg{
+  background:#a89d86!important;
+  border-color:#4e4a40!important;
+  box-shadow:inset 0 0 0 2px #bbb099!important;
+}
+.robot-leg .leg-joint{
+  background:#7e7564!important;
+  border-color:#4e4a40!important;
+}
+.robot-leg .robot-foot{
+  background:#766f61!important;
+  border-color:#4e4a40!important;
+  box-shadow:inset 0 2px #938a77!important;
+}
+.robot-shadow{
+  background:#49463d3d!important;
+  filter:blur(1px)!important;
+}
+
+/* Keep expressive states readable without returning to neon/metallic effects. */
+.robot-wrap.carrying .robot-face-screen{
+  box-shadow:inset 0 0 0 2px #252822!important;
+}
+.robot-wrap.error-pose .robot-face-screen{
+  background:#503a36!important;
+  border-color:#6f5148!important;
+}
+.robot-wrap.error-pose .robot .eye{
+  background:#d99887!important;
+  box-shadow:none!important;
+}
+

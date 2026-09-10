@@ -1,0 +1,239 @@
+/* v1.3 — BYTE mini robot visual redesign.
+   Action classes remain unchanged so physical box ownership/motion is untouched. */
+.robot-wrap{filter:drop-shadow(0 2px 0 #17191555)}
+.robot{left:24px!important;top:1px!important;width:74px!important;height:144px!important;transform-origin:50% 91%!important}
+.robot-head{
+  left:8px!important;top:0!important;width:58px!important;height:51px!important;
+  border-radius:21px 21px 18px 18px!important;
+  background:linear-gradient(145deg,#f5f0d9 0 55%,#c9c6b4 56% 100%)!important;
+  border:3px solid #343b3d!important;
+  box-shadow:inset -7px -5px 0 #aaa99c, inset 4px 4px 0 #fff9e8,0 3px 0 #252a2b66!important;
+  z-index:7;
+}
+.robot-head:before{content:none!important}
+.robot-head:after{content:"";position:absolute;left:14px;bottom:-7px;width:28px;height:8px;border-radius:0 0 7px 7px;background:#6e7775;border:2px solid #343b3d;z-index:-1}
+.robot-antenna{position:absolute;left:25px;top:-20px;width:5px;height:19px;background:#727c78;border:2px solid #343b3d;border-radius:5px;transform-origin:50% 100%;z-index:-1}
+.robot-antenna i{position:absolute;left:-5px;top:-8px;width:11px;height:11px;border-radius:50%;background:#f2b85c;border:2px solid #343b3d;box-shadow:0 0 0 3px #f2b85c22,0 0 9px #f2b85c88}
+.robot-ear{position:absolute;top:17px;width:9px;height:20px;border:3px solid #343b3d;background:#9da5a0;box-shadow:inset 0 3px #d9ddd5}
+.robot-ear.ear-left{left:-9px;border-radius:8px 2px 2px 8px}.robot-ear.ear-right{right:-9px;border-radius:2px 8px 8px 2px}
+.robot-face-screen{position:absolute;left:7px;top:8px;width:38px;height:30px;border-radius:11px;background:linear-gradient(#233037,#172126);border:2px solid #59666a;box-shadow:inset 0 0 8px #071014,0 1px 0 #ffffff55}
+.robot .eye{top:8px!important;width:8px!important;height:9px!important;background:#9df4e1!important;border-radius:6px!important;box-shadow:0 0 5px #7deed8, inset 0 -2px #50a99d;transform-origin:50% 50%;animation:robotBlink 4.8s ease-in-out infinite}
+.robot .eye-l{left:6px!important}.robot .eye-r{right:6px!important}
+.robot .mouth{left:13px!important;top:20px!important;width:12px!important;height:5px!important;border:0!important;border-bottom:2px solid #a7eee0!important;border-radius:0 0 8px 8px;opacity:.95}
+.robot-cheek{position:absolute;top:19px;width:4px;height:3px;border-radius:50%;background:#f19aaa;opacity:.72;box-shadow:0 0 4px #f19aaa66}.robot-cheek.cheek-l{left:4px}.robot-cheek.cheek-r{right:4px}
+@keyframes robotBlink{0%,43%,47%,100%{transform:scaleY(1)}45%{transform:scaleY(.12)}}
+
+.robot-body{
+  left:11px!important;top:50px!important;width:52px!important;height:56px!important;
+  border-radius:15px 15px 18px 18px!important;
+  background:linear-gradient(145deg,#e8e5d3 0 52%,#b7b8ad 53% 100%)!important;
+  border:3px solid #343b3d!important;
+  box-shadow:inset 5px 5px 0 #fff8e8,inset -7px -5px 0 #999e99,0 3px 0 #23292b55!important;
+  z-index:5;
+}
+.robot-neck{position:absolute;left:17px;top:-8px;width:13px;height:8px;border:2px solid #343b3d;border-bottom:0;background:#78817d}
+.robot-chest-screen{position:absolute;left:10px;top:10px;width:27px;height:21px;border-radius:7px;background:#263238;border:2px solid #515d60;box-shadow:inset 0 0 6px #111c20}
+.robot-chest-screen i,.robot-chest-screen b,.robot-chest-screen em{position:absolute;bottom:5px;width:3px;border-radius:3px;background:#83d8c7;box-shadow:0 0 3px #83d8c777}
+.robot-chest-screen i{left:5px;height:6px}.robot-chest-screen b{left:11px;height:10px}.robot-chest-screen em{left:17px;height:8px}
+.robot-belly-light{position:absolute;left:21px;bottom:7px;width:7px;height:7px;border-radius:50%;background:#f3bd63;border:1px solid #4b4e49;box-shadow:0 0 5px #f3bd6388}
+.robot-side-bolt{position:absolute;top:37px;width:5px;height:5px;border-radius:50%;background:#707874;border:1px solid #404647}.robot-side-bolt.bolt-l{left:6px}.robot-side-bolt.bolt-r{right:6px}
+
+.robot-arm{top:58px!important;width:15px!important;height:46px!important;background:linear-gradient(90deg,#aeb4ae,#d9d8c9 45%,#8e9691)!important;border:3px solid #343b3d!important;border-radius:8px!important;z-index:4}
+.robot-arm.left-arm{left:-1px!important}.robot-arm.right-arm{right:-1px!important}
+.robot-arm .arm-joint{position:absolute;left:2px;top:15px;width:7px;height:7px;border-radius:50%;background:#66716e;border:1px solid #343b3d;box-shadow:inset 1px 1px #bdc5bd}
+.robot-arm .robot-claw{left:-1px!important;bottom:-9px!important;width:13px!important;height:12px!important;background:#89928e!important;border:2px solid #343b3d!important;border-radius:6px!important}
+.robot-claw i,.robot-claw b{position:absolute;bottom:-6px;width:5px;height:8px;background:#9ba39f;border:2px solid #343b3d;border-top:0;border-radius:0 0 5px 5px}
+.robot-claw i{left:-3px;transform:rotate(18deg)}.robot-claw b{right:-3px;transform:rotate(-18deg)}
+
+.robot-leg{top:101px!important;width:17px!important;height:34px!important;background:linear-gradient(90deg,#737d79,#aeb4ae 48%,#646d69)!important;border:3px solid #343b3d!important;border-radius:7px!important;z-index:3}
+.robot-leg.left-leg{left:17px!important}.robot-leg.right-leg{right:17px!important}
+.robot-leg .leg-joint{position:absolute;left:3px;top:10px;width:6px;height:6px;border-radius:50%;background:#4f5a58;border:1px solid #343b3d}
+.robot-leg .robot-foot{bottom:-8px!important;width:23px!important;height:11px!important;background:#59635f!important;border:3px solid #343b3d!important;border-radius:8px 8px 5px 5px!important;box-shadow:inset 0 3px #858e88}
+.robot-leg.left-leg .robot-foot{left:-9px!important}.robot-leg.right-leg .robot-foot{left:-2px!important}
+.robot-shadow{left:27px!important;bottom:18px!important;width:68px!important;height:14px!important;background:#22282455!important}
+
+/* Held tile sits between the robot's clamps, not through its torso. */
+.robot-wrap .held-card{left:38px!important;top:79px!important;z-index:20!important}
+.robot-wrap.reaching .held-card,.robot-wrap.placing .held-card,.robot-wrap.copying .held-card{top:79px!important}
+
+/* Cute state language — only robot artwork changes, never physical box geometry. */
+.robot-wrap.walking .robot-antenna{animation:antennaBounce var(--bob-ms,210ms) ease-in-out infinite}
+.robot-wrap.carrying .robot-face-screen{box-shadow:inset 0 0 8px #071014,0 0 7px #83d8c744}
+.robot-wrap.reaching .robot .eye,.robot-wrap.placing .robot .eye{animation:none;transform:scaleY(.72) scaleX(1.08)}
+.robot-wrap.copying .robot .eye{animation:robotCopyEyes .82s ease both!important}
+.robot-wrap.copying .robot-antenna i{animation:copyPulse .82s ease both}
+.robot-wrap.thinking .robot-antenna{animation:thinkAntenna .34s ease-in-out alternate infinite}
+.robot-wrap.thinking .robot .eye-r{transform:translateY(-2px)}
+.robot-wrap.celebrate .robot .mouth{height:7px!important;border-bottom-width:3px!important}
+.robot-wrap.celebrate .robot-antenna i{animation:celebrateLamp .32s ease-in-out infinite alternate}
+.robot-wrap.error-pose .robot-face-screen{background:#382528;border-color:#725357}
+.robot-wrap.error-pose .robot .eye{background:#f39c9c!important;box-shadow:0 0 5px #f39c9c!important;animation:none!important;transform:rotate(24deg) scaleY(.45)}
+.robot-wrap.error-pose .robot .eye-r{transform:rotate(-24deg) scaleY(.45)}
+.robot-wrap.throwing .robot-antenna{animation:throwAntenna .48s ease both}
+@keyframes antennaBounce{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(7deg)}}
+@keyframes robotCopyEyes{0%,100%{transform:scale(1)}35%{transform:scale(.55,1.25)}55%{transform:scale(1.25,.8)}}
+@keyframes copyPulse{0%,100%{background:#f2b85c;box-shadow:0 0 9px #f2b85c88}45%,65%{background:#9df4e1;box-shadow:0 0 14px #9df4e1}}
+@keyframes thinkAntenna{from{transform:rotate(-11deg)}to{transform:rotate(13deg)}}
+@keyframes celebrateLamp{from{transform:scale(.85);background:#f2b85c}to{transform:scale(1.25);background:#9df4e1;box-shadow:0 0 14px #9df4e1}}
+@keyframes throwAntenna{0%{transform:rotate(0)}25%{transform:rotate(-18deg)}60%{transform:rotate(21deg)}100%{transform:rotate(0)}}
+
+/* Keep the robot feeling mechanical while preserving the v1.2 action timing. */
+.robot-wrap.walking .robot-body{animation:robotWalkBody var(--bob-ms,210ms) ease-in-out infinite!important}
+.robot-wrap.walking .robot-head{animation:robotWalkHead var(--bob-ms,210ms) ease-in-out infinite!important}
+.robot-wrap.walking.carrying .robot-body{animation:robotCarryBody var(--bob-ms,210ms) ease-in-out infinite!important}
+@keyframes robotWalkBody{0%,100%{translate:0 0;rotate:-1deg}50%{translate:0 -2px;rotate:1deg}}
+@keyframes robotWalkHead{0%,100%{translate:0 0;rotate:1deg}50%{translate:0 -3px;rotate:-1deg}}
+@keyframes robotCarryBody{0%,100%{translate:0 0;rotate:-.6deg}50%{translate:0 -1px;rotate:.6deg}}
+
+/* v1.4 — object-driven robot hand choreography.
+   The arms no longer play generic pickup/place waves. They use the grip state
+   set by game.js, so claws visibly contact the box before ownership moves. */
+.robot-wrap .robot-arm{
+  transform-origin:50% 5px!important;
+  transition:transform .18s cubic-bezier(.2,.72,.2,1),height .18s cubic-bezier(.2,.72,.2,1)!important;
+  animation:none!important;
+}
+.robot-wrap .robot-claw{
+  transform-origin:50% 50%;
+  transition:transform .12s ease!important;
+}
+.robot-wrap .robot-claw i,
+.robot-wrap .robot-claw b{
+  transition:transform .12s ease!important;
+  transform-origin:50% 0;
+}
+
+/* Neutral arms hang naturally. */
+.robot-wrap:not([data-grip]) .left-arm{transform:rotate(8deg)!important}
+.robot-wrap:not([data-grip]) .right-arm{transform:rotate(-8deg)!important}
+
+/* Carry / held-box grip: both clamps pinch the side edges of the physical tile. */
+.robot-wrap[data-grip="held"] .left-arm,
+.robot-wrap.walking.carrying .left-arm{transform:rotate(-29deg) scaleY(.96)!important}
+.robot-wrap[data-grip="held"] .right-arm,
+.robot-wrap.walking.carrying .right-arm{transform:rotate(29deg) scaleY(.96)!important}
+
+/* Side conveyor contact. The robot is explicitly faced toward INBOX/OUTBOX by JS,
+   so local +X is always the direction of the target. The near claw reaches first,
+   while the other supports the opposite edge. */
+.robot-wrap[data-grip="side"] .left-arm{transform:rotate(-46deg) scaleY(1.08)!important}
+.robot-wrap[data-grip="side"] .right-arm{transform:rotate(-67deg) scaleY(1.17)!important}
+
+/* Floor-memory contact: crouched, symmetrical two-claw grip around the tile. */
+.robot-wrap[data-grip="memory"] .left-arm{transform:rotate(-17deg) scaleY(1.25)!important}
+.robot-wrap[data-grip="memory"] .right-arm{transform:rotate(17deg) scaleY(1.25)!important}
+.robot-wrap[data-grip="memory"] .robot-body{translate:0 8px!important;rotate:0deg!important}
+.robot-wrap[data-grip="memory"] .robot-head{translate:0 5px!important;rotate:0deg!important}
+
+/* COPYTO: left claw deliberately protects the original held tile while the right
+   claw separates and guides only the duplicate toward floor memory. */
+.robot-wrap[data-grip="copy-guide"] .left-arm{transform:rotate(-28deg) scaleY(.96)!important}
+.robot-wrap[data-grip="copy-guide"] .right-arm{transform:rotate(12deg) scaleY(1.26)!important}
+
+/* Throw: one clamp releases into the throw while the support arm stays clear. */
+.robot-wrap[data-grip="throw"] .left-arm{transform:rotate(24deg) scaleY(1.02)!important}
+.robot-wrap[data-grip="throw"] .right-arm{transform:rotate(-72deg) scaleY(1.10)!important}
+
+/* Actual claw closure. Open in anticipation/recovery, close only while gripping. */
+.robot-wrap[data-grip] .robot-claw{transform:translateY(1px)!important}
+.robot-wrap[data-grip] .robot-claw i{transform:rotate(4deg)!important}
+.robot-wrap[data-grip] .robot-claw b{transform:rotate(-4deg)!important}
+.robot-wrap:not([data-grip]) .robot-claw i{transform:rotate(24deg)!important}
+.robot-wrap:not([data-grip]) .robot-claw b{transform:rotate(-24deg)!important}
+
+/* Remove the old finite arm keyframes for manipulation actions. Body/head may still
+   anticipate, but arm direction is now entirely dictated by the physical box. */
+.robot-wrap.reaching .left-arm,.robot-wrap.reaching .right-arm,
+.robot-wrap.placing .left-arm,.robot-wrap.placing .right-arm,
+.robot-wrap.copying .left-arm,.robot-wrap.copying .right-arm,
+.robot-wrap.throwing .left-arm,.robot-wrap.throwing .right-arm{
+  animation:none!important;
+}
+
+/* Anticipation opens hands and keeps them clear of the tile. */
+.robot-wrap.action-anticipate:not([data-grip]) .left-arm{transform:rotate(18deg)!important}
+.robot-wrap.action-anticipate:not([data-grip]) .right-arm{transform:rotate(-18deg)!important}
+
+/* Recovery is a release, not another unrelated gesture. */
+.robot-wrap.action-recover:not([data-grip]) .left-arm{transform:rotate(11deg)!important}
+.robot-wrap.action-recover:not([data-grip]) .right-arm{transform:rotate(-11deg)!important}
+
+/* While simply carrying, held tile and hands share one rigid visual unit. */
+.robot-wrap.walking.carrying .held-card.has-value{animation:none!important;translate:0 0!important}
+
+/* Keep the tile above torso but below claw tips so the hands visibly sit on edges. */
+.robot-wrap .held-card{z-index:8!important}
+.robot-wrap .robot-arm{z-index:10!important}
+.robot-wrap .robot-claw{z-index:12!important}
+
+/* v1.5 — real external box grip geometry.
+   A held tile must live OUTSIDE Byte's torso. The facing state is mirrored by
+   JS on the wrapper so the tile always sits in front of the robot, never in it. */
+.robot-wrap{--held-front-x:94px;--held-front-y:70px;overflow:visible}
+.robot-wrap[data-facing="right"]{--held-front-x:94px}
+.robot-wrap[data-facing="left"]{--held-front-x:-36px}
+.robot-wrap .held-card,
+.robot-wrap.reaching .held-card,
+.robot-wrap.placing .held-card,
+.robot-wrap.copying .held-card{
+  left:var(--held-front-x)!important;
+  top:var(--held-front-y)!important;
+  transform:none!important;
+  z-index:9!important;
+}
+
+/* During carrying the box is a rigid payload. The robot moves; the box does
+   not bob independently or drift through the chest. */
+.robot-wrap.walking.carrying .held-card.has-value{
+  animation:none!important;
+  translate:0 0!important;
+  rotate:0deg!important;
+}
+
+/* Both manipulators point toward the payload side. Because .robot itself is
+   mirrored when facing left, the same joint solution works in both directions. */
+.robot-wrap[data-grip="held"] .left-arm,
+.robot-wrap.walking.carrying .left-arm{transform:rotate(-57deg) scaleY(1.05)!important}
+.robot-wrap[data-grip="held"] .right-arm,
+.robot-wrap.walking.carrying .right-arm{transform:rotate(-34deg) scaleY(1.03)!important}
+
+/* Conveyor pickup/drop uses the same forward contact geometry: both claws are
+   on the box before it leaves/enters the queue. */
+.robot-wrap[data-grip="side"] .left-arm{transform:rotate(-61deg) scaleY(1.10)!important}
+.robot-wrap[data-grip="side"] .right-arm{transform:rotate(-38deg) scaleY(1.08)!important}
+
+/* Floor memory is below Byte. Keep the body above the tile and extend the arms
+   downward instead of moving the robot on top of the box. */
+.robot-wrap[data-grip="memory"] .left-arm{transform:rotate(-12deg) scaleY(1.38)!important}
+.robot-wrap[data-grip="memory"] .right-arm{transform:rotate(12deg) scaleY(1.38)!important}
+.robot-wrap[data-grip="memory"] .robot-body{translate:0 4px!important;rotate:0deg!important}
+.robot-wrap[data-grip="memory"] .robot-head{translate:0 2px!important;rotate:0deg!important}
+
+/* COPYTO: original remains clamped in front of Byte. The guide arm releases
+   only the duplicated transfer tile; the source never falls into the torso. */
+.robot-wrap[data-grip="copy-guide"] .left-arm{transform:rotate(-56deg) scaleY(1.05)!important}
+.robot-wrap[data-grip="copy-guide"] .right-arm{transform:rotate(-12deg) scaleY(1.34)!important}
+
+/* Contact phase must visually read as a grip rather than a wave. */
+.robot-wrap[data-grip] .robot-claw{transform:translateY(0)!important}
+.robot-wrap[data-grip] .robot-claw i{transform:rotate(1deg)!important}
+.robot-wrap[data-grip] .robot-claw b{transform:rotate(-1deg)!important}
+.robot-wrap:not([data-grip]) .robot-claw i{transform:rotate(26deg)!important}
+.robot-wrap:not([data-grip]) .robot-claw b{transform:rotate(-26deg)!important}
+
+/* Old action keyframes must not override object-driven arm contact. */
+.robot-wrap.reaching[data-grip] .left-arm,
+.robot-wrap.reaching[data-grip] .right-arm,
+.robot-wrap.placing[data-grip] .left-arm,
+.robot-wrap.placing[data-grip] .right-arm,
+.robot-wrap.copying[data-grip] .left-arm,
+.robot-wrap.copying[data-grip] .right-arm,
+.robot-wrap.throwing[data-grip] .left-arm,
+.robot-wrap.throwing[data-grip] .right-arm{animation:none!important}
+
+@media(max-width:760px){
+  .robot-wrap[data-facing="right"]{--held-front-x:88px}
+  .robot-wrap[data-facing="left"]{--held-front-x:-25px}
+  .robot-wrap{--held-front-y:74px}
+}
+

@@ -1,0 +1,317 @@
+/* v2.4.2 — BYTE expressive face system.
+   Face-only polish: no arm, grip, payload, gait, transfer-path or box geometry
+   is changed here. The two red cheek dots are intentionally removed. */
+.robot-cheek{display:none!important}
+
+/* Keep the face screen simple and readable. */
+.robot-face-screen{
+  overflow:hidden;
+  transition:background .14s ease,border-color .14s ease,box-shadow .14s ease!important;
+}
+.robot .eye{
+  transition:transform .12s ease,width .12s ease,height .12s ease,border-radius .12s ease,background .12s ease!important;
+}
+.robot .mouth{
+  transition:all .12s ease!important;
+  transform-origin:50% 50%;
+}
+
+/* IDLE — calm, friendly, no unnecessary movement. */
+.robot-wrap:not(.walking):not(.reaching):not(.placing):not(.copying):not(.thinking):not(.calculating):not(.throwing):not(.celebrate):not(.error-pose) .robot .eye{
+  transform:none!important;
+}
+.robot-wrap:not(.walking):not(.reaching):not(.placing):not(.copying):not(.thinking):not(.calculating):not(.throwing):not(.celebrate):not(.error-pose) .robot .mouth{
+  left:13px!important;top:20px!important;width:12px!important;height:5px!important;
+  border:0!important;border-bottom:2px solid #b8d4a8!important;
+  border-radius:0 0 8px 8px!important;
+  transform:none!important;
+}
+
+/* WALKING EMPTY — attentive and lightly upbeat. */
+.robot-wrap.walking:not(.carrying) .robot .eye{
+  animation:none!important;
+  transform:scaleY(.82) translateY(-1px)!important;
+}
+.robot-wrap.walking:not(.carrying) .robot .mouth{
+  left:13px!important;top:20px!important;width:12px!important;height:5px!important;
+  border:0!important;border-bottom:2px solid #b8d4a8!important;
+  border-radius:0 0 9px 9px!important;
+}
+
+/* WALKING WITH A BOX — visibly working under load. The payload remains on the
+   existing carry rig; only the face changes. */
+.robot-wrap.walking.carrying .robot .eye{
+  animation:none!important;
+  height:6px!important;
+  transform:scaleX(1.06) rotate(-3deg)!important;
+  border-radius:7px 7px 3px 3px!important;
+}
+.robot-wrap.walking.carrying .robot .eye-r{transform:scaleX(1.06) rotate(3deg)!important}
+.robot-wrap.walking.carrying .robot .mouth{
+  left:14px!important;top:21px!important;width:10px!important;height:5px!important;
+  border:0!important;border-top:2px solid #b8d4a8!important;
+  border-radius:8px 8px 0 0!important;
+  transform:scaleX(.9)!important;
+}
+
+/* PICKUP / TAKE — effort face. This is deliberately stronger than carry so the
+   contact moment reads as lifting something heavy without moving the box. */
+.robot-wrap.reaching .robot .eye{
+  animation:none!important;
+  height:4px!important;
+  width:9px!important;
+  border-radius:8px!important;
+  transform:rotate(-7deg) translateY(2px)!important;
+}
+.robot-wrap.reaching .robot .eye-r{transform:rotate(7deg) translateY(2px)!important}
+.robot-wrap.reaching .robot .mouth{
+  left:14px!important;top:22px!important;width:10px!important;height:5px!important;
+  border:0!important;border-top:3px solid #b8d4a8!important;
+  border-radius:9px 9px 0 0!important;
+  transform:scaleX(.85)!important;
+}
+
+/* PLACE / OUTBOX — careful concentration rather than another lifting face. */
+.robot-wrap.placing .robot .eye{
+  animation:none!important;
+  height:7px!important;
+  transform:scaleX(.86) translateY(1px)!important;
+}
+.robot-wrap.placing .robot .mouth{
+  left:14px!important;top:22px!important;width:10px!important;height:2px!important;
+  border:0!important;border-bottom:2px solid #b8d4a8!important;
+  border-radius:0!important;
+}
+
+/* COPY — curious/pleased, visually distinct from pickup and placement. */
+.robot-wrap.copying .robot .eye{
+  animation:none!important;
+}
+.robot-wrap.copying .robot .eye-l{transform:scale(.82) translateY(1px)!important}
+.robot-wrap.copying .robot .eye-r{transform:scale(1.08) translateY(-1px)!important}
+.robot-wrap.copying .robot .mouth{
+  left:15px!important;top:21px!important;width:9px!important;height:4px!important;
+  border:0!important;border-bottom:2px solid #b8d4a8!important;
+  border-radius:0 0 7px 7px!important;
+}
+
+/* CALCULATION — focused eyes and a tiny processing mouth. */
+.robot-wrap.calculating .robot .eye{
+  animation:none!important;
+  width:7px!important;height:7px!important;
+  border-radius:2px!important;
+  transform:scaleY(.75)!important;
+}
+.robot-wrap.calculating .robot .eye-l{transform:scaleY(.75) translateY(-1px)!important}
+.robot-wrap.calculating .robot .eye-r{transform:scaleY(.75) translateY(1px)!important}
+.robot-wrap.calculating .robot .mouth{
+  left:16px!important;top:22px!important;width:6px!important;height:2px!important;
+  border:0!important;border-bottom:2px dotted #b8d4a8!important;
+  border-radius:0!important;
+}
+
+/* BRANCH / THINK — looking upward while considering the next instruction. */
+.robot-wrap.thinking .robot .eye{
+  animation:none!important;
+  transform:translateY(-2px) scale(.9)!important;
+}
+.robot-wrap.thinking .robot .eye-r{transform:translate(1px,-3px) scale(.9)!important}
+.robot-wrap.thinking .robot .mouth{
+  left:16px!important;top:22px!important;width:6px!important;height:5px!important;
+  border:2px solid #b8d4a8!important;
+  border-radius:50%!important;
+  background:transparent!important;
+}
+
+/* THROW / REPLACE — mildly annoyed, not alarmed. */
+.robot-wrap.throwing .robot .eye{
+  animation:none!important;
+  height:5px!important;
+  border-radius:7px!important;
+  transform:rotate(6deg)!important;
+}
+.robot-wrap.throwing .robot .eye-r{transform:rotate(-6deg)!important}
+.robot-wrap.throwing .robot .mouth{
+  left:14px!important;top:22px!important;width:10px!important;height:4px!important;
+  border:0!important;border-top:2px solid #d2b59a!important;
+  border-radius:8px 8px 0 0!important;
+}
+
+/* ERROR — worried face, clearly different from normal effort. */
+.robot-wrap.error-pose .robot .eye{
+  animation:none!important;
+  width:8px!important;height:6px!important;
+  background:#d99887!important;
+  border-radius:7px 7px 3px 3px!important;
+  transform:rotate(10deg)!important;
+}
+.robot-wrap.error-pose .robot .eye-r{transform:rotate(-10deg)!important}
+.robot-wrap.error-pose .robot .mouth{
+  left:13px!important;top:21px!important;width:12px!important;height:6px!important;
+  border:0!important;border-top:2px solid #e1a392!important;
+  border-radius:10px 10px 0 0!important;
+}
+
+/* COMPLETE — obvious satisfaction without adding face clutter. */
+.robot-wrap.celebrate .robot .eye{
+  animation:none!important;
+  height:4px!important;
+  border-radius:7px!important;
+  transform:rotate(8deg) translateY(2px)!important;
+}
+.robot-wrap.celebrate .robot .eye-r{transform:rotate(-8deg) translateY(2px)!important}
+.robot-wrap.celebrate .robot .mouth{
+  left:11px!important;top:19px!important;width:16px!important;height:9px!important;
+  border:0!important;border-bottom:3px solid #b8d4a8!important;
+  border-radius:0 0 12px 12px!important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .robot-face-screen,.robot .eye,.robot .mouth{transition:none!important}
+}
+
+
+/* v2.4.3 — friendlier action expressions + calculation processing display.
+   Face-only changes. Robot motion, hands, grips, payloads and action timing are untouched. */
+
+/* Carrying should read as determined/engaged, not unhappy. */
+.robot-wrap.walking.carrying .robot .eye{
+  height:6px!important;
+  transform:scaleX(1.02) translateY(-1px)!important;
+  border-radius:6px!important;
+}
+.robot-wrap.walking.carrying .robot .eye-r{
+  transform:scaleX(1.02) translateY(-1px)!important;
+}
+.robot-wrap.walking.carrying .robot .mouth{
+  left:14px!important;top:20px!important;width:10px!important;height:4px!important;
+  border:0!important;border-bottom:2px solid #b8d4a8!important;
+  border-radius:0 0 8px 8px!important;
+  transform:scaleX(.88)!important;
+}
+
+/* Pickup is effort, but not sadness: narrowed eyes + compact determined mouth. */
+.robot-wrap.reaching .robot .eye{
+  animation:none!important;
+  height:5px!important;
+  width:9px!important;
+  border-radius:7px!important;
+  transform:rotate(-4deg) translateY(1px)!important;
+}
+.robot-wrap.reaching .robot .eye-r{
+  transform:rotate(4deg) translateY(1px)!important;
+}
+.robot-wrap.reaching .robot .mouth{
+  left:14px!important;top:21px!important;width:10px!important;height:3px!important;
+  border:0!important;border-bottom:2px solid #b8d4a8!important;
+  border-radius:0 0 5px 5px!important;
+  transform:scaleX(.82)!important;
+}
+
+/* Placement gets a small satisfied expression once the box is under control. */
+.robot-wrap.placing .robot .mouth{
+  left:14px!important;top:20px!important;width:10px!important;height:4px!important;
+  border:0!important;border-bottom:2px solid #b8d4a8!important;
+  border-radius:0 0 7px 7px!important;
+}
+
+/* CALCULATION — use the face itself as a tiny processing display.
+   Eyes scan in opposite phases; the mouth becomes an animated loading track. */
+.robot-wrap.calculating .robot-face-screen{
+  background:#303832!important;
+}
+.robot-wrap.calculating .robot .eye{
+  animation:byteCalcEyeScan .72s steps(4,end) infinite!important;
+  width:6px!important;
+  height:6px!important;
+  border-radius:2px!important;
+  transform:none!important;
+}
+.robot-wrap.calculating .robot .eye-r{
+  animation-delay:-.36s!important;
+}
+.robot-wrap.calculating .robot .mouth{
+  left:11px!important;
+  top:22px!important;
+  width:20px!important;
+  height:4px!important;
+  border:1px solid #78916d!important;
+  border-radius:2px!important;
+  background:#232a25!important;
+  overflow:hidden!important;
+  transform:none!important;
+}
+.robot-wrap.calculating .robot .mouth::after{
+  content:"";
+  position:absolute;
+  left:-8px;
+  top:0;
+  width:8px;
+  height:100%;
+  border-radius:1px;
+  background:#b8d4a8;
+  animation:byteCalcLoad .85s ease-in-out infinite;
+}
+@keyframes byteCalcEyeScan{
+  0%,100%{translate:-1px 0;scale:1 .75}
+  33%{translate:1px -1px;scale:1 .95}
+  66%{translate:2px 0;scale:.9 .8}
+}
+@keyframes byteCalcLoad{
+  0%{left:-8px;width:8px;opacity:.75}
+  45%{left:5px;width:11px;opacity:1}
+  100%{left:20px;width:8px;opacity:.75}
+}
+
+/* Thinking should feel curious, not worried. */
+.robot-wrap.thinking .robot .mouth{
+  left:15px!important;top:21px!important;width:8px!important;height:4px!important;
+  border:0!important;border-bottom:2px solid #b8d4a8!important;
+  border-radius:0 0 7px 7px!important;
+  background:transparent!important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .robot-wrap.calculating .robot .eye,
+  .robot-wrap.calculating .robot .mouth::after{animation:none!important}
+  .robot-wrap.calculating .robot .mouth::after{left:6px!important;width:8px!important}
+}
+
+/* v2.4.5 — clean discard visual shared by held and floor-memory replacement. */
+.clean-discard-box{
+  position:fixed!important;
+  z-index:9997!important;
+  pointer-events:none!important;
+  transform-origin:50% 50%;
+  will-change:transform,opacity;
+  filter:drop-shadow(0 5px 3px #15150f35);
+}
+.discard-paper-puff{
+  position:fixed;
+  z-index:9996;
+  width:24px;
+  height:18px;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+.discard-paper-puff i{
+  position:absolute;
+  left:9px;
+  top:6px;
+  width:7px;
+  height:5px;
+  background:#d8c89f;
+  border:1px solid #7d7056;
+  opacity:0;
+  animation:discardPaperBit .17s ease-out forwards;
+}
+.discard-paper-puff i:nth-child(1){--px:-13px;--py:-8px;--pr:-28deg}
+.discard-paper-puff i:nth-child(2){--px:13px;--py:-7px;--pr:23deg}
+.discard-paper-puff i:nth-child(3){--px:-9px;--py:8px;--pr:34deg}
+.discard-paper-puff i:nth-child(4){--px:11px;--py:7px;--pr:-19deg}
+@keyframes discardPaperBit{
+  0%{opacity:.8;transform:translate(0,0) rotate(0) scale(.9)}
+  100%{opacity:0;transform:translate(var(--px),var(--py)) rotate(var(--pr)) scale(.45)}
+}
+@media(prefers-reduced-motion:reduce){.discard-paper-puff i{animation:none;display:none}}
+

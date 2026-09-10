@@ -1,0 +1,95 @@
+/* v1.2 — cinematic worker action language + safe floor-memory interaction spacing */
+.worker-wrap{
+  --action-ms:520ms;
+  transform-origin:50% 88%;
+}
+
+/* Travel has weight: alternating planted steps, head counter-motion, arm swing,
+   and a smaller, tighter gait while carrying a box. */
+.worker-wrap.walking .left-leg{animation:walkLegPro var(--walk-ms,420ms) cubic-bezier(.45,.05,.55,.95) infinite!important}
+.worker-wrap.walking .right-leg{animation:walkLegPro var(--walk-ms,420ms) cubic-bezier(.45,.05,.55,.95) infinite reverse!important}
+.worker-wrap.walking .left-arm{animation:walkArmPro var(--walk-ms,420ms) cubic-bezier(.45,.05,.55,.95) infinite reverse!important}
+.worker-wrap.walking .right-arm{animation:walkArmPro var(--walk-ms,420ms) cubic-bezier(.45,.05,.55,.95) infinite!important}
+.worker-wrap.walking .worker-head{animation:walkHeadPro var(--bob-ms,210ms) ease-in-out infinite!important}
+.worker-wrap.walking .worker-body{animation:walkBodyPro var(--bob-ms,210ms) ease-in-out infinite!important}
+.worker-wrap.walking .worker-shadow{animation:walkShadowPro var(--bob-ms,210ms) ease-in-out infinite!important}
+.worker-wrap.walking.carrying .left-arm,
+.worker-wrap.walking.carrying .right-arm{animation:carryArmPro var(--bob-ms,210ms) ease-in-out infinite!important}
+.worker-wrap.walking.carrying .worker-body{animation:carryBodyPro var(--bob-ms,210ms) ease-in-out infinite!important}
+.worker-wrap.walking.carrying .held-card.has-value{animation:carryTilePro var(--bob-ms,210ms) ease-in-out infinite!important}
+@keyframes walkLegPro{0%,100%{transform:rotate(9deg) translateY(0)}50%{transform:rotate(-12deg) translateY(-2px)}}
+@keyframes walkArmPro{0%,100%{transform:rotate(22deg)}50%{transform:rotate(-23deg)}}
+@keyframes walkHeadPro{0%,100%{translate:0 0;rotate:-1deg}50%{translate:0 -2px;rotate:1deg}}
+@keyframes walkBodyPro{0%,100%{translate:0 0;rotate:-.5deg}50%{translate:0 -1px;rotate:.5deg}}
+@keyframes walkShadowPro{0%,100%{transform:scaleX(1);opacity:.52}50%{transform:scaleX(.88);opacity:.42}}
+@keyframes carryArmPro{0%,100%{transform:rotate(34deg)}50%{transform:rotate(39deg)}}
+@keyframes carryBodyPro{0%,100%{translate:0 0;rotate:-1deg}50%{translate:0 -1px;rotate:1deg}}
+@keyframes carryTilePro{0%,100%{translate:0 0}50%{translate:0 -1px}}
+
+/* Pickup / COPYFROM — anticipate upward, sink through the knees, hands arrive
+   at the object together, then rise with the weight. */
+.worker-wrap.reaching .worker-body{animation:pickupBodyPro .58s cubic-bezier(.2,.7,.22,1) both!important}
+.worker-wrap.reaching .worker-head{animation:pickupHeadPro .58s cubic-bezier(.2,.7,.22,1) both!important}
+.worker-wrap.reaching .left-arm{animation:pickupLeftPro .58s cubic-bezier(.2,.7,.22,1) both!important}
+.worker-wrap.reaching .right-arm{animation:pickupRightPro .58s cubic-bezier(.2,.7,.22,1) both!important}
+.worker-wrap.reaching .left-leg,.worker-wrap.reaching .right-leg{animation:pickupLegPro .58s cubic-bezier(.2,.7,.22,1) both!important}
+@keyframes pickupBodyPro{0%{translate:0 0;rotate:0}22%{translate:0 -2px;rotate:-1deg}58%{translate:0 13px;rotate:3deg}78%{translate:0 10px;rotate:2deg}100%{translate:0 0;rotate:0}}
+@keyframes pickupHeadPro{0%{translate:0 0;rotate:0}55%{translate:1px 8px;rotate:7deg}78%{translate:0 5px;rotate:3deg}100%{translate:0 0;rotate:0}}
+@keyframes pickupLeftPro{0%{transform:rotate(8deg)}25%{transform:rotate(-2deg)}58%,74%{transform:rotate(69deg)}100%{transform:rotate(29deg)}}
+@keyframes pickupRightPro{0%{transform:rotate(-8deg)}25%{transform:rotate(2deg)}58%,74%{transform:rotate(-69deg)}100%{transform:rotate(-29deg)}}
+@keyframes pickupLegPro{0%{translate:0 0}58%,74%{translate:0 6px}100%{translate:0 0}}
+
+/* Place / OUTBOX — box is presented first, then knees and arms lower together;
+   recovery has a small release follow-through rather than snapping upright. */
+.worker-wrap.placing .worker-body{animation:placeBodyPro .62s cubic-bezier(.2,.72,.2,1) both!important}
+.worker-wrap.placing .worker-head{animation:placeHeadPro .62s cubic-bezier(.2,.72,.2,1) both!important}
+.worker-wrap.placing .left-arm{animation:placeLeftPro .62s cubic-bezier(.2,.72,.2,1) both!important}
+.worker-wrap.placing .right-arm{animation:placeRightPro .62s cubic-bezier(.2,.72,.2,1) both!important}
+.worker-wrap.placing .left-leg,.worker-wrap.placing .right-leg{animation:placeLegPro .62s cubic-bezier(.2,.72,.2,1) both!important}
+@keyframes placeBodyPro{0%{translate:0 0;rotate:0}18%{translate:0 -2px;rotate:1deg}56%{translate:0 12px;rotate:4deg}74%{translate:0 12px;rotate:3deg}100%{translate:0 0;rotate:0}}
+@keyframes placeHeadPro{0%{rotate:0;translate:0 0}56%{rotate:8deg;translate:0 7px}74%{rotate:5deg;translate:0 6px}100%{rotate:0;translate:0 0}}
+@keyframes placeLeftPro{0%{transform:rotate(28deg)}20%{transform:rotate(18deg)}56%,72%{transform:rotate(73deg)}100%{transform:rotate(8deg)}}
+@keyframes placeRightPro{0%{transform:rotate(-28deg)}20%{transform:rotate(-18deg)}56%,72%{transform:rotate(-73deg)}100%{transform:rotate(-8deg)}}
+@keyframes placeLegPro{0%{translate:0 0}56%,72%{translate:0 6px}100%{translate:0 0}}
+
+/* COPYTO — visibly different from PLACE: the worker keeps the original near
+   the chest, pinches/separates a duplicate, then guides only the copy downward. */
+.worker-wrap.copying .worker-body{animation:copyBodyPro .82s cubic-bezier(.18,.7,.2,1) both!important}
+.worker-wrap.copying .worker-head{animation:copyHeadPro .82s cubic-bezier(.18,.7,.2,1) both!important}
+.worker-wrap.copying .left-arm{animation:copyLeftPro .82s cubic-bezier(.18,.7,.2,1) both!important}
+.worker-wrap.copying .right-arm{animation:copyRightPro .82s cubic-bezier(.18,.7,.2,1) both!important}
+@keyframes copyBodyPro{0%{translate:0 0}18%{translate:0 -2px}46%{translate:0 3px;rotate:-2deg}72%{translate:0 8px;rotate:3deg}100%{translate:0 0;rotate:0}}
+@keyframes copyHeadPro{0%{rotate:0}35%{rotate:-6deg}70%{rotate:7deg}100%{rotate:0}}
+@keyframes copyLeftPro{0%{transform:rotate(31deg)}30%,48%{transform:rotate(43deg)}72%{transform:rotate(65deg)}100%{transform:rotate(27deg)}}
+@keyframes copyRightPro{0%{transform:rotate(-31deg)}30%{transform:rotate(-43deg)}48%{transform:rotate(-62deg)}72%{transform:rotate(-72deg)}100%{transform:rotate(-27deg)}}
+.worker-wrap.copying .held-card.has-value{animation:copyHeldPro .82s cubic-bezier(.18,.7,.2,1) both!important}
+@keyframes copyHeldPro{0%,100%{translate:0 0;rotate:0}35%,55%{translate:-3px -3px;rotate:-2deg}72%{translate:-1px 0;rotate:-1deg}}
+
+/* Throw/discard — fast anticipation + torso twist; the transferred box owns
+   the tile independently, so this never duplicates the source. */
+.worker-wrap.throwing .worker-body{animation:throwBodyPro .48s cubic-bezier(.2,.75,.2,1) both!important}
+.worker-wrap.throwing .worker-head{animation:throwHeadPro .48s ease both!important}
+.worker-wrap.throwing .left-arm{animation:throwLeftPro .48s cubic-bezier(.2,.75,.2,1) both!important}
+.worker-wrap.throwing .right-arm{animation:throwRightPro .48s cubic-bezier(.2,.75,.2,1) both!important}
+@keyframes throwBodyPro{0%{rotate:0;translate:0 0}24%{rotate:-5deg;translate:-2px 1px}55%{rotate:7deg;translate:3px -2px}100%{rotate:0;translate:0 0}}
+@keyframes throwHeadPro{0%{rotate:0}25%{rotate:-7deg}58%{rotate:9deg}100%{rotate:0}}
+@keyframes throwLeftPro{0%{transform:rotate(25deg)}28%{transform:rotate(58deg)}62%{transform:rotate(-28deg)}100%{transform:rotate(8deg)}}
+@keyframes throwRightPro{0%{transform:rotate(-25deg)}28%{transform:rotate(-64deg)}62%{transform:rotate(34deg)}100%{transform:rotate(-8deg)}}
+
+/* Keep floor values visually in front of the floor but below the worker's hands.
+   Worker now stops above the tile, so neither body nor feet cover memory boxes. */
+.memory-tile{z-index:3}
+.memory-box{position:relative;z-index:5}
+.worker-wrap{z-index:12}
+.worker-wrap.reaching,.worker-wrap.placing,.worker-wrap.copying{z-index:14}
+
+/* Action micro-phases add readable anticipation/contact/recovery without opacity,
+   scaling or box geometry changes (avoids the old flicker). */
+.worker-wrap.action-anticipate .worker-shadow{transform:scaleX(.94)}
+.worker-wrap.action-contact .worker-shadow{transform:scaleX(1.05)}
+.worker-wrap.action-recover .worker-shadow{transform:scaleX(.98)}
+
+/* Transfer tiles remain dimensionally rigid; physicality comes from trajectory. */
+.transfer-box,.copy-transfer-box,.discard-box{backface-visibility:hidden;transform-style:preserve-3d}
+
+

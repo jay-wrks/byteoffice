@@ -1,0 +1,111 @@
+/* v2.4 — two player drafts + optional read-only answer tab */
+.workspace-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+.workspace-tabs.has-answer{grid-template-columns:repeat(3,minmax(0,1fr))}
+.workspace-tab[hidden]{display:none!important}
+.workspace-tab.answer-tab{background:#d8d2bd;border-style:dashed}
+.workspace-tab.answer-tab b{background:#c8d5b7;color:#3f5038}
+.workspace-tab.answer-tab.active{background:#596850;color:#fff5dc;border-style:solid}
+.program-panel.answer-mode .command-tray,.program-panel.answer-mode .editor-tip{opacity:.42;filter:grayscale(.6)}
+.program-panel.answer-mode .command-card{cursor:not-allowed}
+.program-panel.answer-mode .clear-btn,.program-panel.answer-mode .editor-toolbar button{opacity:.45;cursor:not-allowed}
+.answer-sheet{margin:10px;padding:18px 18px 16px;background:#eee1c1;border:1px solid #94866c;box-shadow:inset 0 0 0 3px #f7eacd,3px 3px 0 #9d9076;position:relative;color:#353027}
+.answer-stamp{position:absolute;right:13px;top:12px;border:2px solid #647558;color:#647558;padding:4px 7px;font:800 8px "DM Mono";letter-spacing:.1em;transform:rotate(3deg)}
+.answer-kicker{display:block;color:#7a6b54;font:800 8px "DM Mono";letter-spacing:.14em;margin-bottom:5px}
+.answer-sheet h3{font:22px "Special Elite";margin:0 72px 16px 0}
+.answer-section{padding:11px 0;border-top:1px dashed #aa9a7b}
+.answer-section b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#6a5f4d;margin-bottom:5px}
+.answer-section p{margin:0;font:14px/1.55 "Special Elite"}
+.answer-plan{background:#e2d4af;margin:3px -8px 10px;padding:12px 8px;border:1px solid #b8a783}
+.answer-tests{display:grid;gap:6px;margin:10px 0 12px}
+.answer-example{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:start;border:1px solid #baa986;background:#f4e8c9;padding:7px 8px}
+.answer-example span{font:800 8px "DM Mono";color:#786b56}
+.answer-example code{font:9px/1.45 "DM Mono";white-space:normal;overflow-wrap:anywhere;color:#3e4939}
+.answer-sheet>small{display:block;color:#776b58;font-size:8px;line-height:1.5}
+
+/* v2.5 — real program tabs + executable read-only Answer */
+.workspace-switcher{
+  padding:7px 10px 0;
+  background:#cfc2a2;
+  border-bottom:1px solid #8f836b;
+  display:block;
+}
+.workspace-tabs{
+  display:flex;
+  align-items:flex-end;
+  gap:2px;
+  min-width:0;
+  border-bottom:1px solid #817660;
+  padding:0 4px;
+}
+.workspace-tabs.has-answer{display:flex}
+.workspace-tab{
+  position:relative;
+  flex:0 1 150px;
+  min-width:72px;
+  height:36px;
+  margin-bottom:-1px;
+  padding:5px 12px 6px;
+  border:1px solid transparent;
+  border-bottom-color:#817660;
+  border-radius:8px 8px 0 0;
+  background:transparent;
+  box-shadow:none;
+  color:#6e6452;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  font-size:9px;
+  font-weight:800;
+  overflow:hidden;
+  transition:background .15s ease,color .15s ease,border-color .15s ease,transform .15s ease;
+}
+.workspace-tab:hover{background:rgba(244,232,201,.45);color:#433d34}
+.workspace-tab b{
+  width:18px;height:18px;display:grid;place-items:center;flex:0 0 auto;
+  border:0;border-radius:4px;background:#b8aa8c;color:#5f5646;
+  font:800 9px "DM Mono";
+}
+.workspace-tab span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.workspace-tab.has-code b:after{width:4px;height:4px;margin:15px 0 0 15px}
+.workspace-tab.active{
+  z-index:2;
+  background:#eee1c1;
+  color:#332f29;
+  border-color:#817660;
+  border-bottom-color:#eee1c1;
+  box-shadow:none;
+}
+.workspace-tab.active b{background:#65705b;color:#fff4d6;border:0}
+.workspace-tab.answer-tab{background:transparent;border-style:solid}
+.workspace-tab.answer-tab b{background:#a9b49d;color:#394536}
+.workspace-tab.answer-tab.active{background:#eee1c1;color:#30372d;border-color:#817660;border-bottom-color:#eee1c1}
+.workspace-tab.answer-tab.active b{background:#596850;color:#fff5dc}
+.workspace-tab[hidden]{display:none!important}
+
+.program-panel.answer-mode .command-tray{opacity:.42;filter:grayscale(.6);pointer-events:none}
+.program-panel.answer-mode .editor-tip{opacity:.55}
+.program-panel.answer-mode .clear-btn{opacity:.42;cursor:not-allowed}
+.program-panel.answer-mode .editor-toolbar button:disabled{opacity:.38;cursor:not-allowed}
+.program-panel.answer-mode .editor-toolbar #compactBtn,
+.program-panel.answer-mode .editor-toolbar #shareBtn,
+.program-panel.answer-mode .editor-toolbar #testBtn,
+.program-panel.answer-mode .editor-toolbar #analyzeBtn,
+.program-panel.answer-mode .editor-toolbar #copyAnswerBtn{opacity:1;cursor:pointer}
+.copy-answer-btn{font-weight:900!important;border-color:#5e7058!important;background:#d7e0c8!important;color:#364431!important}
+.copy-answer-btn[hidden]{display:none!important}
+.answer-program-row{cursor:default!important}
+.answer-program-row .drag-grip{cursor:default!important;color:#918773}
+.answer-program-row .line-num{cursor:default!important}
+.answer-program-row .answer-chip{cursor:default;pointer-events:none}
+.answer-program-row .answer-row-tools{display:flex;align-items:center;justify-content:flex-end;color:#807660;font-size:10px;padding-right:5px}
+.answer-program-row .answer-lock{font-size:14px;line-height:1}
+.answer-copy-choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+
+@media(max-width:700px){
+  .workspace-switcher{padding-left:6px;padding-right:6px}
+  .workspace-tabs{padding:0;overflow-x:auto}
+  .workspace-tab{flex:1 0 92px;padding-inline:7px}
+  .answer-copy-choices{grid-template-columns:1fr}
+}
+

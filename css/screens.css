@@ -1,0 +1,414 @@
+/* v2.0 cumulative polish — control flow rail, roadmap unification, home terminal and page transitions */
+
+/* --- Control-flow rail: clean, compact and detached from instruction cards --- */
+.program-list{--jump-gutter:76px;padding-right:8px}
+.program-row{
+  grid-template-columns:18px 32px minmax(0,1fr) 92px var(--jump-gutter)!important;
+  min-height:43px;height:auto;background:transparent!important;border:0!important;box-shadow:none!important;outline:0!important;overflow:visible;isolation:isolate;
+}
+.program-list.compact .program-row{grid-template-columns:16px 28px minmax(0,1fr) 84px var(--jump-gutter)!important}
+.program-row::before{
+  content:"";position:absolute;left:0;right:var(--jump-gutter);top:0;bottom:0;z-index:0;pointer-events:none;box-sizing:border-box;
+  background:#eee3c6;border:1px solid #9e9275;box-shadow:2px 2px #a59b82;transition:background .14s,outline-color .14s,transform .14s;
+}
+.program-row.selected::before{background:#f7edce;outline:2px solid #6d745f;outline-offset:-2px}
+.program-row.active::before{background:#fff5cc;outline:3px solid #b55b42;outline-offset:-3px}
+.program-row.target-candidate::before{outline:2px dashed #b65d43;outline-offset:-3px}
+.program-row.target-candidate:hover::before,.program-row.operand-drag-over::before{background:#fff0bc;outline:3px solid #b65d43;outline-offset:-3px}
+.program-row>.drag-grip,.program-row>.line-num,.program-row>.instruction,.program-row>.row-tools{position:relative;z-index:10}
+.instruction{flex-wrap:nowrap!important;overflow:hidden;white-space:nowrap}
+.instruction>b{flex:0 0 auto;white-space:nowrap}
+.instruction>.operand-chip{flex:1 1 auto;min-width:0;max-width:100%;overflow:hidden}
+.instruction>.operand-chip span:nth-child(2){min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.instruction>.operand-chip i{flex:0 0 auto}
+.row-tools,.program-row.selected .row-tools,.program-row.active .row-tools{background:transparent!important;min-width:0;white-space:nowrap;padding-right:8px}
+.jump-port{position:relative;z-index:3;height:100%;min-width:0;overflow:visible;border:0!important;background:transparent!important;box-shadow:none!important;color:transparent!important;font-size:0!important}
+.program-row:not(:has(.jump-target)) .jump-port{color:transparent!important}
+.jump-arrow-layer{z-index:8!important;overflow:visible!important}
+.jump-arrow-layer .jump-link{stroke:#a64d3d;stroke-width:2.1;opacity:.94;filter:drop-shadow(0 1px 0 #f7e8bd) drop-shadow(0 0 1px #f7e8bd)}
+.jump-arrow-layer .jump-dot{fill:#a64d3d;stroke:#f5e8c5;stroke-width:1.4}
+.jump-arrow-layer marker path{fill:#a64d3d;stroke:#f5e8c5;stroke-width:.45}
+.jump-target{gap:6px}
+.jump-target .target-required-icon{font-size:14px;line-height:1;color:#a84c3a}
+.jump-target .target-cursor-icon{font:900 12px "DM Mono",monospace;color:#6b735e;margin-left:1px}
+.unresolved-target{background:#f2dfb5!important;border:1px dashed #a84c3a!important;box-shadow:inset 0 0 0 2px #fff0c9,0 0 0 1px #c99c6b55!important;color:#5a4037!important;animation:jumpTargetNeeded 1s ease-in-out infinite alternate}
+.program-row.target-disabled::before{opacity:.62}.program-row.target-disabled{cursor:not-allowed}
+.program-row.target-disabled .line-num::after{content:"×";position:absolute;right:-2px;top:-4px;width:13px;height:13px;display:grid;place-items:center;border-radius:50%;background:#9a4739;color:#f8e8c5;font:900 9px sans-serif}
+@keyframes jumpTargetNeeded{from{filter:none}to{filter:brightness(1.05)}}
+@media(max-width:1250px){.program-list{--jump-gutter:68px}}
+
+/* --- Roadmap: same Byte Office machine / paper language as gameplay --- */
+.modal.roadmap-modal{background:#20231ff2}
+.modal.roadmap-modal .modal-card{border:5px solid #3c3c35;background:#8a897c;box-shadow:inset 0 0 0 2px #b8b5a3,0 7px 0 #1119}
+.modal.roadmap-modal .modal-close{width:36px;height:36px;border-radius:3px;background:#2a2d27;border:1px solid #55584e;color:#eee3ca;box-shadow:0 3px 0 #171815}
+.roadmap-shell{background:#8a897c;color:var(--ink)}
+.roadmap-head{min-height:78px;align-items:center;padding:12px 58px 12px 20px;background:#151714;border-bottom:5px solid #090a09;box-shadow:0 3px 0 #42453b}
+.roadmap-kicker{color:#9d9b8e;font-size:10px;letter-spacing:.16em}.roadmap-head h2{margin:4px 0 2px;color:#eee3ca;font-size:27px}.roadmap-head p{color:#9d9b8e;font-size:11px}
+.roadmap-progress b{color:#eee3ca}.roadmap-progress span,.roadmap-progress small{color:#9d9b8e}.roadmap-progress-track{height:8px;background:#292b26;border:1px solid #55584e;box-shadow:inset 0 1px 2px #0008}.roadmap-progress-track i{background:#6f815f}
+.roadmap-toolbar{min-height:48px;padding:8px 12px;background:#353730;border-bottom:5px solid #252721}.roadmap-toolbar button{min-height:30px;border:2px solid #22241f;border-radius:0;background:#5c5f55;color:#eee6ce;box-shadow:0 3px #171815;font-size:10px}.roadmap-toolbar button:hover{background:#6b6f63}.roadmap-toolbar button:active{transform:translateY(2px);box-shadow:0 1px #171815}.roadmap-toolbar>span{color:#b9b5a3;font-size:10px}
+.road-viewport{background:#8a897c;border:0;box-shadow:inset 0 0 0 2px #b8b5a3;scrollbar-color:#5c5f55 #252721}.road-tile{filter:saturate(.68) contrast(.92) brightness(.92)}.road-tile:after{background:linear-gradient(#20231f20,#0000 12%,#0000 88%,#20231f35)!important;box-shadow:none!important}
+.road-region-tag{left:24px;top:20px;z-index:7;padding:9px 13px;background:#31322e;border:2px solid #1b1c1a;color:#e4dec4;box-shadow:0 3px 0 #111;border-radius:0;transform:none;font:800 13px/1.15 "Libre Franklin",system-ui,sans-serif;letter-spacing:.12em}
+.road-level{width:154px;height:122px;z-index:6}.road-level-pin{width:66px;height:54px;border-radius:0;background:#e8d8af;border:2px solid #5c5546;color:#252522;box-shadow:4px 4px 0 #3d3a32;transform:translate(-50%,-50%) rotate(-1deg)}.road-level-pin:after{display:none}.road-level-pin i{font:700 19px "DM Mono"}.road-level-pin em{right:-14px;top:-11px;min-width:32px;padding:4px 5px;border-radius:0;background:#31322e;border:2px solid #1b1c1a;color:#e4dec4;box-shadow:2px 2px 0 #1118;font-size:9px}.road-level:hover .road-level-pin{transform:translate(-50%,-55%) rotate(0) scale(1.05)}
+.road-level.done .road-level-pin{background:#cfdfcf;border-color:#566356;color:#252522;box-shadow:4px 4px 0 #3d4a3e}.road-level.current .road-level-pin{background:#f3e6bd;border-color:#9c4a3c;color:#252522;box-shadow:4px 4px 0 #71362d,0 0 0 3px #f1e6c8cc}.road-level.locked .road-level-pin{background:#8d8878;border-color:#575348;color:#4b473f;filter:none;opacity:.9;box-shadow:inset 0 0 0 3px #aaa493,3px 3px #5b584e}
+.road-level-label{top:88px;min-width:162px;max-width:190px;padding:7px 9px;background:#eee3c6;border:1px solid #9e9275;color:#2b2924;box-shadow:2px 2px #a59b82;border-radius:0}.road-level-label b{font:800 12px/1.2 "Libre Franklin",system-ui,sans-serif}.road-level-label small{font-size:9px;line-height:1.25;margin-top:3px;color:#655d4f}
+.roadmap-foot{min-height:58px;background:#353730;border-top:5px solid #252721;padding:9px 14px}.roadmap-foot b{color:#ddd5bc;font-size:10px}.roadmap-foot span{color:#a9a58f;font-size:10px}.roadmap-foot .modal-primary{border:2px solid #22241f;border-radius:0;background:#6f815f;color:#eee6ce;box-shadow:0 3px #171815;font-family:"Libre Franklin",system-ui,sans-serif;font-weight:800}
+
+/* --- Main employee terminal / home page --- */
+.home-screen{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:42px;background:#20221e;color:#282822;overflow:auto;opacity:1;visibility:visible;transition:opacity .28s ease,transform .34s cubic-bezier(.2,.75,.2,1),visibility 0s linear}
+.home-screen.is-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:scale(1.018);transition:opacity .22s ease,transform .28s ease,visibility 0s linear .28s}
+.home-backdrop-grid{position:absolute;inset:0;pointer-events:none;background:linear-gradient(#ffffff05 1px,transparent 1px),linear-gradient(90deg,#ffffff05 1px,transparent 1px),radial-gradient(circle at 70% 22%,#77796622,transparent 38%);background-size:42px 42px,42px 42px,auto}
+.home-desk{position:relative;width:min(920px,94vw);display:grid;gap:22px}
+.home-brand-row{display:flex;align-items:center;gap:16px;color:#eee3ca}.home-brand-mark{width:58px;height:58px;display:grid;place-items:center;background:#6f815f;border:2px solid #9ba78d;box-shadow:5px 5px 0 #0f100e;font:900 29px "DM Mono",monospace}.home-kicker{display:block;color:#9e9b8b;font:800 9px "DM Mono",monospace;letter-spacing:.18em}.home-brand-row h1{margin:3px 0 1px;font-size:32px;letter-spacing:.035em}.home-brand-row p{margin:0;color:#aaa692;font-size:11px}
+.home-file-card{position:relative;background:#e9dfc2;border:2px solid #9e9275;box-shadow:10px 12px 0 #10110f;padding:34px 34px 18px}.home-file-card::before{content:"";position:absolute;inset:7px;border:1px solid #c1b595;pointer-events:none}.home-file-tab{position:absolute;top:-26px;left:28px;height:27px;padding:0 17px;display:flex;align-items:center;background:#e9dfc2;border:2px solid #9e9275;border-bottom:0;font:900 9px "DM Mono",monospace;letter-spacing:.14em;color:#565044}
+.home-resume-copy{position:relative;z-index:1;border-bottom:1px dashed #a6997b;padding-bottom:18px}.home-resume-copy>span{font:900 9px "DM Mono",monospace;letter-spacing:.15em;color:#817660}.home-resume-copy h2{font-size:27px;margin:5px 0 6px;color:#34352f}.home-resume-copy p{margin:0;color:#6f6758;font-size:11px}
+.home-actions{position:relative;z-index:1;display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:12px;margin-top:20px}.home-actions button{min-height:92px;text-align:left;display:grid;grid-template-columns:38px 1fr;grid-template-rows:auto auto;align-content:center;column-gap:10px;padding:13px 15px;border:2px solid #8f846d;background:#d9ccb0;color:#35352f;box-shadow:3px 3px 0 #a89b7e;cursor:pointer;transition:transform .14s,box-shadow .14s,background .14s}.home-actions button>span{grid-row:1/3;width:34px;height:34px;display:grid;place-items:center;background:#4b4e45;color:#eee3c7;font-size:14px}.home-actions button b{align-self:end;font-size:13px}.home-actions button small{align-self:start;color:#756c5b;font-size:9px;line-height:1.35}.home-actions button:hover{transform:translateY(-2px);box-shadow:3px 5px 0 #998c72;background:#e6d8b8}.home-actions button:active{transform:translateY(2px);box-shadow:1px 1px 0 #998c72}.home-actions .home-primary{background:#6f815f;color:#fff1d1;border-color:#47523e;box-shadow:4px 4px 0 #36402f}.home-actions .home-primary>span{background:#e9dfc2;color:#4d5846}.home-actions .home-primary small{color:#dae2d1}.home-actions .home-primary:hover{background:#7c8d6b;box-shadow:4px 6px 0 #30392b}
+.home-meta{position:relative;z-index:1;margin-top:17px;display:flex;justify-content:space-between;color:#746b59;font:800 8px "DM Mono",monospace;letter-spacing:.05em}.home-settings{position:relative;z-index:2;margin-top:16px;padding:14px;background:#d5c8aa;border:1px solid #93866d;box-shadow:inset 0 0 0 3px #e5d8b8;opacity:0;transform:translateY(-7px);transition:opacity .18s,transform .18s}.home-settings.open{opacity:1;transform:none}.home-settings-head{display:flex;justify-content:space-between;align-items:center;padding:2px 3px 10px;border-bottom:1px solid #a99a7c}.home-settings-head span{display:block;color:#766b59;font:800 8px "DM Mono",monospace;letter-spacing:.12em}.home-settings-head b{font-size:16px}.home-settings-head button{width:30px;height:30px;border:1px solid #82755e;background:#ede0c0;cursor:pointer;font-size:18px}.setting-row{display:grid;grid-template-columns:1fr 42px;align-items:center;gap:15px;padding:10px 4px;border-bottom:1px dashed #aa9b7c;cursor:pointer}.setting-row:last-child{border-bottom:0}.setting-row b{display:block;font-size:11px}.setting-row small{display:block;margin-top:2px;color:#776d5c;font-size:8px}.setting-row input{position:absolute;opacity:0;pointer-events:none}.setting-row>i{position:relative;width:38px;height:20px;background:#9d9580;border:1px solid #756d5c;box-shadow:inset 0 1px 2px #0003}.setting-row>i::after{content:"";position:absolute;left:2px;top:2px;width:14px;height:14px;background:#e9dfc2;border:1px solid #6e6757;transition:transform .16s}.setting-row input:checked+i{background:#6f815f}.setting-row input:checked+i::after{transform:translateX(17px)}
+
+/* --- True screen transitions, rather than instant UI swaps --- */
+.app-shell{transition:opacity .28s ease,transform .34s cubic-bezier(.2,.75,.2,1),filter .28s ease}.app-shell.is-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:scale(.986);filter:blur(2px)}
+.page-curtain{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:#191b17;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(100%)}.page-curtain.active{visibility:visible;pointer-events:auto}.page-curtain.entering{animation:curtainIn .28s cubic-bezier(.6,0,.25,1) forwards}.page-curtain.leaving{animation:curtainOut .3s cubic-bezier(.6,0,.25,1) forwards}.curtain-sheet{display:grid;gap:5px;text-align:center;color:#e8dec3}.curtain-sheet span{font:900 10px "DM Mono",monospace;letter-spacing:.2em;color:#8d977e}.curtain-sheet b{font-size:13px;letter-spacing:.04em}.curtain-sheet::before{content:"";width:54px;height:4px;background:#6f815f;justify-self:center;margin-bottom:8px;box-shadow:18px 0 #9d4d3e,-18px 0 #d7c79e}
+@keyframes curtainIn{0%{opacity:0;transform:translateY(100%)}100%{opacity:1;transform:translateY(0)}}@keyframes curtainOut{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-100%)}}
+.modal:not(.hidden) .modal-card{animation:modalPaperIn .28s cubic-bezier(.2,.8,.2,1) both}.modal.roadmap-modal:not(.hidden) .modal-card{animation:mapUnfoldIn .34s cubic-bezier(.2,.8,.2,1) both}@keyframes modalPaperIn{from{opacity:0;transform:translateY(14px) rotate(.25deg) scale(.985)}to{opacity:1;transform:none}}@keyframes mapUnfoldIn{from{opacity:0;transform:scaleX(.965) translateY(10px)}to{opacity:1;transform:none}}
+body.hide-editor-tips .editor-tip{display:none!important}
+body.reduced-motion *,body.reduced-motion *::before,body.reduced-motion *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+@media(prefers-reduced-motion:reduce){.page-curtain{display:none!important}.home-screen,.app-shell{transition:none}.unresolved-target{animation:none}}
+@media(max-width:760px){.home-screen{padding:25px 14px}.home-desk{width:100%}.home-brand-row h1{font-size:25px}.home-file-card{padding:28px 18px 15px}.home-actions{grid-template-columns:1fr}.home-actions button{min-height:72px}.home-meta{gap:8px;flex-direction:column}.road-region-tag{font-size:11px;padding:8px 11px}.road-level{width:142px;height:114px}.road-level-pin{width:58px;height:50px}.road-level-pin i{font-size:16px}.road-level-label{top:82px;min-width:150px;max-width:176px}.road-level-label b{font-size:11px}.road-level-label small{font-size:8px}}
+
+/* v2.3 — true screen separation + interaction polish --------------------- */
+
+/* The roadmap is a first-class page. Nothing from the processing floor is
+   used as its backdrop, and the floor stays hidden/uninitialized until a
+   level is explicitly entered. */
+.map-screen{
+  position:fixed;
+  inset:0;
+  z-index:118;
+  display:block;
+  background:#20221e;
+  opacity:1;
+  visibility:visible;
+  transform:none;
+  overflow:hidden;
+  transition:opacity .28s ease,transform .34s cubic-bezier(.2,.75,.2,1),visibility 0s linear;
+}
+.map-screen.is-hidden{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:scale(.988);
+  transition:opacity .22s ease,transform .28s ease,visibility 0s linear .28s;
+}
+.map-page-content{height:100%;min-height:0}
+.map-page-content>.roadmap-shell{height:100%;min-height:0}
+.roadmap-shell{grid-template-rows:auto auto minmax(0,1fr) auto}
+.roadmap-head{position:relative}
+.road-exit-btn{
+  position:absolute;
+  right:16px;
+  top:15px;
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  border:2px solid #22241f;
+  border-radius:0;
+  background:#5c5f55;
+  color:#eee6ce;
+  box-shadow:0 3px #171815;
+  font:700 22px/1 "DM Mono",monospace;
+  cursor:pointer;
+  transition:transform .13s ease,box-shadow .13s ease,background .13s ease,opacity .13s ease;
+}
+.road-exit-btn:hover{background:#6b6f63;transform:translateY(-1px)}
+.road-exit-btn:active{transform:translateY(2px) scale(.96);box-shadow:0 1px #171815}
+
+/* Roadmap-owned list view. It slides over the map instead of replacing a
+   game modal, so map/list feel like two views of one screen. */
+.map-overlay{
+  position:absolute;
+  inset:0;
+  z-index:40;
+  display:grid;
+  place-items:center;
+  padding:24px;
+  background:#191b17d9;
+  backdrop-filter:blur(0px);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .22s ease,backdrop-filter .22s ease,visibility 0s linear .22s;
+}
+.map-overlay.open{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  backdrop-filter:blur(2px);
+  transition:opacity .22s ease,backdrop-filter .22s ease,visibility 0s linear;
+}
+.map-overlay.closing{opacity:0;backdrop-filter:blur(0)}
+.map-directory-sheet{
+  width:min(1120px,94vw);
+  height:min(780px,90vh);
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  padding:20px;
+  background:#eee3c6;
+  border:4px solid #3c3c35;
+  box-shadow:8px 9px 0 #10110f;
+  transform:translateY(16px) scale(.985);
+  opacity:0;
+  transition:transform .24s cubic-bezier(.2,.8,.2,1),opacity .2s ease;
+}
+.map-overlay.open .map-directory-sheet{transform:none;opacity:1}
+.map-overlay.closing .map-directory-sheet{transform:translateY(10px) scale(.99);opacity:0}
+.map-directory-top{display:flex;align-items:flex-start;gap:18px;border-bottom:1px dashed #a99a7c;padding-bottom:12px;margin-bottom:12px}
+.map-directory-top .paper-button{flex:0 0 auto;margin-top:4px}
+.map-directory-top .modal-heading{flex:1;min-width:0}
+.map-directory-sheet .level-tools{flex:0 0 auto}
+.map-directory-sheet .level-list-scroll{flex:1;min-height:0;overflow:auto;padding-right:5px}
+
+/* Settings behaves like a floating paper sheet instead of inserting/removing
+   a large block in document flow. This removes the lower-row flicker/jump. */
+.home-file-card{position:relative}
+.home-settings{
+  position:absolute;
+  z-index:20;
+  left:28px;
+  right:28px;
+  top:150px;
+  margin:0;
+  max-height:min(480px,calc(100vh - 230px));
+  overflow:auto;
+  transform-origin:78% 0;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translateY(-8px) scale(.985);
+  clip-path:inset(0 0 100% 0);
+  transition:opacity .2s ease,transform .24s cubic-bezier(.2,.8,.2,1),clip-path .26s cubic-bezier(.2,.8,.2,1),visibility 0s linear .26s;
+  box-shadow:6px 7px 0 #81765f,inset 0 0 0 3px #e5d8b8;
+}
+.home-settings.open{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transform:none;
+  clip-path:inset(0 0 0 0);
+  transition:opacity .2s ease,transform .24s cubic-bezier(.2,.8,.2,1),clip-path .26s cubic-bezier(.2,.8,.2,1),visibility 0s linear;
+}
+.home-settings.closing{opacity:0;transform:translateY(-5px) scale(.992);clip-path:inset(0 0 100% 0);pointer-events:none}
+.home-settings-head button{
+  transition:transform .13s ease,box-shadow .13s ease,background .13s ease;
+  box-shadow:2px 2px 0 #8f8269;
+}
+.home-settings-head button:hover{background:#f7e9c8;transform:translateY(-1px)}
+.home-settings-head button:active{transform:translate(2px,2px) scale(.94);box-shadow:0 0 0 #8f8269}
+
+/* Dialogs now animate both directions. Previously only opening was animated,
+   so closing instantly hid the sheet and looked like a flicker. */
+.modal{
+  opacity:1;
+  transition:opacity .2s ease,visibility 0s linear;
+}
+.modal.hidden{opacity:0;visibility:hidden;pointer-events:none;display:flex!important;transition:opacity .18s ease,visibility 0s linear .18s}
+.modal .modal-card{
+  opacity:1;
+  transform:none;
+  transition:opacity .2s ease,transform .22s cubic-bezier(.2,.8,.2,1);
+}
+.modal.closing{opacity:0}
+.modal.closing .modal-card{opacity:0;transform:translateY(10px) scale(.99)}
+.modal-close{
+  transition:transform .13s ease,box-shadow .13s ease,background .13s ease,opacity .13s ease!important;
+}
+.modal-close:hover{transform:translateY(-1px) rotate(2deg)}
+.modal-close:active{transform:translate(1px,2px) scale(.9) rotate(-4deg);box-shadow:none!important}
+
+/* Consistent physical response on touch/click for controls that previously
+   changed state with no visible acknowledgement. */
+button,.workspace-tab,.setting-row,.level-card,.road-level{
+  -webkit-tap-highlight-color:transparent;
+}
+button:not(:disabled){transition-property:transform,box-shadow,background-color,border-color,opacity,filter;transition-duration:.13s;transition-timing-function:ease}
+button:not(:disabled):active{filter:brightness(.96)}
+.setting-row{transition:background .14s ease,transform .12s ease}
+.setting-row:active{background:#c9bb9d;transform:scale(.995)}
+.setting-row>i{transition:background .16s ease,box-shadow .16s ease,transform .12s ease}
+.setting-row:active>i{transform:scale(.94)}
+
+@media(max-width:760px){
+  .home-settings{left:12px;right:12px;top:138px;max-height:calc(100vh - 185px)}
+  .map-overlay{padding:10px}
+  .map-directory-sheet{width:100%;height:94vh;padding:14px}
+  .map-directory-top{flex-direction:column;gap:8px}
+}
+body.reduced-motion .map-overlay,body.reduced-motion .map-directory-sheet,body.reduced-motion .home-settings{transition:none!important}
+
+/* v2.3.1 — roadmap directory cleanup + interaction ownership fix. */
+.map-directory-sheet{
+  width:min(1050px,94vw);
+  height:min(720px,88vh);
+  padding:0;
+  overflow:hidden;
+  background:#e9dfc2;
+  border:4px solid #3c3c35;
+  box-shadow:8px 9px 0 #10110f;
+}
+.map-directory-header{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  min-height:92px;
+  padding:16px 18px 14px 20px;
+  background:#292c26;
+  border-bottom:4px solid #171916;
+  box-shadow:inset 0 -1px #55584e;
+}
+.map-directory-title{min-width:0}
+.map-directory-title>span{
+  display:block;
+  margin-bottom:4px;
+  color:#aaa58f;
+  font:800 9px "DM Mono",monospace;
+  letter-spacing:.16em;
+}
+.map-directory-title h2{
+  margin:0;
+  color:#eee3ca;
+  font:26px/1.05 "Special Elite",serif;
+}
+.map-directory-title p{
+  margin:5px 0 0;
+  color:#aaa58f;
+  font:9px/1.35 "DM Mono",monospace;
+}
+.map-directory-back{
+  flex:0 0 auto;
+  width:auto!important;
+  min-width:112px;
+  min-height:36px;
+  margin:0!important;
+  padding:0 13px;
+  border:2px solid #191b17;
+  background:#5d6255;
+  color:#eee3ca;
+  box-shadow:0 3px #111310;
+  font:800 10px "Libre Franklin",system-ui,sans-serif;
+  cursor:pointer;
+}
+.map-directory-back span{margin-right:6px;font:700 14px "DM Mono",monospace}
+.map-directory-back:hover{background:#6d735f;transform:translateY(-1px)}
+.map-directory-back:active{transform:translateY(2px);box-shadow:0 1px #111310}
+.map-directory-controls{
+  flex:0 0 auto;
+  display:flex;
+  align-items:stretch;
+  gap:10px;
+  padding:12px 16px;
+  background:#d8cbaa;
+  border-bottom:1px solid #a89b7c;
+}
+.map-search{
+  flex:1 1 360px;
+  min-width:220px;
+  height:38px;
+  display:flex;
+  align-items:center;
+  background:#f3e7ca;
+  border:1px solid #8f8268;
+  box-shadow:inset 0 1px #fff6dc;
+}
+.map-search>span{padding:0 9px;color:#746b59;font:18px "DM Mono",monospace}
+.map-search input{
+  width:100%;height:100%;min-width:0;border:0;outline:0;background:transparent;
+  color:#2d2b25;font:10px "DM Mono",monospace;padding:0 10px 0 0;
+}
+.map-directory-controls .level-filters{
+  flex:0 0 auto;
+  display:flex;
+  gap:5px;
+}
+.map-directory-controls .level-filters button{
+  min-width:58px;
+  height:38px;
+  padding:0 10px;
+  border:1px solid #8f8268;
+  background:#e7d9b8;
+  color:#504a3f;
+  box-shadow:0 2px #a39678;
+  font:800 9px "DM Mono",monospace;
+  cursor:pointer;
+}
+.map-directory-controls .level-filters button.active{
+  background:#69745f;
+  border-color:#485141;
+  color:#fff0cf;
+  box-shadow:inset 0 0 0 1px #87947a,0 2px #343b30;
+}
+.map-directory-rule{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  gap:13px;
+  padding:7px 17px;
+  background:#eee3c6;
+  border-bottom:1px dashed #aa9c7d;
+  color:#766c59;
+  font:8px "DM Mono",monospace;
+}
+.map-directory-rule span{font-weight:900;letter-spacing:.14em;color:#9c4a3c}
+.map-directory-rule b{font-weight:700}
+.map-directory-sheet .level-list-scroll{
+  flex:1 1 auto;
+  min-height:0;
+  overflow:auto;
+  padding:13px 16px 17px;
+  scrollbar-color:#77715f #d8cbaa;
+}
+.map-level-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  padding:0;
+}
+.map-level-grid .level-card-wrap{min-width:0}
+.map-level-grid .level-card{
+  min-height:72px;
+  grid-template-columns:54px minmax(0,1fr);
+  padding:10px 38px 10px 10px;
+  border:1px solid #968a6c;
+  background:#ddd0ad;
+  box-shadow:2px 2px #b2a583;
+  transition:transform .13s ease,box-shadow .13s ease,background .13s ease;
+}
+.map-level-grid .level-card:not(:disabled):hover{
+  transform:translateY(-2px);
+  box-shadow:2px 4px #9d9275;
+  background:#e6d8b5;
+}
+.map-level-grid .level-card:not(:disabled):active{transform:translateY(1px);box-shadow:1px 1px #9d9275}
+.map-level-grid .level-card>span{font-size:18px;text-align:center}
+.map-level-grid .level-card b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.map-level-grid .level-card small{display:block;margin-top:3px;font-size:9px;line-height:1.3}
+.map-level-grid .level-card.done{background:#cbd7c1;border-color:#85917b}
+.map-level-grid .level-card.locked{background:#c5bca5;border-color:#9e9580;opacity:.6}
+.map-level-grid .favorite-btn{right:8px;font-size:15px}
+
+@media(max-width:760px){
+  .map-directory-sheet{height:92vh}
+  .map-directory-header{align-items:flex-start;min-height:0;padding:13px 14px;gap:10px}
+  .map-directory-title h2{font-size:21px}
+  .map-directory-title p{display:none}
+  .map-directory-back{min-width:88px;padding:0 9px}
+  .map-directory-controls{flex-direction:column;padding:10px}
+  .map-search{flex:0 0 38px;min-width:0}
+  .map-directory-controls .level-filters{display:grid;grid-template-columns:repeat(4,1fr)}
+  .map-directory-controls .level-filters button{min-width:0;padding:0 5px}
+  .map-directory-rule{display:none}
+  .map-directory-sheet .level-list-scroll{padding:10px}
+  .map-level-grid{grid-template-columns:1fr;gap:8px}
+}
+

@@ -1,0 +1,249 @@
+/* Physical worker animation system — original Byte Office character/art, HRM-style physical execution. */
+.factory-scene{isolation:isolate}.work-floor{z-index:2;justify-content:flex-end;padding-bottom:58px}.worker-wrap{position:absolute;z-index:12;width:120px;height:180px;left:calc(50% - 60px);top:90px;transition:left .52s cubic-bezier(.34,.7,.27,1),top .52s cubic-bezier(.34,.7,.27,1);pointer-events:none;will-change:left,top}.worker{transform-origin:50% 88%;transition:transform .15s ease}.worker.face-left{transform:scaleX(-1)}.worker-shadow{position:absolute;left:25px;bottom:13px;width:74px;height:17px;border-radius:50%;background:#302f2a66;filter:blur(2px)}
+.worker-head{transform-origin:50% 100%}.worker-head .ear{position:absolute;right:-7px;top:17px;width:8px;height:12px;border:2px solid #45382d;background:#c99568;border-radius:50%}.shirt-pocket{position:absolute;right:6px;top:18px;width:9px;height:8px;border:1px solid #77766f;border-top:0}.worker-arm{transform-origin:50% 4px}.worker-arm .hand{position:absolute;left:2px;bottom:-7px;width:10px;height:11px;background:#d0a170;border:2px solid #45382d;border-radius:50%}.worker-leg{transform-origin:50% 4px}.worker-leg .shoe{position:absolute;bottom:-7px;width:24px;height:10px;background:#2c2c2b;border:2px solid #20201f;border-radius:7px 3px 3px 3px}.left-leg .shoe{left:-8px}.right-leg .shoe{left:0}
+.held-card{top:74px;left:39px;transition:top .16s ease,transform .16s ease,opacity .12s ease;z-index:20}.worker.face-left + .held-card{transform:none}
+.worker-wrap.walking .worker-head{animation:headBob var(--bob-ms,260ms) ease-in-out infinite}.worker-wrap.walking .left-leg{animation:legWalk var(--walk-ms,520ms) ease-in-out infinite}.worker-wrap.walking .right-leg{animation:legWalk var(--walk-ms,520ms) ease-in-out infinite reverse}.worker-wrap.walking .left-arm{animation:armWalk var(--walk-ms,520ms) ease-in-out infinite reverse}.worker-wrap.walking .right-arm{animation:armWalk var(--walk-ms,520ms) ease-in-out infinite}.worker-wrap.walking .held-card.has-value{animation:carryBob var(--bob-ms,260ms) ease-in-out infinite}
+.worker-wrap.reaching .worker{animation:crouchReach .42s ease both}.worker-wrap.reaching .right-arm{animation:reachDown .42s ease both}.worker-wrap.reaching .left-arm{animation:reachDownLeft .42s ease both}.worker-wrap.reaching .held-card{top:96px;transform:rotate(-4deg)}
+.worker-wrap.placing .worker{animation:crouchReach .42s ease both}.worker-wrap.placing .right-arm{animation:reachDown .42s ease both}.worker-wrap.placing .left-arm{animation:reachDownLeft .42s ease both}.worker-wrap.placing .held-card{top:102px;transform:rotate(4deg)}
+.worker-wrap.thinking .worker-head{animation:thinkTilt .34s ease-in-out alternate infinite}.worker-wrap.thinking .right-arm{animation:pointThink .34s ease-in-out alternate infinite}.worker-wrap.celebrate .worker{animation:celebrateBody .5s ease-in-out infinite alternate}.worker-wrap.celebrate .left-arm{animation:cheerLeft .5s ease-in-out infinite alternate}.worker-wrap.celebrate .right-arm{animation:cheerRight .5s ease-in-out infinite alternate}.worker-wrap.error-pose .worker-head{transform:rotate(8deg)}.worker-wrap.error-pose .left-arm{transform:rotate(40deg)}.worker-wrap.error-pose .right-arm{transform:rotate(-40deg)}
+.memory-tile{transition:transform .12s ease,background .12s ease}.memory-tile:has(b:not(:empty)){ }.value-box{transition:transform .15s ease,opacity .15s ease}
+@keyframes legWalk{0%,100%{transform:rotate(18deg)}50%{transform:rotate(-20deg)}}@keyframes armWalk{0%,100%{transform:rotate(24deg)}50%{transform:rotate(-26deg)}}@keyframes headBob{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}@keyframes carryBob{0%,100%{transform:translateY(0)}50%{transform:translateY(2px)}}@keyframes crouchReach{0%,100%{transform:translateY(0) scaleY(1)}45%,65%{transform:translateY(18px) scaleY(.9)}}@keyframes reachDown{0%,100%{transform:rotate(-8deg)}45%,65%{transform:rotate(-65deg) translateY(11px)}}@keyframes reachDownLeft{0%,100%{transform:rotate(8deg)}45%,65%{transform:rotate(65deg) translateY(11px)}}@keyframes thinkTilt{from{transform:rotate(-3deg)}to{transform:rotate(7deg)}}@keyframes pointThink{from{transform:rotate(-8deg)}to{transform:rotate(-82deg)}}@keyframes celebrateBody{from{transform:translateY(0)}to{transform:translateY(-10px)}}@keyframes cheerLeft{from{transform:rotate(8deg)}to{transform:rotate(125deg)}}@keyframes cheerRight{from{transform:rotate(-8deg)}to{transform:rotate(-125deg)}}
+@media(max-width:760px){.worker-wrap{transform:scale(.82);transform-origin:50% 100%}.work-floor{padding-bottom:52px}.factory-scene{min-height:520px}}
+
+/* v0.3 — persistent physical boxes and flicker-free transfers */
+.value-box{animation:none;will-change:transform;backface-visibility:hidden;transform:translateZ(0);}
+.value-box.settle-box{animation:settleBox .22s cubic-bezier(.2,.8,.2,1) both;}
+.box-in-transit{opacity:0!important;}
+.transfer-box{position:fixed!important;z-index:9999!important;margin:0!important;pointer-events:none!important;transform-origin:center;box-shadow:5px 7px 0 #29272099!important;animation:none!important;will-change:transform;}
+.held-card{opacity:0;visibility:hidden;transform:translateZ(0);backface-visibility:hidden;}
+.held-card.has-value{opacity:1;visibility:visible;}
+.memory-tile{overflow:visible;}
+.memory-box{width:50px;height:38px;display:grid;place-items:center;background:#e8d8af;border:2px solid #5c5546;box-shadow:3px 3px 0 #3d3a32;font:700 17px "DM Mono";opacity:0;transform:translateY(-2px) scale(.9);transition:opacity .12s ease,transform .18s cubic-bezier(.2,.8,.2,1);backface-visibility:hidden;}
+.memory-box.has-value{opacity:1;transform:translateY(-2px) scale(1);}
+.held-card.math-pop{animation:mathPop .22s cubic-bezier(.2,.8,.2,1);}
+@keyframes settleBox{from{transform:translateY(-5px) scale(.96);opacity:.65}to{transform:translateY(0) scale(1);opacity:1}}
+@keyframes mathPop{0%{transform:scale(1)}45%{transform:scale(1.14) rotate(-2deg)}100%{transform:scale(1)}}
+
+/* v0.4 — dedicated physical arithmetic sequences */
+.worker-wrap.calculating .worker-head{animation:calcHead .3s ease-in-out alternate infinite}
+.worker-wrap.calculating .left-arm{animation:calcLeft .42s ease-in-out alternate infinite}
+.worker-wrap.calculating .right-arm{animation:calcRight .42s ease-in-out alternate infinite}
+.math-stage{position:fixed;z-index:10020;width:210px;height:104px;transform:translate(-50%,-50%);pointer-events:none;contain:layout style;}
+.math-stage .value-box{position:absolute;left:50%;top:50%;margin-left:-31px;margin-top:-24px;transform-origin:center;box-shadow:4px 5px 0 #29272099;}
+.math-operator,.math-equals{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:900 31px "DM Mono";color:#352f26;text-shadow:0 2px #e8dbb9;opacity:0;z-index:3;}
+.math-equals{left:70%;font-size:24px;}
+.math-result-box{opacity:0;z-index:5;background:#f3e6bd!important;}
+.math-result-box.show{left:84%!important;opacity:1;animation:resultReveal .3s cubic-bezier(.15,.9,.25,1) both!important;}
+.math-equals.show{opacity:1;animation:eqReveal .22s ease both;}
+.math-source-active{animation:memoryPulse .5s ease-in-out infinite alternate;}
+.math-stage.math-add .math-operator{color:#586d50}.math-stage.math-sub .math-operator{color:#984a3d}
+.math-combine .math-held-operand,.math-combine .math-memory-operand{filter:brightness(1.06)}
+.math-sparks{position:absolute;left:50%;top:50%;width:1px;height:1px;z-index:4}.math-sparks i{position:absolute;width:5px;height:5px;border-radius:50%;background:#d2b45e;opacity:0}.math-sparks.burst i{animation:mathSpark .34s ease-out both}.math-sparks.burst i:nth-child(1){--sx:34px;--sy:-30px}.math-sparks.burst i:nth-child(2){--sx:-38px;--sy:-25px;animation-delay:.02s}.math-sparks.burst i:nth-child(3){--sx:43px;--sy:15px;animation-delay:.04s}.math-sparks.burst i:nth-child(4){--sx:-42px;--sy:19px;animation-delay:.06s}.math-sparks.burst i:nth-child(5){--sx:8px;--sy:-42px;animation-delay:.03s}.math-sparks.burst i:nth-child(6){--sx:-6px;--sy:38px;animation-delay:.05s}
+@keyframes calcHead{from{transform:rotate(-4deg) translateY(0)}to{transform:rotate(4deg) translateY(2px)}}
+@keyframes calcLeft{from{transform:rotate(18deg)}to{transform:rotate(58deg)}}@keyframes calcRight{from{transform:rotate(-18deg)}to{transform:rotate(-58deg)}}
+@keyframes memoryPulse{from{transform:translateY(-2px) scale(1);box-shadow:3px 3px 0 #3d3a32}to{transform:translateY(-4px) scale(1.07);box-shadow:4px 6px 0 #3d3a3266}}
+@keyframes resultReveal{0%{transform:scale(.2) rotate(-12deg)}65%{transform:scale(1.16) rotate(2deg)}100%{transform:scale(1)}}
+@keyframes eqReveal{from{transform:translate(-50%,-50%) scale(.4);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+@keyframes mathSpark{0%{transform:translate(0,0) scale(.4);opacity:1}100%{transform:translate(var(--sx),var(--sy)) scale(0);opacity:0}}
+
+/* v0.5 — replacement throws + compositor-stable rendering */
+.worker-wrap,.worker,.held-card,.memory-box,.value-box,.transfer-box,.discard-box{backface-visibility:hidden;-webkit-backface-visibility:hidden;transform-style:preserve-3d;}
+.held-card{visibility:visible!important;pointer-events:none;contain:layout paint style;}
+.held-card:not(.has-value){opacity:0;transform:translateZ(0) scale(.985);}
+.held-card.has-value{opacity:1;transform:translateZ(0) scale(1);}
+.memory-box{contain:layout paint style;}
+.value-box,.memory-box,.held-card{transition-property:opacity,transform;transition-duration:.14s,.18s;transition-timing-function:ease,cubic-bezier(.2,.8,.2,1);}
+.box-in-transit{opacity:0!important;transition:none!important;}
+.discard-box{position:fixed!important;z-index:10040!important;margin:0!important;pointer-events:none!important;will-change:transform,opacity;box-shadow:5px 7px 0 #29272099!important;}
+.discard-box.destroying{animation:boxCrush .18s cubic-bezier(.55,.02,.9,.4) forwards!important;}
+.destroy-burst{position:fixed;z-index:10050;width:1px;height:1px;pointer-events:none;contain:layout style paint;}
+.destroy-burst i{position:absolute;left:-4px;top:-4px;width:8px;height:8px;background:#d7c293;border:1px solid #554b39;box-shadow:1px 1px 0 #332f27;animation:destroyShard .18s ease-out forwards;will-change:transform,opacity;}
+.destroy-burst i:nth-child(1){--dx:-34px;--dy:-25px;--r:-90deg}.destroy-burst i:nth-child(2){--dx:31px;--dy:-31px;--r:120deg}.destroy-burst i:nth-child(3){--dx:-40px;--dy:7px;--r:-160deg}.destroy-burst i:nth-child(4){--dx:42px;--dy:11px;--r:190deg}.destroy-burst i:nth-child(5){--dx:-23px;--dy:32px;--r:80deg}.destroy-burst i:nth-child(6){--dx:27px;--dy:35px;--r:-130deg}.destroy-burst i:nth-child(7){--dx:-5px;--dy:-42px;--r:210deg}.destroy-burst i:nth-child(8){--dx:7px;--dy:43px;--r:-220deg}
+.worker-wrap.throwing .worker{animation:throwBody .42s cubic-bezier(.2,.8,.2,1) both}.worker-wrap.throwing .right-arm{animation:throwRight .42s cubic-bezier(.2,.8,.2,1) both}.worker-wrap.throwing .left-arm{animation:throwLeft .42s cubic-bezier(.2,.8,.2,1) both}
+@keyframes boxCrush{0%{filter:none;opacity:1}45%{transform:translate(-50%,-50%) scale(1.14,.68) rotate(8deg);filter:brightness(1.18)}100%{transform:translate(-50%,-50%) scale(.08) rotate(-14deg);opacity:0}}
+@keyframes destroyShard{0%{transform:translate(0,0) rotate(0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--r)) scale(.2);opacity:0}}
+@keyframes throwBody{0%{transform:rotate(0)}35%{transform:rotate(-8deg) translateY(2px)}70%{transform:rotate(7deg) translateY(-2px)}100%{transform:rotate(0)}}
+@keyframes throwRight{0%{transform:rotate(-8deg)}35%{transform:rotate(55deg)}70%{transform:rotate(-125deg)}100%{transform:rotate(-8deg)}}
+@keyframes throwLeft{0%{transform:rotate(8deg)}35%{transform:rotate(38deg)}70%{transform:rotate(-80deg)}100%{transform:rotate(8deg)}}
+
+/* Prevent small paint flashes while instructions advance. */
+.program-row,.memory-tile,.inbox-zone,.outbox-zone{backface-visibility:hidden;}
+.program-row.active{will-change:auto;}
+
+/* v0.6 — true COPYTO duplication + one immutable physical box size */
+:root{--physical-box-w:62px;--physical-box-h:48px}
+.value-box,.held-card,.memory-box,.transfer-box,.discard-box{
+  box-sizing:border-box;
+  width:var(--physical-box-w)!important;
+  height:var(--physical-box-h)!important;
+}
+/* Never resize a tile when it changes ownership/location. */
+.held-card{left:29px;top:72px;opacity:0;transform:translate3d(0,0,0)!important;transition:opacity .1s linear,top .16s ease!important}
+.held-card.has-value{opacity:1;transform:translate3d(0,0,0)!important}
+.held-card:not(.has-value){opacity:0;transform:translate3d(0,0,0)!important}
+.memory-box{opacity:0;transform:translate3d(0,-2px,0)!important;transition:opacity .1s linear!important}
+.memory-box.has-value{opacity:1;transform:translate3d(0,-2px,0)!important}
+.value-box.settle-box{animation:none!important}
+.box-in-transit{opacity:0!important;transition:none!important}
+.transfer-box{transition:none!important;contain:layout paint style;transform-origin:center center!important}
+
+/* Body pose may move the hand, but the box itself never scales. */
+.worker-wrap.reaching .held-card{top:96px;transform:translate3d(0,0,0) rotate(-4deg)!important}
+.worker-wrap.placing .held-card{top:102px;transform:translate3d(0,0,0) rotate(4deg)!important}
+.worker-wrap.walking .held-card.has-value{animation:carryBobStable var(--bob-ms,260ms) ease-in-out infinite!important}
+@keyframes carryBobStable{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,2px,0)}}
+
+/* COPYTO has its own human pose and duplication cue. */
+.worker-wrap.copying .worker{animation:copyLean .52s ease-in-out both}
+.worker-wrap.copying .left-arm{animation:copyLeftArm .52s ease-in-out both}
+.worker-wrap.copying .right-arm{animation:copyRightArm .52s ease-in-out both}
+.worker-wrap.copying .held-card{top:78px!important;transform:translate3d(0,0,0) rotate(-2deg)!important}
+.copy-source-active{filter:brightness(1.08);outline:2px dashed #f1df9b;outline-offset:3px}
+.copy-transfer-box{box-shadow:4px 4px 0 #3d3a32,0 0 0 2px #f0dfaa!important}
+@keyframes copyLean{0%,100%{transform:translateY(0)}45%,70%{transform:translateY(8px)}}
+@keyframes copyLeftArm{0%,100%{transform:rotate(8deg)}45%,70%{transform:rotate(42deg)}}
+@keyframes copyRightArm{0%,100%{transform:rotate(-8deg)}45%,70%{transform:rotate(-48deg)}}
+
+/* Stop incidental paint/size pulses on normal ownership changes. Special arithmetic/destruction effects remain separate. */
+.memory-box:not(.math-source-active),.held-card:not(.math-pop){animation:none}
+
+/* v0.7 — zero-fade physical handoffs + smoother readable actions */
+.value-box,.held-card,.memory-box,.transfer-box,.copy-transfer-box{
+  opacity:1!important;
+  transition-property:top,transform!important;
+  transition-duration:.18s,.22s!important;
+  transition-timing-function:cubic-bezier(.28,.02,.18,1)!important;
+}
+.held-card,.memory-box{visibility:hidden!important;}
+.held-card.has-value,.memory-box.has-value{visibility:visible!important;}
+.box-in-transit,.physical-hidden{visibility:hidden!important;opacity:1!important;transition:none!important;}
+.inbox-zone .value-box,.outbox-zone .value-box{animation:none!important;}
+.transfer-box,.copy-transfer-box{visibility:visible!important;opacity:1!important;animation:none!important;transition:none!important;will-change:transform;}
+
+/* COPYTO: no fade, no resize. The duplicate physically separates from the original. */
+.copy-source-active{filter:none!important;outline:2px dashed #f1df9b;outline-offset:4px;}
+.copy-transfer-box{filter:none!important;}
+.worker-wrap.copying .worker{animation:copyLeanV7 var(--copy-ms,700ms) cubic-bezier(.25,.1,.25,1) both!important;}
+.worker-wrap.copying .left-arm{animation:copyLeftV7 var(--copy-ms,700ms) cubic-bezier(.25,.1,.25,1) both!important;}
+.worker-wrap.copying .right-arm{animation:copyRightV7 var(--copy-ms,700ms) cubic-bezier(.25,.1,.25,1) both!important;}
+@keyframes copyLeanV7{0%{transform:translateY(0) rotate(0)}35%{transform:translateY(5px) rotate(-2deg)}68%{transform:translateY(5px) rotate(2deg)}100%{transform:translateY(0) rotate(0)}}
+@keyframes copyLeftV7{0%{transform:rotate(8deg)}35%{transform:rotate(34deg)}68%{transform:rotate(58deg)}100%{transform:rotate(8deg)}}
+@keyframes copyRightV7{0%{transform:rotate(-8deg)}35%{transform:rotate(-42deg)}68%{transform:rotate(-66deg)}100%{transform:rotate(-8deg)}}
+
+/* Arithmetic: boxes move only; they never fade or resize. */
+.math-stage-v6{width:250px;height:120px;overflow:visible;contain:layout style;}
+.math-stage-v6 .value-box{opacity:1!important;visibility:visible!important;animation:none!important;transition:none!important;will-change:transform;}
+.math-stage-v6 .math-symbol-v6,
+.math-stage-v6 .math-equals-v6{opacity:1!important;visibility:visible!important;transform:translate3d(-50%,-50%,0);animation:none!important;}
+.math-stage-v6 .math-symbol-v6{left:50%;top:50%;}
+.math-stage-v6 .math-equals-v6{left:50%;top:82%;font-size:19px;color:#4a4438;}
+.math-stage-v6 .math-equals-v6:not(.show-v6){visibility:hidden!important;}
+.math-stage-v6 .math-equals-v6.show-v6{visibility:visible!important;}
+.math-caption-v6{position:absolute;left:50%;top:-5px;transform:translateX(-50%);white-space:nowrap;font:800 11px "DM Mono";letter-spacing:.08em;color:#3f3a31;background:#d8cfb8;border:1px solid #756d5c;padding:4px 8px;box-shadow:2px 2px 0 #4d493f;}
+.math-value-changed-v6{animation:mathNodV7 .24s ease-in-out both!important;}
+@keyframes mathNodV7{0%{rotate:0deg}45%{rotate:-3deg}100%{rotate:0deg}}
+.math-source-active{animation:none!important;}
+.worker-wrap.calculating .worker-head{animation:calcHeadV7 .7s ease-in-out infinite alternate!important;}
+.worker-wrap.calculating .left-arm{animation:calcLeftV7 .7s ease-in-out infinite alternate!important;}
+.worker-wrap.calculating .right-arm{animation:calcRightV7 .7s ease-in-out infinite alternate!important;}
+@keyframes calcHeadV7{from{transform:rotate(-2deg) translateY(0)}to{transform:rotate(3deg) translateY(1px)}}
+@keyframes calcLeftV7{from{transform:rotate(18deg)}to{transform:rotate(44deg)}}
+@keyframes calcRightV7{from{transform:rotate(-18deg)}to{transform:rotate(-44deg)}}
+
+/* Normal pickup/place poses move the hand/box smoothly without opacity or scale pulses. */
+.worker-wrap.reaching .held-card{transition:top .24s cubic-bezier(.3,0,.2,1)!important;}
+.worker-wrap.placing .held-card{transition:top .24s cubic-bezier(.3,0,.2,1)!important;}
+.worker-wrap.walking .held-card.has-value{animation:carryBobStableV7 var(--bob-ms,320ms) ease-in-out infinite!important;}
+@keyframes carryBobStableV7{0%,100%{transform:translate3d(0,0,0)!important}50%{transform:translate3d(0,1px,0)!important}}
+
+/* v0.8 — single-owner physical boxes. No fades, no visibility transitions, no stacked WAAPI transforms. */
+.value-box,.held-card,.memory-box,.transfer-box,.copy-transfer-box{
+  transition:none!important;
+  animation:none;
+}
+.held-card,.memory-box{
+  opacity:1!important;
+  transform:translate3d(0,0,0)!important;
+}
+.held-card{visibility:hidden!important;top:72px!important;}
+.held-card.has-value{visibility:visible!important;}
+.memory-box{visibility:hidden!important;transform:translate3d(0,-2px,0)!important;}
+.memory-box.has-value{visibility:visible!important;}
+.box-in-transit,.physical-hidden{visibility:hidden!important;opacity:1!important;}
+.transfer-box,.copy-transfer-box{visibility:visible!important;opacity:1!important;transition:none!important;animation:none!important;}
+.worker-wrap.reaching .held-card{top:96px!important;transform:translate3d(0,0,0) rotate(-4deg)!important;}
+.worker-wrap.placing .held-card{top:102px!important;transform:translate3d(0,0,0) rotate(4deg)!important;}
+.worker-wrap.copying .held-card{top:78px!important;transform:translate3d(0,0,0) rotate(-2deg)!important;}
+.worker-wrap.walking .held-card.has-value{animation:carryBobStableV8 var(--bob-ms,320ms) ease-in-out infinite!important;}
+@keyframes carryBobStableV8{0%,100%{translate:0 0}50%{translate:0 1px}}
+/* The only intended duplication is COPYTO/COPYFROM/math; normal transfers always hide their source. */
+
+/* v0.9 — unified physical tile geometry + single visual owner */
+:root{--tile-w:62px;--tile-h:48px}
+.value-box,.held-card,.memory-box,.transfer-box,.copy-transfer-box,.math-stage-v8 .math-operand{
+  width:var(--tile-w)!important;
+  height:var(--tile-h)!important;
+  box-sizing:border-box!important;
+  border:2px solid #5c5546!important;
+  background:#e8d8af!important;
+  box-shadow:4px 4px 0 #3d3a32!important;
+  font:700 19px "DM Mono"!important;
+  line-height:1!important;
+  display:grid;
+  place-items:center;
+  opacity:1!important;
+  transition:none!important;
+  animation:none!important;
+}
+.output-box{background:#cfdfcf!important}
+.held-card{left:29px!important;top:72px!important}
+.memory-box{transform:translate3d(0,-2px,0)!important}
+.physical-parked{visibility:hidden!important;opacity:1!important;transition:none!important;animation:none!important}
+.transfer-box{position:fixed!important;margin:0!important;z-index:20000!important;pointer-events:none!important;transform-origin:center center!important;contain:layout paint style}
+.copy-transfer-box{outline:2px dashed #f1df9b;outline-offset:3px}
+.copy-source-active{outline:2px dashed #f1df9b;outline-offset:4px;filter:none!important}
+
+/* Keep body poses from changing the physical tile's geometry. */
+.worker-wrap.reaching .held-card,.worker-wrap.placing .held-card,.worker-wrap.copying .held-card{
+  width:var(--tile-w)!important;height:var(--tile-h)!important;
+}
+
+/* Arithmetic stage is intentionally only the two moving operands. */
+.math-stage-v8{position:fixed;z-index:20010;width:260px;height:126px;transform:translate(-50%,-50%);pointer-events:none;overflow:visible;contain:layout style}
+.math-stage-v8 .math-operand{position:absolute;left:50%;top:52px;margin-left:calc(var(--tile-w) / -2);margin-top:calc(var(--tile-h) / -2);will-change:transform}
+.math-symbol-v8{position:absolute;left:50%;top:52px;transform:translate(-50%,-50%);font:900 30px "DM Mono";color:#3e3b34;background:#d8cfb8;border:1px solid #756d5c;padding:2px 7px;z-index:-1}
+.math-equation-v8{position:absolute;left:50%;top:90px;transform:translateX(-50%);white-space:nowrap;font:800 13px "DM Mono";color:#38352f;background:#e6dcc2;border:1px solid #756d5c;padding:4px 8px;box-shadow:2px 2px 0 #4d493f}
+.math-caption-v8{position:absolute;left:50%;top:-4px;transform:translateX(-50%);white-space:nowrap;font:800 10px "DM Mono";letter-spacing:.1em;color:#3f3a31;background:#d8cfb8;border:1px solid #756d5c;padding:4px 8px}
+
+/* No incidental box bobbing/fades; movement belongs to worker or explicit transfer only. */
+.worker-wrap.walking .held-card.has-value{animation:none!important}
+.held-card,.held-card.has-value,.held-card:not(.has-value),.memory-box,.memory-box.has-value{
+  transform:none!important;opacity:1!important;transition:none!important
+}
+.held-card:not(.has-value),.memory-box:not(.has-value){visibility:hidden!important}
+.held-card.has-value,.memory-box.has-value{visibility:visible!important}
+.worker-wrap.reaching .held-card{top:72px!important;transform:none!important}
+.worker-wrap.placing .held-card{top:72px!important;transform:none!important}
+.worker-wrap.copying .held-card{top:72px!important;transform:none!important}
+
+@media(max-width:760px){:root{--tile-w:50px;--tile-h:42px}.value-box,.held-card,.memory-box,.transfer-box,.copy-transfer-box,.math-stage-v8 .math-operand{font-size:16px!important}}
+
+
+/* v1.0 — OUTBOX single-owner handoff. The anchor reserves geometry only; it is never a second box. */
+.outbox-drop-anchor{
+  width:var(--tile-w);
+  height:var(--tile-h);
+  flex:0 0 auto;
+  box-sizing:border-box;
+  visibility:hidden;
+  pointer-events:none;
+}
+
+/* v1.1 — ownership state must override every normal has-value rule. */
+.held-card.physical-parked,
+.memory-box.physical-parked,
+.value-box.physical-parked {
+  visibility:hidden!important;
+  opacity:1!important;
+}
+

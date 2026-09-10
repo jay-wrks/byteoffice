@@ -1,0 +1,348 @@
+/* v2.0 — one-piece physical carry rig.
+   The payload and its two visible clamps are siblings under one carry-rig,
+   so they can never drift out of phase. The old robot arm artwork is used for
+   reaching, placing and memory actions only; once ownership is established,
+   this mechanically linked cradle becomes the authoritative carry geometry. */
+.carry-rig{
+  position:absolute;
+  inset:0;
+  z-index:21;
+  pointer-events:none;
+  overflow:visible;
+  transform-origin:60px 100px;
+}
+.carry-rig .held-card{
+  z-index:22!important;
+}
+.carry-link{
+  display:none;
+  position:absolute;
+  top:66px;
+  width:12px;
+  height:34px;
+  border:3px solid #343b3d;
+  border-radius:7px;
+  background:linear-gradient(90deg,#9ea7a2,#d8d9cf 48%,#7e8985);
+  transform-origin:50% 4px;
+  z-index:24;
+  box-shadow:inset 1px 0 #e9e8dc;
+}
+.carry-link-left{left:36px;transform:rotate(17deg)}
+.carry-link-right{left:72px;transform:rotate(-17deg)}
+.carry-link-joint{
+  position:absolute;
+  left:1px;
+  top:-5px;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#66716e;
+  border:1px solid #343b3d;
+}
+.carry-edge-claw{
+  position:absolute;
+  left:-3px;
+  bottom:-10px;
+  width:13px;
+  height:13px;
+  border:2px solid #343b3d;
+  border-radius:6px;
+  background:#89928e;
+  z-index:28;
+}
+.carry-edge-claw i,.carry-edge-claw b{
+  position:absolute;
+  top:3px;
+  width:6px;
+  height:10px;
+  background:#a5ada9;
+  border:2px solid #343b3d;
+  border-radius:4px;
+}
+/* Fingers physically pinch the exact left/right walls of the 62px payload. */
+.carry-link-left .carry-edge-claw{left:-13px;bottom:-12px;transform:rotate(-17deg)}
+.carry-link-right .carry-edge-claw{left:6px;bottom:-12px;transform:rotate(17deg)}
+.carry-link-left .carry-edge-claw i{right:-1px;transform:translateX(1px) rotate(-4deg)}
+.carry-link-left .carry-edge-claw b{display:none}
+.carry-link-right .carry-edge-claw b{left:-1px;transform:translateX(-1px) rotate(4deg)}
+.carry-link-right .carry-edge-claw i{display:none}
+
+/* Only show the linked cradle when a real owned box exists. */
+.robot-wrap.has-held[data-grip="held"] .carry-link,
+.robot-wrap.has-held.walking.carrying .carry-link{display:block}
+
+/* The old independently animated arms are not allowed to compete with the
+   linked cradle during normal holding/walking. */
+.robot-wrap.has-held[data-grip="held"] .robot-arm,
+.robot-wrap.has-held.walking.carrying .robot-arm{
+  visibility:hidden!important;
+  animation:none!important;
+}
+
+/* One animation, one transform, one clock: box + both clamps + connector arms.
+   The payload has a tiny footstep inertia only while walking. */
+.robot-wrap.walking.carrying.has-held .carry-rig{
+  animation:carryRigGroundV20 var(--walk-ms,300ms) linear infinite!important;
+}
+.robot-wrap.walking.carrying.has-held .held-card.has-value,
+.robot-wrap.walking.carrying.has-held .carry-link{
+  animation:none!important;
+  translate:0 0!important;
+  rotate:0deg!important;
+}
+@keyframes carryRigGroundV20{
+  0%,50%,100%{transform:translate3d(0,0,0) rotate(0deg)}
+  7%{transform:translate3d(-.35px,-.55px,0) rotate(-.12deg)}
+  17%{transform:translate3d(.16px,-.14px,0) rotate(.05deg)}
+  57%{transform:translate3d(.35px,-.55px,0) rotate(.12deg)}
+  67%{transform:translate3d(-.16px,-.14px,0) rotate(-.05deg)}
+}
+
+/* Standing carry is rigid: no shake and no delayed arm recovery. */
+.robot-wrap.has-held:not(.walking)[data-grip="held"] .carry-rig{
+  animation:none!important;
+  transform:none!important;
+}
+
+/* Ensure action poses can use the real robot arms again while reaching toward
+   a source/destination. The linked cradle takes over only at held ownership. */
+.robot-wrap[data-grip="side"] .robot-arm,
+.robot-wrap[data-grip="memory"] .robot-arm,
+.robot-wrap[data-grip="copy-guide"] .robot-arm,
+.robot-wrap[data-grip="throw"] .robot-arm{visibility:visible!important}
+
+@media(max-width:760px){
+  .carry-link-left{left:36px}
+  .carry-link-right{left:72px}
+}
+
+/* v2.1 — physically coupled manipulation rig.
+   During any real box transfer, the box is the single source of truth. Two
+   telescopic manipulators are recalculated from the robot shoulders to the
+   exact left/right box walls every frame. There is no separate arm animation. */
+.robot-wrap{
+  --carry-center-x:29px; /* 62px tile => exact center at x=60 */
+  --carry-center-y:78px;
+}
+.robot-wrap .carry-rig .held-card{
+  width:62px!important;
+  height:48px!important;
+  box-sizing:border-box!important;
+}
+
+/* Clean, symmetrical standing/walking cradle. The links start at the real
+   shoulder locations and finish at the two side walls of the centered tile. */
+.carry-link{
+  top:66px!important;
+  width:12px!important;
+  height:37px!important;
+}
+.carry-link-left{left:32px!important;transform:rotate(14deg)!important}
+.carry-link-right{left:78px!important;transform:rotate(-14deg)!important}
+.carry-link-left .carry-edge-claw{
+  left:-10px!important;
+  bottom:-11px!important;
+  transform:rotate(-14deg)!important;
+}
+.carry-link-right .carry-edge-claw{
+  left:7px!important;
+  bottom:-11px!important;
+  transform:rotate(14deg)!important;
+}
+
+/* Temporary real-time manipulators used from first contact until final handoff. */
+.manip-tether{
+  position:fixed;
+  left:0;top:0;
+  height:11px;
+  width:10px;
+  z-index:20020;
+  pointer-events:none;
+  transform-origin:0 50%;
+  border:3px solid #343b3d;
+  border-radius:7px;
+  box-sizing:border-box;
+  background:linear-gradient(#d8d9cf,#9ea7a2 55%,#7e8985);
+  box-shadow:inset 0 1px #ecebdf;
+}
+.manip-tether::before{
+  content:"";
+  position:absolute;
+  left:-6px;top:50%;
+  width:11px;height:11px;
+  margin-top:-5.5px;
+  border-radius:50%;
+  background:#66716e;
+  border:2px solid #343b3d;
+  box-sizing:border-box;
+}
+.manip-clamp{
+  position:absolute;
+  right:-8px;top:50%;
+  width:14px;height:18px;
+  margin-top:-9px;
+  border:2px solid #343b3d;
+  border-radius:6px;
+  background:#89928e;
+  box-sizing:border-box;
+}
+.manip-tether.left .manip-clamp{transform:rotate(90deg) translateY(0)}
+.manip-tether.right .manip-clamp{transform:rotate(-90deg) translateY(0)}
+.manip-clamp::after{
+  content:"";
+  position:absolute;
+  left:3px;top:3px;
+  width:5px;height:10px;
+  border-radius:3px;
+  background:#b8bfba;
+  border:1px solid #343b3d;
+  box-sizing:border-box;
+}
+.robot-wrap.coupled-manipulation .robot-arm{
+  visibility:hidden!important;
+  animation:none!important;
+}
+/* Do not expose the standing cradle until the moving box has reached it. */
+.robot-wrap.coupled-manipulation .carry-link{display:none!important}
+
+/* v2.2 — ONE permanent pair of robot hands for every action.
+   v2.0/v2.1 introduced separate carry links and temporary manipulation hands.
+   They are retired completely. The original .robot-arm/.robot-claw pair is
+   now the only visible hand system for pickup, carry, walk and placement. */
+.carry-link,
+.manip-tether{display:none!important}
+
+/* Never hide/swap the original hands while Byte owns or manipulates a box. */
+.robot-wrap.has-held[data-grip="held"] .robot-arm,
+.robot-wrap.has-held.walking.carrying .robot-arm,
+.robot-wrap.coupled-manipulation .robot-arm,
+.robot-wrap.single-hand-coupled .robot-arm{
+  visibility:visible!important;
+}
+
+/* Live pickup/place coupling. These exact original arms aim at the moving
+   transfer tile; there is no second animation track and no duplicate claws. */
+.robot-wrap.single-hand-coupled .robot-arm{
+  animation:none!important;
+  transform:rotate(var(--live-arm-angle,0deg)) scaleY(var(--live-arm-scale,1))!important;
+  transform-origin:50% 4px!important;
+}
+.robot-wrap.single-hand-coupled .left-arm .robot-claw{
+  transform:rotate(-90deg)!important;
+  transform-origin:50% 50%!important;
+}
+.robot-wrap.single-hand-coupled .right-arm .robot-claw{
+  transform:rotate(90deg)!important;
+  transform-origin:50% 50%!important;
+}
+
+/* Normal owned carry: the SAME original hands settle onto the exact left and
+   right side walls of the centered 62x48 box. Geometry from current layout:
+   shoulders ~= (38,66)/(85,66), box side grips ~= (29,103)/(91,103). */
+.robot-wrap.has-held[data-grip="held"] .left-arm,
+.robot-wrap.walking.carrying.has-held .left-arm{
+  transform:rotate(13deg) scaleY(.80)!important;
+}
+.robot-wrap.has-held[data-grip="held"] .right-arm,
+.robot-wrap.walking.carrying.has-held .right-arm{
+  transform:rotate(-10deg) scaleY(.79)!important;
+}
+.robot-wrap.has-held[data-grip="held"] .left-arm .robot-claw,
+.robot-wrap.walking.carrying.has-held .left-arm .robot-claw{
+  transform:rotate(-90deg)!important;
+}
+.robot-wrap.has-held[data-grip="held"] .right-arm .robot-claw,
+.robot-wrap.walking.carrying.has-held .right-arm .robot-claw{
+  transform:rotate(90deg)!important;
+}
+
+/* The old carry-rig may still provide the payload's tiny gait inertia, but it
+   contains only the box now. Hands remain the original robot hands forever. */
+.robot-wrap.walking.carrying.has-held .left-arm,
+.robot-wrap.walking.carrying.has-held .right-arm{
+  animation:none!important;
+}
+
+/* v2.3 — restore meaningful OUTBOX placement using the same permanent hands.
+   During the live transfer, the JS computes both arm endpoints from the moving
+   box every frame. This class only supplies a subtle body reach; it never
+   animates the arms independently. */
+.robot-wrap.outbox-live-place .robot-body{
+  translate:3px 1px!important;
+  rotate:1.5deg!important;
+  transition:translate .12s ease,rotate .12s ease!important;
+}
+.robot-wrap.outbox-live-place .robot-head{
+  translate:2px 0!important;
+  rotate:1deg!important;
+  transition:translate .12s ease,rotate .12s ease!important;
+}
+.robot-wrap.outbox-live-place.single-hand-coupled .robot-arm{
+  animation:none!important;
+  visibility:visible!important;
+}
+
+/* v2.4 — polished OUTBOX, thought/calculation intro/outro, smooth gait. */
+.robot-wrap.outbox-live-place .robot-body{
+  translate:1px 0!important; rotate:.6deg!important;
+  transition:translate .18s cubic-bezier(.22,.8,.2,1),rotate .18s ease!important;
+}
+.robot-wrap.outbox-live-place .robot-head{
+  translate:1px 0!important; rotate:.35deg!important;
+  transition:translate .18s cubic-bezier(.22,.8,.2,1),rotate .18s ease!important;
+}
+/* Keep the single pair of hands visible and calm while presenting the box. */
+.robot-wrap.outbox-live-place .robot-claw i,
+.robot-wrap.outbox-live-place .robot-claw b{transform:rotate(1deg)!important}
+
+/* Smoother locomotion: one shared, soft gait clock. Shorter angular travel and
+   eased weight transfer remove the stiff 'windmill' feeling while preserving
+   the speed-coupled cadence computed by JS. */
+.robot-wrap.walking .left-leg,
+.robot-wrap.walking .right-leg{animation:robotSmoothStepV24 var(--walk-ms,300ms) cubic-bezier(.45,.05,.55,.95) infinite!important}
+.robot-wrap.walking .right-leg{animation-delay:calc(-1 * var(--half-walk-ms,150ms))!important}
+.robot-wrap.walking .left-leg .robot-foot,
+.robot-wrap.walking .right-leg .robot-foot{animation:robotSmoothFootV24 var(--walk-ms,300ms) cubic-bezier(.45,.05,.55,.95) infinite!important}
+.robot-wrap.walking .right-leg .robot-foot{animation-delay:calc(-1 * var(--half-walk-ms,150ms))!important}
+.robot-wrap.walking .robot-body{animation:robotSmoothBodyV24 var(--walk-ms,300ms) ease-in-out infinite!important}
+.robot-wrap.walking .robot-head{animation:robotSmoothHeadV24 var(--walk-ms,300ms) ease-in-out infinite!important}
+.robot-wrap.walking:not(.carrying) .left-arm{animation:robotSmoothArmV24 var(--walk-ms,300ms) ease-in-out infinite reverse!important}
+.robot-wrap.walking:not(.carrying) .right-arm{animation:robotSmoothArmV24 var(--walk-ms,300ms) ease-in-out infinite!important}
+@keyframes robotSmoothStepV24{
+  0%{transform:rotate(7deg) translateY(0)}
+  22%{transform:rotate(3deg) translateY(1px)}
+  48%{transform:rotate(-7deg) translateY(-1px)}
+  72%{transform:rotate(-3deg) translateY(-2px)}
+  100%{transform:rotate(7deg) translateY(0)}
+}
+@keyframes robotSmoothFootV24{
+  0%,24%{transform:translateX(calc(-.10 * var(--plant-px,18px))) rotate(1deg)}
+  48%{transform:translateX(calc(.08 * var(--plant-px,18px))) translateY(-2px) rotate(-4deg)}
+  72%{transform:translateX(calc(.16 * var(--plant-px,18px))) translateY(-1px) rotate(2deg)}
+  100%{transform:translateX(calc(-.10 * var(--plant-px,18px))) rotate(1deg)}
+}
+@keyframes robotSmoothBodyV24{0%,100%{translate:0 0;rotate:-.3deg}25%,75%{translate:0 -1px;rotate:0}50%{translate:0 -.4px;rotate:.3deg}}
+@keyframes robotSmoothHeadV24{0%,100%{translate:0 0;rotate:.15deg}50%{translate:0 -.7px;rotate:-.15deg}}
+@keyframes robotSmoothArmV24{0%,100%{transform:rotate(9deg)}50%{transform:rotate(-9deg)}}
+
+/* Fun thought bubble with a clear pop-in and pop-out. */
+.robot-thought{position:fixed;z-index:20040;pointer-events:none;opacity:0;transform:translate3d(-8px,8px,0) scale(.72);transform-origin:0 100%;transition:opacity .18s ease,transform .28s cubic-bezier(.2,1.35,.35,1)}
+.robot-thought.show{opacity:1;transform:translate3d(0,0,0) scale(1)}
+.robot-thought.hide{opacity:0;transform:translate3d(6px,-7px,0) scale(.82);transition:opacity .16s ease,transform .22s cubic-bezier(.4,0,1,1)}
+.thought-card{min-width:100px;max-width:160px;padding:7px 10px;background:#f1e5c4;border:2px solid #4d493f;border-radius:12px 12px 12px 4px;box-shadow:3px 4px 0 #35332d;font-family:"DM Mono";color:#35332d}
+.thought-card b{display:block;font-size:9px;letter-spacing:.12em;margin-bottom:2px;color:#7b4a3b}.thought-card span{font-size:12px;font-weight:800;white-space:nowrap}
+.thought-dot{position:absolute;border:2px solid #4d493f;background:#f1e5c4;border-radius:50%}.thought-dot.d1{width:9px;height:9px;left:-10px;bottom:-7px}.thought-dot.d2{width:6px;height:6px;left:-17px;bottom:-15px}
+.robot-thought-calc .thought-card b{color:#47706a}
+
+/* Calculation card has a playful machine-like intro/outro without fading the
+   physical number tiles themselves. */
+.math-stage-v8{opacity:0;scale:.82;translate:0 8px;transition:opacity .18s ease,scale .30s cubic-bezier(.2,1.3,.3,1),translate .30s cubic-bezier(.2,1.3,.3,1)}
+.math-stage-v8.math-enter{opacity:1;scale:1;translate:0 0}
+.math-stage-v8.math-exit{opacity:0;scale:.9;translate:0 -8px;transition:opacity .17s ease,scale .22s ease-in,translate .22s ease-in}
+.math-stage-v8.math-enter .math-symbol-v8{animation:mathSymbolPopV24 .48s cubic-bezier(.2,1.5,.3,1) both}
+.math-stage-v8.math-enter .math-caption-v8{animation:mathCaptionV24 .45s cubic-bezier(.2,1.3,.3,1) both}
+.math-stage-v8.math-enter .math-equation-v8{animation:mathEquationV24 .55s .08s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes mathSymbolPopV24{0%{transform:translate(-50%,-50%) scale(.2) rotate(-16deg)}70%{transform:translate(-50%,-50%) scale(1.12) rotate(3deg)}100%{transform:translate(-50%,-50%) scale(1) rotate(0)}}
+@keyframes mathCaptionV24{0%{transform:translateX(-50%) translateY(-8px) scale(.8)}100%{transform:translateX(-50%) translateY(0) scale(1)}}
+@keyframes mathEquationV24{0%{transform:translateX(-50%) translateY(7px) scale(.86)}100%{transform:translateX(-50%) translateY(0) scale(1)}}
+
