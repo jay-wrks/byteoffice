@@ -1,7 +1,11 @@
 (function(){
   'use strict';
 
-  const MONACO='https://cdn.jsdelivr.net/npm/monaco-editor@0.56.0/min/vs';
+  // Monaco 0.56.0's minified AMD loader references optional min-maps files
+  // that are not exposed by the CDN package, which produces noisy 404 source
+  // map warnings in Firefox. The dev AMD build has the same editor/runtime
+  // features and avoids that broken source-map request.
+  const MONACO='https://cdn.jsdelivr.net/npm/monaco-editor@0.56.0/dev/vs';
   let editor=null, model=null, textarea=null, decorations=[], loading=null;
 
   function loadMonaco(){
@@ -19,7 +23,9 @@
       };
       if(typeof window.require==='function') return start();
       const s=document.createElement('script');
-      s.src=MONACO+'/loader.js'; s.onload=start; s.onerror=()=>reject(new Error('Failed to load Monaco Editor.'));
+      s.src=MONACO+'/loader.js';
+      s.onload=start;
+      s.onerror=()=>reject(new Error('Failed to load Monaco Editor.'));
       document.head.appendChild(s);
     });
     return loading;
@@ -78,24 +84,41 @@
   function chrome(){
     return `<div class="byte-ide">
       <div class="byte-ide-titlebar"><div class="byte-ide-project"><span class="java-dot">J</span><b>ByteOffice</b><small>›</small><span>src</span><small>›</small><span>Program.java</span></div><div class="byte-ide-title-actions"><button class="byte-ide-iconbtn" id="ideFind" title="Find">⌕</button><button class="byte-ide-iconbtn" id="ideCommand" title="Command Palette">⌘</button></div></div>
-      <div class="byte-ide-tabbar"><div class="byte-ide-tab active" id="ideFileTab">Program.java<span class="dirty"></span></div></div>
-      <div class="byte-ide-main"><div class="byte-ide-stripe"><button class="active">Project</button><button>Problems</button></div><div class="byte-ide-editorwrap"><div id="byteMonaco" class="byte-monaco"></div><div id="byteIdeLoading" class="byte-ide-loading">Loading Java IDE…</div></div></div>
-      <div class="byte-ide-status"><span id="ideRuntimeState" class="ready">Java</span><div class="byte-ide-breadcrumb"><span>Program</span><i>›</i><span>program(ByteBot bot)</span></div><span class="spacer"></span><span id="ideCursor">Ln 1, Col 1</span><span>Spaces: 4</span><span>UTF-8</span><kbd>Java 8</kbd></div>
+      <div class="byte-ide-tabbar"><div class="byte-ide-tab active" id="ideFileTab"><span class="java-file-icon">J</span><span>Program.java</span></div></div>
+      <div class="byte-ide-breadcrumb"><span>ByteOffice</span><i>›</i><span>src</span><i>›</i><span>Program.java</span><i>›</i><b>program(ByteBot bot)</b></div>
+      <div class="byte-monaco-wrap"><div id="byteMonaco" class="byte-monaco"></div><div id="byteIdeLoading" class="byte-ide-loading">Loading Java IDE…</div></div>
+      <div class="byte-ide-status"><span>ByteOffice Java IDE</span><span id="ideCursor">Ln 1, Col 1</span><span>Spaces: 4</span><span>UTF-8</span><span>Java 8</span></div>
     </div>`;
   }
 
-  function validate(m){
-    if(!model) return;
-    const src=model.getValue(), lines=src.split(/\r?\n/), markers=[];
-    if(!/\bclass\s+Program\b/.test(src)) markers.push({severity:m.MarkerSeverity.Error,message:'Required class Program is missing.',startLineNumber:1,startColumn:1,endLineNumber:1,endColumn:2});
-    if(!/\bvoid\s+program\s*\(\s*ByteBot\s+bot\s*\)/.test(src)) markers.push({severity:m.MarkerSeverity.Error,message:'ByteOffice requires: public void program(ByteBot bot)',startLineNumber:1,startColumn:1,endLineNumber:1,endColumn:Math.max(2,(lines[0]||'').length+1)});
-    let depth=0;
-    lines.forEach((line,i)=>{for(let j=0;j<line.length;j++){if(line[j]==='{')depth++;else if(line[j]==='}')depth--;if(depth<0){markers.push({severity:m.MarkerSeverity.Error,message:'Unexpected closing brace.',startLineNumber:i+1,startColumn:j+1,endLineNumber:i+1,endColumn:j+2});depth=0;}}});
-    if(depth>0){const i=lines.length;markers.push({severity:m.MarkerSeverity.Error,message:'Missing closing brace.',startLineNumber:i,startColumn:Math.max(1,(lines[i-1]||'').length),endLineNumber:i,endColumn:(lines[i-1]||'').length+1});}
-    m.editor.setModelMarkers(model,'byteoffice-live',markers);
+  function syncToLegacy(value){
+    if(!textarea) return;
+    textarea.value=value;
+    textarea.dispatchEvent(new Event('input',{bubbles:true}));
+    document.querySelector('#ideFileTab')?.classList.add('modified');
   }
 
-  async function mount(){
+  function structuralMarkers(monaco,source){
+    const markers=[];
+    const lines=source.split(/\r?\n/);
+    if(!/\bclass\s+Program\b/.test(source)) markers.push({severity:monaco.MarkerSeverity.Error,message:'Required class Program is missing.',startLineNumber:1,startColumn:1,endLineNumber:1,endColumn:2});
+    if(!/\bvoid\s+program\s*\(\s*ByteBot\s+bot\s*\)/.test(source)){
+      const ln=Math.max(1,lines.findIndex(x=>/class\s+Program/.test(x))+1);
+      markers.push({severity:monaco.MarkerSeverity.Error,message:'ByteOffice requires: public void program(ByteBot bot)',startLineNumber:ln,startColumn:1,endLineNumber:ln,endColumn:Math.max(2,(lines[ln-1]||'').length+1)});
+    }
+    let depth=0;
+    for(let i=0;i<lines.length;i++){
+      for(let j=0;j<lines[i].length;j++){
+        if(lines[i][j]==='{') depth++;
+        else if(lines[i][j]==='}') depth--;
+        if(depth<0){markers.push({severity:monaco.MarkerSeverity.Error,message:'Unexpected closing brace.',startLineNumber:i+1,startColumn:j+1,endLineNumber:i+1,endColumn:j+2});depth=0;}
+      }
+    }
+    if(depth>0){const i=lines.length;markers.push({severity:monaco.MarkerSeverity.Error,message:`${depth} closing brace${depth===1?' is':'s are'} missing.`,startLineNumber:i,startColumn:Math.max(1,lines[i-1].length),endLineNumber:i,endColumn:lines[i-1].length+1});}
+    monaco.editor.setModelMarkers(model,'byteoffice-live',markers);
+  }
+
+  async function mountEditor(){
     const host=document.querySelector('#programList');
     if(!host) return;
     textarea=host.querySelector('#javaEditor');
@@ -103,47 +126,59 @@
     const initial=textarea.value;
     textarea.style.display='none';
     host.insertAdjacentHTML('beforeend',chrome());
-
-    const m=await loadMonaco();
-    defineTheme(m); registerCompletions(m);
-    model=m.editor.createModel(initial,'java',m.Uri.parse('inmemory://byteoffice/Program.java'));
-    editor=m.editor.create(document.querySelector('#byteMonaco'),{
-      model,theme:'byteoffice-darcula',automaticLayout:true,fontSize:13,lineHeight:21,fontFamily:'JetBrains Mono, Menlo, Monaco, Consolas, monospace',fontLigatures:true,
-      tabSize:4,insertSpaces:true,detectIndentation:false,wordWrap:'off',smoothScrolling:true,minimap:{enabled:true,showSlider:'mouseover'},scrollBeyondLastLine:false,
+    const monaco=await loadMonaco();
+    defineTheme(monaco);registerCompletions(monaco);
+    model=monaco.editor.createModel(initial,'java',monaco.Uri.parse('inmemory://byteoffice/Program.java'));
+    editor=monaco.editor.create(document.querySelector('#byteMonaco'),{
+      model,theme:'byteoffice-darcula',automaticLayout:true,fontSize:13,fontFamily:'JetBrains Mono, Menlo, Monaco, Consolas, monospace',fontLigatures:true,
+      lineHeight:21,letterSpacing:.1,tabSize:4,insertSpaces:true,detectIndentation:false,wordWrap:'off',smoothScrolling:true,
+      minimap:{enabled:true,side:'right',showSlider:'mouseover',scale:1},scrollBeyondLastLine:false,padding:{top:10,bottom:18},
       folding:true,foldingHighlight:true,showFoldingControls:'mouseover',bracketPairColorization:{enabled:true},guides:{bracketPairs:true,indentation:true,highlightActiveIndentation:true},
       renderLineHighlight:'all',renderWhitespace:'selection',cursorBlinking:'smooth',cursorSmoothCaretAnimation:'on',stickyScroll:{enabled:true,maxLineCount:3},
-      quickSuggestions:{other:true,comments:false,strings:false},suggestOnTriggerCharacters:true,parameterHints:{enabled:true},formatOnPaste:true,overviewRulerLanes:2,
-      glyphMargin:true,lineNumbersMinChars:3,contextmenu:true,find:{addExtraSpaceOnTop:false},padding:{top:10,bottom:18}
+      quickSuggestions:{other:true,comments:false,strings:false},suggestOnTriggerCharacters:true,parameterHints:{enabled:true},formatOnPaste:true,
+      overviewRulerLanes:2,overviewRulerBorder:false,glyphMargin:true,lineNumbersMinChars:3,contextmenu:true,links:false,
+      find:{addExtraSpaceOnTop:false,autoFindInSelection:'never'},lightbulb:{enabled:'on'},occurrencesHighlight:'singleFile',selectionHighlight:true
     });
     document.querySelector('#byteIdeLoading')?.classList.add('hidden');
-    validate(m);
+    structuralMarkers(monaco,initial);
 
-    model.onDidChangeContent(()=>{
-      textarea.value=model.getValue();
-      textarea.dispatchEvent(new Event('input',{bubbles:true}));
-      document.querySelector('#ideFileTab')?.classList.add('modified');
-      validate(m);
+    editor.onDidChangeModelContent(()=>{
+      const value=model.getValue();syncToLegacy(value);structuralMarkers(monaco,value);
     });
     editor.onDidChangeCursorPosition(e=>{const el=document.querySelector('#ideCursor');if(el)el.textContent=`Ln ${e.position.lineNumber}, Col ${e.position.column}`;});
+    editor.onDidFocusEditorText(()=>document.querySelector('#ideFileTab')?.classList.remove('modified'));
     document.querySelector('#ideFind')?.addEventListener('click',()=>editor.getAction('actions.find')?.run());
     document.querySelector('#ideCommand')?.addEventListener('click',()=>editor.getAction('editor.action.quickCommand')?.run());
 
     window.ByteOfficeIDE={
       editor,model,
-      focus(){editor.focus();},getValue(){return model.getValue();},
+      focus(){editor.focus();},
+      getValue(){return model.getValue();},
       setValue(v){if(model.getValue()!==v)model.setValue(v);},
-      highlightLine(line){if(!Number.isFinite(+line)||+line<1)return;decorations=editor.deltaDecorations(decorations,[{range:new m.Range(+line,1,+line,1),options:{isWholeLine:true,className:'byte-active-exec-line',glyphMarginClassName:'byte-active-exec-glyph'}}]);editor.revealLineInCenterIfOutsideViewport(+line);},
+      revealLine(line){editor.revealLineInCenterIfOutsideViewport(line);},
+      highlightLine(line){
+        decorations=editor.deltaDecorations(decorations,[{range:new monaco.Range(line,1,line,1),options:{isWholeLine:true,className:'byte-active-exec-line',glyphMarginClassName:'byte-active-exec-glyph'}}]);
+        editor.revealLineInCenterIfOutsideViewport(line);
+      },
       clearExecution(){decorations=editor.deltaDecorations(decorations,[]);}
     };
   }
 
-  function dispose(){if(editor)editor.dispose();if(model)model.dispose();editor=null;model=null;textarea=null;window.ByteOfficeIDE=null;}
-
   const oldRender=window.renderProgram;
-  if(typeof oldRender==='function') window.renderProgram=function(){dispose();oldRender.apply(this,arguments);queueMicrotask(()=>mount().catch(err=>{console.error('ByteOffice IDE failed:',err);const ta=document.querySelector('#javaEditor');if(ta)ta.style.display='block';}));};
+  if(typeof oldRender==='function'){
+    window.renderProgram=function(){
+      if(editor){editor.dispose();model?.dispose();editor=null;model=null;window.ByteOfficeIDE=null;}
+      oldRender.apply(this,arguments);
+      queueMicrotask(()=>mountEditor().catch(err=>{console.error('ByteOffice IDE failed:',err);const host=document.querySelector('#programList');if(host){const ta=host.querySelector('#javaEditor');if(ta)ta.style.display='block';}}));
+    };
+  }
 
   const oldHighlight=window.highlightLine;
-  window.highlightLine=function(line){if(typeof oldHighlight==='function')oldHighlight(line);window.ByteOfficeIDE?.highlightLine(Number(line));};
+  window.highlightLine=function(line){
+    if(typeof oldHighlight==='function') oldHighlight(line);
+    const n=Number(line);
+    if(window.ByteOfficeIDE&&Number.isFinite(n)&&n>0) window.ByteOfficeIDE.highlightLine(n);
+  };
 
-  if(document.querySelector('#javaEditor')) mount().catch(console.error);
+  if(document.querySelector('#javaEditor')) mountEditor().catch(console.error);
 })();
