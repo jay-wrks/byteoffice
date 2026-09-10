@@ -90,8 +90,9 @@
 .java-api-tray .tray-head{min-height:27px!important}
 .java-api-tray .tray-title{font-size:9px!important;line-height:1!important;margin:0!important}
 .java-api-tray .tray-subtitle{display:none!important}
-.java-api-tray .command-palette{display:none!important}
-.java-api-tray.tray-open,.java-api-tray.open{max-height:210px!important;overflow:auto!important}
-.java-api-tray.tray-open .command-palette,.java-api-tray.open .command-palette{display:grid!important}
+.java-api-tray.collapsed{max-height:42px!important;overflow:hidden!important}
+.java-api-tray.collapsed .command-palette{display:none!important}
+.java-api-tray:not(.collapsed){max-height:210px!important;overflow:auto!important}
+.java-api-tray:not(.collapsed) .command-palette{display:grid!important}
 .java-api-tray .command-tray-toggle{width:26px!important;height:24px!important}
 .java-program-panel .monaco-editor .view-lines{font-size:13px!important}
