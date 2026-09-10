@@ -30,6 +30,12 @@
     return `<button type="button" class="byte-ide-tab ${active?'active':''} ${extra}" data-ide-workspace="${slot}" role="tab" aria-selected="${active?'true':'false'}"><span>${label}</span><i class="dirty" aria-hidden="true"></i></button>`;
   }
 
+  function resetBeforeWorkspaceChange(){
+    window.stopRun?.();
+    window.ByteOfficeExecutionHighlight?.clear?.();
+    window.resetMachine?.(false);
+  }
+
   function renderIdeTabs(){
     const bar=document.querySelector('.byte-ide-tabbar');
     if(!bar) return;
@@ -83,6 +89,7 @@
   }
 
   window.switchWorkspace=function(next){
+    resetBeforeWorkspaceChange();
     if(next==='answer') return enterAnswer();
     return returnToDraft(next);
   };
