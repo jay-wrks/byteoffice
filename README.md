@@ -79,3 +79,5 @@ ByteOffice/
 ## Important
 
 The stylesheet and script order in `index.html` is deliberate. The game uses classic scripts so the split files continue to share the same global lexical environment as the original monolithic build.
+
+<!-- test_byte write-access verified for redesign work -->
