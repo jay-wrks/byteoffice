@@ -49,9 +49,7 @@
   <!-- Keep compiler loading same-origin: redirects the old Maven URL to java/tools.jar. -->
   <script src="js/java/local-compiler-fetch.js"></script>
 
-  <!-- Full Java source mode. Must load after legacy helpers and before bindings. -->
-  <script src="js/java/java-mode.js"></script>
-  <script src="js/java/java-ui.js"></script>
-  <script src="js/app/bindings.js"></script>
+  <!-- Bootstrap patches CheerpOS' flat /str paths, then loads Java UI + bindings in order. -->
+  <script src="js/java/java-mode-bootstrap.js"></script>
 </body>
 </html>
