@@ -1,11 +1,8 @@
 (function(){
   'use strict';
 
-  // Monaco 0.56.0's minified AMD loader references optional min-maps files
-  // that are not exposed by the CDN package, which produces noisy 404 source
-  // map warnings in Firefox. The dev AMD build has the same editor/runtime
-  // features and avoids that broken source-map request.
-  const MONACO='https://cdn.jsdelivr.net/npm/monaco-editor@0.56.0/dev/vs';
+  // Monaco is vendored into the repository so the IDE does not depend on a CDN.
+  const MONACO='libs/monaco/vs';
   let editor=null, model=null, textarea=null, decorations=[], loading=null;
 
   function loadMonaco(){
@@ -13,7 +10,7 @@
     if(loading) return loading;
     loading=new Promise((resolve,reject)=>{
       const start=()=>{
-        if(typeof window.require!=='function') return reject(new Error('Monaco loader unavailable.'));
+        if(typeof window.require!=='function') return reject(new Error('Local Monaco loader unavailable.'));
         window.require.config({paths:{vs:MONACO}});
         window.MonacoEnvironment={getWorkerUrl(){
           const src=`self.MonacoEnvironment={baseUrl:'${MONACO}/'};importScripts('${MONACO}/base/worker/workerMain.js');`;
@@ -25,7 +22,7 @@
       const s=document.createElement('script');
       s.src=MONACO+'/loader.js';
       s.onload=start;
-      s.onerror=()=>reject(new Error('Failed to load Monaco Editor.'));
+      s.onerror=()=>reject(new Error('Failed to load local Monaco Editor from libs/monaco.'));
       document.head.appendChild(s);
     });
     return loading;
@@ -130,7 +127,7 @@
     defineTheme(monaco);registerCompletions(monaco);
     model=monaco.editor.createModel(initial,'java',monaco.Uri.parse('inmemory://byteoffice/Program.java'));
     editor=monaco.editor.create(document.querySelector('#byteMonaco'),{
-      model,theme:'byteoffice-darcula',automaticLayout:true,fontSize:13,fontFamily:'JetBrains Mono, Menlo, Monaco, Consolas, monospace',fontLigatures:true,
+      model,theme:'byteoffice-darcula',automaticLayout:true,fontSize:13,fontFamily:'DM Mono, Menlo, Monaco, Consolas, monospace',fontLigatures:false,
       lineHeight:21,letterSpacing:.1,tabSize:4,insertSpaces:true,detectIndentation:false,wordWrap:'off',smoothScrolling:true,
       minimap:{enabled:true,side:'right',showSlider:'mouseover',scale:1},scrollBeyondLastLine:false,padding:{top:10,bottom:18},
       folding:true,foldingHighlight:true,showFoldingControls:'mouseover',bracketPairColorization:{enabled:true},guides:{bracketPairs:true,indentation:true,highlightActiveIndentation:true},
