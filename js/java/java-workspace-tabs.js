@@ -5,32 +5,11 @@
   const originalSaveSettings=window.saveSettings;
 
   function javaAnswerSource(){
-    const answer=(typeof level==='function' && level()?.answer) || [];
-    const nextPc=i=>i+1<answer.length ? String(i+1) : '-1';
-    const line=(ins,i)=>{
-      const next=nextPc(i), arg=Number(ins.arg);
-      switch(ins.op){
-        case 'READ': return `                bot.take(); pc = ${next}; break;`;
-        case 'WRITE': return `                bot.send(); pc = ${next}; break;`;
-        case 'STORE': return `                bot.copyTo(${arg}); pc = ${next}; break;`;
-        case 'LOAD': return `                bot.copyFrom(${arg}); pc = ${next}; break;`;
-        case 'PLACE': return `                bot.place(${arg}); pc = ${next}; break;`;
-        case 'TAKE': return `                bot.pick(${arg}); pc = ${next}; break;`;
-        case 'ADD': return `                bot.add(${arg}); pc = ${next}; break;`;
-        case 'SUB': return `                bot.subtract(${arg}); pc = ${next}; break;`;
-        case 'JUMP': return `                pc = ${arg}; break;`;
-        case 'JNEG': return `                pc = bot.isNegative() ? ${arg} : ${next}; break;`;
-        case 'JZERO': return `                pc = bot.isZero() ? ${arg} : ${next}; break;`;
-        default: return `                pc = ${next}; break;`;
-      }
-    };
+    const id=typeof level==='function' ? Number(level()?.id) : -1;
+    const source=window.BYTE_JAVA_SOLUTIONS?.[id];
+    if(typeof source==='string' && source.trim()) return source;
 
-    if(!answer.length){
-      return `import byteoffice.ByteBot;\n\npublic class Program {\n    public void program(ByteBot bot) {\n        // No official answer is available for this level.\n    }\n}\n`;
-    }
-
-    const cases=answer.map((ins,i)=>`            case ${i}:\n${line(ins,i)}`).join('\n');
-    return `import byteoffice.ByteBot;\n\npublic class Program {\n    public void program(ByteBot bot) {\n        // Official ByteOffice solution — generated from the canonical machine program.\n        int pc = 0;\n        while (pc >= 0) {\n            switch (pc) {\n${cases}\n                default:\n                    return;\n            }\n        }\n    }\n}\n`;
+    return `import byteoffice.ByteBot;\n\npublic class Program {\n    public void program(ByteBot bot) {\n        // No authored Java answer is available for this level.\n    }\n}\n`;
   }
 
   function setJavaAnswerControls(on){
