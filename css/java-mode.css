@@ -1,0 +1,35 @@
+.java-program-panel{--java-ink:#1e293b;--java-muted:#64748b;--java-line:#d6dde7;--java-surface:#fbfcfe;--java-code:#111827;--java-code-soft:#1f2937;min-width:0}
+.java-program-panel .program-header{gap:14px}
+.java-header-actions{display:flex;align-items:center;gap:9px}
+.java-version-badge{display:inline-flex;align-items:center;justify-content:center;min-height:28px;padding:0 9px;border:1px solid rgba(30,41,59,.14);border-radius:8px;background:rgba(255,255,255,.64);font-size:11px;font-weight:900;letter-spacing:.08em;color:#334155}
+.java-editor-toolbar{flex-wrap:wrap;row-gap:7px}
+.java-editor-toolbar .editor-tip{flex:1 1 100%;white-space:normal;line-height:1.35}
+.java-program-list{position:relative!important;padding:0!important;overflow:hidden!important;min-height:300px;background:#111827!important;border-color:rgba(15,23,42,.28)!important}
+.java-editor-shell{height:100%;min-height:300px;display:grid;grid-template-rows:auto minmax(0,1fr);background:#111827;color:#e5e7eb;border-radius:inherit;overflow:hidden}
+.java-editor-topline{height:34px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 11px 0 14px;border-bottom:1px solid rgba(255,255,255,.08);background:#172033;font:700 11px/1 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;letter-spacing:.03em;color:#cbd5e1}
+.java-runtime-pill{display:inline-flex;align-items:center;max-width:56%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:4px 7px;border-radius:999px;background:rgba(148,163,184,.12);color:#cbd5e1;font-size:9px;text-transform:uppercase;letter-spacing:.08em}
+.java-runtime-pill[data-kind="ready"],.java-runtime-pill[data-kind="success"]{background:rgba(34,197,94,.13);color:#86efac}
+.java-runtime-pill[data-kind="loading"],.java-runtime-pill[data-kind="working"]{background:rgba(59,130,246,.15);color:#93c5fd}
+.java-runtime-pill[data-kind="paused"]{background:rgba(245,158,11,.15);color:#fcd34d}
+.java-runtime-pill[data-kind="error"]{background:rgba(239,68,68,.16);color:#fca5a5}
+.java-editor-body{position:relative;display:grid;grid-template-columns:48px minmax(0,1fr);min-height:0;height:100%;background:#111827}
+.java-line-numbers{margin:0;padding:14px 7px 36px 0;overflow:hidden;user-select:none;text-align:right;border-right:1px solid rgba(255,255,255,.07);background:#0d1422;color:#64748b;font:500 13px/21px ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}
+.java-line-numbers span{display:block;height:21px;padding-right:5px;border-radius:4px;transition:background .14s ease,color .14s ease,transform .14s ease}
+.java-line-numbers span.active-java-line{background:rgba(59,130,246,.2);color:#bfdbfe;font-weight:800;transform:translateX(2px)}
+.java-editor{box-sizing:border-box;display:block;width:100%;height:100%;min-height:300px;margin:0;padding:14px 16px 40px;border:0;outline:0;resize:none;overflow:auto;background:#111827;color:#e5edf8;caret-color:#93c5fd;tab-size:4;font:500 13px/21px ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;white-space:pre}
+.java-editor::selection{background:rgba(59,130,246,.34)}
+.java-editor:focus{box-shadow:inset 0 0 0 1px rgba(96,165,250,.26)}
+.java-api-tray{max-height:235px}
+.java-api-tray .tray-head{align-items:flex-start}
+.java-api-tray .tray-title{margin-bottom:3px}
+.tray-subtitle{max-width:460px;font-size:10px;line-height:1.35;color:var(--muted,#64748b)}
+.java-api-palette{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px!important;overflow:auto;padding-right:2px}
+.java-api-card{min-width:0!important;text-align:left!important;padding:8px 9px!important;display:grid!important;gap:3px!important;align-content:start!important}
+.java-api-card strong{font:800 11px/1.25 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace!important;letter-spacing:0!important;text-transform:none!important;overflow-wrap:anywhere}
+.java-api-card span{font-size:9px!important;line-height:1.35!important;opacity:.78}
+.java-api-card:hover{transform:translateY(-1px)}
+.java-api-tray.collapsed .java-api-palette,.java-api-tray.collapsed .tray-subtitle{display:none!important}
+.java-api-tray.collapsed{max-height:none}
+.java-program-panel.answer-mode .java-editor{pointer-events:auto;opacity:1}
+@media(max-width:1180px){.java-api-palette{grid-template-columns:1fr}.java-editor-toolbar .editor-tip{display:none}}
+@media(max-width:760px){.java-editor-body{grid-template-columns:38px minmax(0,1fr)}.java-line-numbers,.java-editor{font-size:12px;line-height:20px}.java-line-numbers span{height:20px}.java-editor{padding-left:11px}.java-version-badge{display:none}}
