@@ -1,19 +1,26 @@
 (function(){
   'use strict';
 
+  const ASSET_VERSION='20260911-0022';
+
+  function versioned(src){
+    return src + (src.includes('?')?'&':'?') + 'v=' + encodeURIComponent(ASSET_VERSION);
+  }
+
   async function loadClassicScript(src){
+    const url=versioned(src);
     await new Promise((resolve,reject)=>{
       const script=document.createElement('script');
-      script.src=src;
+      script.src=url;
       script.onload=resolve;
-      script.onerror=()=>reject(new Error(`Failed to load ${src}`));
+      script.onerror=()=>reject(new Error(`Failed to load ${url}`));
       document.body.appendChild(script);
     });
   }
 
   async function boot(){
     try{
-      const response=await fetch('js/java/java-mode.js',{cache:'no-store'});
+      const response=await fetch(versioned('js/java/java-mode.js'),{cache:'no-store'});
       if(!response.ok) throw new Error(`Could not load Java mode (${response.status})`);
       let source=await response.text();
 
@@ -21,10 +28,8 @@
         .replaceAll('/str/byteoffice/ByteBot.java','/str/ByteBot.java')
         .replaceAll('/str/byteoffice/GameRunner.java','/str/GameRunner.java');
 
-      (0,eval)(source+'\n//# sourceURL=js/java/java-mode.patched.js');
+      (0,eval)(source+'\n//# sourceURL=js/java/java-mode.patched.js?v='+ASSET_VERSION);
 
-      // Monaco provides the IDE behavior; the following theme layer makes it
-      // visually part of ByteOffice's paper/factory world instead of a generic IDE.
       await loadClassicScript('js/java/intellij-editor.js');
       await loadClassicScript('js/java/byteoffice-monaco-theme.js');
       await loadClassicScript('js/java/java-ui.js');
