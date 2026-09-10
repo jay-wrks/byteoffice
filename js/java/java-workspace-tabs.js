@@ -3,6 +3,23 @@
 
   const originalSwitchWorkspace=window.switchWorkspace;
   const originalSaveSettings=window.saveSettings;
+  let savedTransitionSpeed=null;
+
+  function setTransitionSpeedMax(){
+    const speed=document.querySelector('#speedRange');
+    if(!speed||savedTransitionSpeed!==null) return;
+    savedTransitionSpeed=speed.value;
+    speed.value=speed.max||'8';
+    window.refreshSpeedControl?.();
+  }
+
+  function restoreTransitionSpeed(){
+    const speed=document.querySelector('#speedRange');
+    if(!speed||savedTransitionSpeed===null) return;
+    speed.value=savedTransitionSpeed;
+    savedTransitionSpeed=null;
+    window.refreshSpeedControl?.();
+  }
 
   function javaAnswerSource(){
     const id=typeof level==='function' ? Number(level()?.id) : -1;
@@ -32,6 +49,7 @@
 
   async function resetBeforeWorkspaceChange(){
     document.querySelector('.java-program-panel')?.classList.add('byte-workspace-switching');
+    setTransitionSpeedMax();
     const pending=window.stopRun?.();
     window.ByteOfficeExecutionHighlight?.clear?.();
     if(pending&&typeof pending.then==='function') await pending;
@@ -135,6 +153,8 @@
   document.addEventListener('click',e=>{
     if(e.target.closest('#copyAnswerBtn')) copyAnswerToDraft();
   });
+
+  window.addEventListener('byteoffice-ide-ready',restoreTransitionSpeed);
 
   const host=document.querySelector('#programList');
   if(host){
