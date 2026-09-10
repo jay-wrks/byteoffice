@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const ASSET_VERSION='20260911-0061';
+  const ASSET_VERSION='20260911-0062';
 
   function versioned(src){
     return src + (src.includes('?')?'&':'?') + 'v=' + encodeURIComponent(ASSET_VERSION);
