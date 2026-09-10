@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const ASSET_VERSION='20260911-0022';
+  const ASSET_VERSION='20260911-0048';
 
   function versioned(src){
     return src + (src.includes('?')?'&':'?') + 'v=' + encodeURIComponent(ASSET_VERSION);
@@ -32,6 +32,7 @@
 
       await loadClassicScript('js/java/intellij-editor.js');
       await loadClassicScript('js/java/byteoffice-monaco-theme.js');
+      await loadClassicScript('js/java/ide-layout-controls.js');
       await loadClassicScript('js/java/java-ui.js');
       await loadClassicScript('js/app/bindings.js');
     }catch(err){
