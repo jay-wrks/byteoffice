@@ -222,7 +222,6 @@
         if(!Number.isInteger(n)||n<1){ return; }
         if(!editor||!model||!count){ pendingExecutionLine=n; return; }
         if(n>count) return;
-        decorations=editor.deltaDecorations(decorations,[{range:new monaco.Range(n,1,n,1),options:{isWholeLine:true,className:'byte-active-exec-line',glyphMarginClassName:'byte-active-exec-glyph'}}]);
         const firstExecutionLine=executionMarkerLine<1;
         executionMarkerLine=n;
         positionExecutionMarker(n,!firstExecutionLine);
@@ -245,7 +244,7 @@
           scrollAnimation=requestAnimationFrame(animateScroll);
         }
       },
-      clearExecution(){cancelAnimationFrame(scrollAnimation);decorations=editor.deltaDecorations(decorations,[]);executionMarkerLine=-1;if(executionMarker){executionMarker.hidden=true;executionMarker.style.transition='none';}}
+      clearExecution(){cancelAnimationFrame(scrollAnimation);if(decorations.length) decorations=editor.deltaDecorations(decorations,[]);executionMarkerLine=-1;if(executionMarker){executionMarker.hidden=true;executionMarker.style.transition='none';}}
     };
     if(pendingExecutionLine>0){
       const line=pendingExecutionLine;

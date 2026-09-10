@@ -1,9 +1,4 @@
-/* Live Program.java execution marker — synchronized with Byte's physical actions. */
-.java-program-panel .monaco-editor .byte-active-exec-line{
-  background:linear-gradient(90deg,rgba(191,155,78,.26),rgba(191,155,78,.10) 72%,transparent)!important;
-  box-shadow:inset 4px 0 0 #bf9b4e!important;
-  outline:1px solid rgba(191,155,78,.18)!important;
-}
+/* Live Program.java execution marker — synchronized with Byte’s physical actions. */
 .java-program-panel .byte-exec-motion-marker{
   position:absolute;
   top:0;
@@ -17,30 +12,6 @@
   box-shadow:0 0 10px rgba(211,174,86,.35);
   will-change:transform;
 }
-.java-program-panel .monaco-editor .byte-active-exec-glyph{
-  position:relative!important;
-  width:10px!important;
-  height:10px!important;
-  margin-left:3px!important;
-  margin-top:5px!important;
-  border-radius:50%!important;
-  background:#bf9b4e!important;
-  border:2px solid #443b26!important;
-  box-shadow:0 0 0 2px rgba(191,155,78,.16),0 0 9px rgba(191,155,78,.72)!important;
-}
-.java-program-panel .monaco-editor .byte-active-exec-glyph:after{
-  content:"";
-  position:absolute;
-  inset:-5px;
-  border:1px solid rgba(191,155,78,.42);
-  border-radius:50%;
-  animation:byteExecutionPulse 1s ease-out infinite;
-}
-@keyframes byteExecutionPulse{
-  0%{transform:scale(.7);opacity:.8}
-  75%,100%{transform:scale(1.55);opacity:0}
-}
 @media (prefers-reduced-motion:reduce){
-  .java-program-panel .monaco-editor .byte-active-exec-glyph:after{animation:none}
   .java-program-panel .byte-exec-motion-marker{transition:none!important}
 }
