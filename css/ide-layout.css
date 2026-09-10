@@ -13,24 +13,22 @@
     transition:opacity .16s ease,transform .22s ease;
   }
 
+  /* Coding focus: give the IDE the whole work area. */
   .game-layout.ide-maximized{
-    grid-template-columns:0 minmax(340px,.62fr) minmax(620px,1.38fr)!important;
-    gap:10px!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:0!important;
   }
 
-  .game-layout.ide-maximized>.mission-panel{
-    opacity:0;
-    overflow:hidden;
-    pointer-events:none;
-    transform:translateX(-18px);
-  }
-
+  .game-layout.ide-maximized>.mission-panel,
   .game-layout.ide-maximized>.factory-panel{
-    min-width:340px;
+    display:none!important;
   }
 
   .game-layout.ide-maximized>.java-program-panel{
-    min-width:620px;
+    grid-column:1!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
   }
 }
 
@@ -43,6 +41,14 @@
 .byte-ide-maximized .java-program-panel .byte-ide-project span,
 .byte-ide-maximized .java-program-panel .byte-ide-breadcrumb span{
   opacity:.88;
+}
+
+/* In coding focus mode the editor should feel like the main workspace. */
+.byte-ide-maximized .java-program-panel{
+  min-width:0!important;
+}
+.byte-ide-maximized .java-program-list{
+  min-height:calc(100vh - 300px)!important;
 }
 
 @media (max-width:1100px){
