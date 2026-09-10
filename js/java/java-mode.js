@@ -23,25 +23,14 @@ public final class ByteBot {
 
     private static int sourceLine() {
         StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-        int fallback = -1;
         for (StackTraceElement element : trace) {
             String name = element.getClassName();
             if (name.equals("Program") || name.endsWith(".Program")) {
                 int line = element.getLineNumber();
                 return line > 0 ? line : -1;
             }
-            // Some CheerpJ builds omit the default-package Program name from
-            // the stack. Keep the first real application frame as a fallback,
-            // but never use ByteBot, Thread, or reflection wrapper frames.
-            if (fallback < 1 && !name.equals(ByteBot.class.getName()) &&
-                !name.equals(Thread.class.getName()) &&
-                !name.startsWith("java.lang.reflect.") &&
-                !name.startsWith("sun.reflect.") &&
-                element.getLineNumber() > 0) {
-                fallback = element.getLineNumber();
-            }
         }
-        return fallback;
+        return -1;
     }
 
     private static void check(int code) {
@@ -109,7 +98,6 @@ public final class GameRunner {
   let execution=null;
   let headless=false;
   let activeJavaLine=-1;
-  let javaActionOrdinal=0;
   let runtimeMessage='Java JVM not loaded';
   let lastCompileMs=null;
   let lastRunMs=null;
@@ -124,22 +112,6 @@ public final class GameRunner {
   }
   function assignSource(source){ program=[{op:'JAVA',source:String(source)}]; }
   function sourceLines(){ return sourceFromProgram().split(/\r?\n/); }
-  function sourceActionLines(){
-    const names='take|send|copyTo|copyFrom|place|pick|add|subtract|hasNext|isZero|isNegative|isHolding|memorySize|isEmpty';
-    const call=new RegExp(`\\bbot\\s*\\.\\s*(?:${names})\\s*\\(`);
-    return sourceLines().reduce((lines,text,index)=>{
-      const code=text.replace(/\/\/.*$/,'');
-      if(call.test(code)) lines.push(index+1);
-      return lines;
-    },[]);
-  }
-  function resolveJavaActionLine(line){
-    const reported=Number(line);
-    const ordinal=javaActionOrdinal++;
-    if(Number.isInteger(reported)&&reported>1) return reported;
-    const sites=sourceActionLines();
-    return sites.length ? sites[ordinal%sites.length] : reported;
-  }
   function botCallCount(){
     const m=sourceFromProgram().match(/\bbot\s*\.\s*(?:take|send|copyTo|copyFrom|place|pick|add|subtract)\s*\(/g);
     return m ? m.length : 0;
@@ -332,7 +304,6 @@ public final class GameRunner {
   }
 
   function resetJavaState(input=level().input){
-    javaActionOrdinal=0;
     javaMachine={input:[...input],output:[],memory:Array.from({length:level().memory},()=>null),held:null,steps:0,lastLine:-1,halted:false,error:null,cancelled:false};
     expectedOutput=[...(level().output||[])];
     return machineSnapshot();
@@ -366,7 +337,7 @@ public final class GameRunner {
     await waitForExecutionPermit();
     if(!javaMachine||javaMachine.cancelled||execution?.cancelled) return 7;
     if(javaMachine.halted) return 7;
-    line=resolveJavaActionLine(line);
+    line=Number.isFinite(+line)?+line:-1;
     javaMachine.lastLine=line;
     if(!headless) highlightJavaLine(line);
     if(javaMachine.steps>=1500) return actionError(5,'Safety stop: your Java program performed more than 1500 ByteBot actions.',line);
@@ -419,7 +390,7 @@ public final class GameRunner {
 
   function safeBoolLine(line){
     if(!javaMachine||javaMachine.cancelled||execution?.cancelled) return false;
-    javaMachine.lastLine=resolveJavaActionLine(line);
+    javaMachine.lastLine=Number(line)||-1;
     if(!headless) highlightJavaLine(javaMachine.lastLine);
     return true;
   }
