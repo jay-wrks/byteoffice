@@ -160,6 +160,9 @@
 
     host.querySelector('.byte-ide')?.remove();
     host.insertAdjacentHTML('beforeend',chrome());
+    const actionMenu=document.querySelector('.java-action-menu-wrap');
+    const titleActions=document.querySelector('.byte-ide-title-actions');
+    if(actionMenu&&titleActions) titleActions.appendChild(actionMenu);
 
     const monaco=await loadMonaco();
     defineTheme(monaco);registerCompletions(monaco);
