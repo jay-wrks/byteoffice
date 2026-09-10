@@ -1,7 +1,6 @@
 (function(){
   'use strict';
 
-  const ECJ_URL='https://repo.maven.apache.org/maven2/org/eclipse/jdt/ecj/3.46.0/ecj-3.46.0.jar';
   const JAVA_MODE_VERSION='1.0.0';
 
   const BYTEBOT_SOURCE=String.raw`package byteoffice;
@@ -95,7 +94,6 @@ public final class GameRunner {
   let javaMachine=null;
   let expectedOutput=[];
   let javaRuntimePromise=null;
-  let compilerMounted=false;
   let compiledSource=null;
   let execution=null;
   let headless=false;
@@ -399,16 +397,10 @@ public final class GameRunner {
   async function ensureJavaRuntime(){
     if(javaRuntimePromise) return javaRuntimePromise;
     javaRuntimePromise=(async()=>{
-      updateJavaStatus('Loading Java 17 JVM…','loading');
+      updateJavaStatus('Loading Java 8 JVM…','loading');
       if(typeof cheerpjInit!=='function') throw new Error('CheerpJ loader is unavailable. Serve ByteOffice over HTTP/HTTPS and check your connection.');
-      const compilerFetch=fetch(ECJ_URL).then(r=>{ if(!r.ok) throw new Error(`ECJ download failed (${r.status})`); return r.arrayBuffer(); });
-      await cheerpjInit({version:17,status:'none',natives});
-      if(!compilerMounted){
-        const bytes=new Uint8Array(await compilerFetch);
-        cheerpOSAddStringFile('/str/ecj.jar',bytes);
-        compilerMounted=true;
-      }
-      updateJavaStatus('Java 17 ready','ready');
+      await cheerpjInit({version:8,status:'none',natives});
+      updateJavaStatus('Java compiler ready','ready');
       return true;
     })().catch(err=>{
       javaRuntimePromise=null;
@@ -432,9 +424,9 @@ public final class GameRunner {
     els.footer.textContent='Compiling your Java source inside the browser…';
     mountSources(source);
     const exit=await cheerpjRunMain(
-      'org.eclipse.jdt.internal.compiler.batch.Main',
-      '/str/ecj.jar',
-      '-17','-proc:none','-g','-d','/files',
+      'com.sun.tools.javac.Main',
+      '/app/java/tools.jar:/files/',
+      '-g','-d','/files',
       '/str/byteoffice/ByteBot.java','/str/byteoffice/GameRunner.java','/str/Program.java'
     );
     if(exit!==0){
@@ -445,7 +437,7 @@ public final class GameRunner {
       return false;
     }
     compiledSource=source;
-    updateJavaStatus('Compiled · Java 17','ready');
+    updateJavaStatus('Compiled · Java 8','ready');
     els.footer.textContent='Java compiled successfully. Ready to run ByteBot.';
     return true;
   }
@@ -569,7 +561,7 @@ public final class GameRunner {
     try{
       const ok=await compileCurrentSource(true);
       if(!ok) return;
-      showModal(`<div class="modal-heading"><span>JAVA COMPILER</span><h2>Program.java builds successfully</h2><p>Full Java 17 source is accepted. The puzzle restriction is enforced only by the ByteBot boundary: box values are never returned to Java.</p></div><div class="analysis-block"><h3>Physical ByteBot memory</h3><ul><li>This level exposes ${level().memory} floor slot${level().memory===1?'':'s'}.</li><li>Byte can hold one box at a time.</li><li><code>take()</code>, <code>send()</code>, <code>copyTo()</code>, <code>copyFrom()</code>, <code>place()</code>, <code>pick()</code>, <code>add()</code>, and <code>subtract()</code> never return box values.</li><li>Your own Java variables, methods, classes, arrays, collections, recursion, and standard Java syntax remain available.</li></ul></div>`);
+      showModal(`<div class="modal-heading"><span>JAVA COMPILER</span><h2>Program.java builds successfully</h2><p>Full Java 8 source is accepted. The puzzle restriction is enforced only by the ByteBot boundary: box values are never returned to Java.</p></div><div class="analysis-block"><h3>Physical ByteBot memory</h3><ul><li>This level exposes ${level().memory} floor slot${level().memory===1?'':'s'}.</li><li>Byte can hold one box at a time.</li><li><code>take()</code>, <code>send()</code>, <code>copyTo()</code>, <code>copyFrom()</code>, <code>place()</code>, <code>pick()</code>, <code>add()</code>, and <code>subtract()</code> never return box values.</li><li>Your own Java variables, methods, classes, arrays, collections, recursion, and standard Java syntax remain available.</li></ul></div>`);
     }catch(err){ els.footer.textContent=err.message; }
   };
 

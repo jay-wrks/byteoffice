@@ -20,7 +20,7 @@
       let source=await response.text();
 
       // /str is a flat string-file namespace. The package declarations remain
-      // in the Java source; ECJ creates /files/byteoffice/*.class for us.
+      // in the Java source; javac creates /files/byteoffice/*.class for us.
       source=source
         .replaceAll('/str/byteoffice/ByteBot.java','/str/ByteBot.java')
         .replaceAll('/str/byteoffice/GameRunner.java','/str/GameRunner.java');

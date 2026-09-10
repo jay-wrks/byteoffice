@@ -16,7 +16,7 @@ public class Program {
 }
 ```
 
-`Program.java` is otherwise normal Java 17. Players may use variables, methods, helper classes, arrays, collections, recursion and the Java standard library.
+`Program.java` is otherwise normal Java 8. Players may use variables, methods, helper classes, arrays, collections, recursion and the Java standard library.
 
 The puzzle restriction exists only at the `ByteBot` boundary. Box values are never returned to Java, so Java variables cannot be used as invisible storage for INPUT or floor-box values.
 
@@ -68,13 +68,13 @@ public void program(ByteBot bot) {
 
 There is no Byte Office application server.
 
-The browser loads CheerpJ 4.3 and starts a Java 17 JVM in WebAssembly. The Eclipse ECJ compiler is downloaded from Maven Central and mounted into CheerpJ's in-browser virtual filesystem. Byte Office writes these sources into that filesystem:
+The browser loads CheerpJ 4.3 and starts a Java 8 JVM in WebAssembly. The bundled `java/tools.jar` compiler runs inside CheerpJ. Byte Office writes these sources into that filesystem:
 
 - the player's `Program.java`
 - the protected `byteoffice.ByteBot` API
 - Byte Office's hidden `GameRunner`
 
-ECJ compiles them in the browser and CheerpJ executes `GameRunner`. `GameRunner` creates the player's `Program` class and calls `program(ByteBot bot)`.
+`javac` compiles them in the browser and CheerpJ executes `GameRunner`. `GameRunner` creates the player's `Program` class and calls `program(ByteBot bot)`.
 
 Native `ByteBot` operations bridge back into the existing JavaScript machine/animation pipeline. For example, `bot.take()` triggers the same physical INBOX pickup animation as the old `READ` instruction, and `bot.copyTo(0)` triggers the existing COPYTO animation.
 
@@ -96,7 +96,7 @@ http://localhost:8080
 
 No Node build, backend API, Docker container or Java installation is required on the player's computer.
 
-An internet connection is currently required to load the CheerpJ runtime and ECJ compiler from their CDNs.
+An internet connection is currently required to load the CheerpJ runtime from its CDN.
 
 ## Java execution model
 
