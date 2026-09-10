@@ -42,3 +42,38 @@
 .java-api-tray{background:#c7b99a!important;border-top:3px solid #7f745f!important;box-shadow:inset 0 1px #eee0bc!important}.java-api-tray .tray-title{color:#514a3d!important}.java-api-tray .tray-subtitle{color:#6e6554!important}.java-api-palette{grid-template-columns:repeat(2,minmax(0,1fr))!important}.java-api-card{border-radius:2px!important;background:#eadcba!important;border:1px solid #8c7f64!important;box-shadow:2px 2px #756a55!important}.java-api-card strong{color:#934638!important}.java-api-card span{color:#655c4e!important}.java-api-card:hover{background:#f7e8bf!important}
 
 @media(max-width:900px){.byte-ide{min-height:340px}.java-editor-toolbar button{padding:0 5px!important}.java-editor-toolbar #shareBtn,.java-editor-toolbar #undoBtn,.java-editor-toolbar #redoBtn{display:none!important}.java-api-palette{grid-template-columns:1fr!important}}
+
+/* Compact IDE density: keep the game controls readable while giving Program.java the space. */
+.java-program-panel{min-height:0!important;overflow:hidden!important}
+.java-program-panel .program-header{padding:7px 10px!important;min-height:48px!important}
+.java-program-panel .program-header h2{font-size:17px!important;line-height:1!important;margin:2px 0 0!important}
+.java-program-panel .program-header .small-cap{font-size:8px!important;line-height:1!important}
+.java-program-panel .java-header-actions{gap:6px!important;align-items:center!important}
+.java-program-panel .java-version-badge{padding:5px 7px!important;font-size:8px!important;line-height:1!important}
+.java-program-panel .clear-btn{padding:5px 7px!important;font-size:8px!important;margin:0!important}
+.java-program-panel .workspace-switcher{min-height:34px!important;padding:0 8px!important}
+.java-program-panel .workspace-tabs{min-height:34px!important;align-items:end!important}
+.java-program-panel .workspace-tab{min-height:29px!important;height:29px!important;padding:0 10px!important;font-size:9px!important}
+.java-editor-toolbar{min-height:35px!important;height:35px!important;padding:4px 6px!important;gap:4px!important}
+.java-editor-toolbar button{height:25px!important;min-height:25px!important;padding:0 7px!important;font-size:8px!important;box-shadow:0 1px 0 #20221e!important}
+.java-program-list{flex:1 1 auto!important;min-height:0!important;height:auto!important}
+.byte-ide{min-height:0!important;height:100%!important;grid-template-rows:28px 25px 20px minmax(0,1fr) 21px!important}
+.byte-ide-titlebar{padding:0 7px!important;gap:5px!important}
+.byte-ide-project{gap:4px!important;font-size:8px!important}
+.byte-ide-project .java-dot{width:16px!important;height:16px!important;font-size:8px!important}
+.byte-ide-iconbtn{width:22px!important;height:20px!important;font-size:10px!important;box-shadow:none!important}
+.byte-ide-tabbar{padding-left:4px!important}
+.byte-ide-tab{height:23px!important;min-width:118px!important;padding:0 8px!important;gap:5px!important;font-size:8px!important}
+.byte-ide-tab:before{width:13px!important;height:13px!important;font-size:7px!important}
+.byte-ide-breadcrumb{padding:0 7px!important;gap:4px!important;font-size:7px!important}
+.byte-ide-status{gap:8px!important;padding:0 7px!important;font-size:7px!important;border-top-width:2px!important;white-space:nowrap!important;overflow:hidden!important}
+.byte-ide-status:before{width:6px!important;height:6px!important;flex:0 0 auto!important}
+.java-api-tray{flex:0 0 auto!important;max-height:42px!important;overflow:hidden!important;padding:6px 8px!important}
+.java-api-tray .tray-head{min-height:27px!important}
+.java-api-tray .tray-title{font-size:9px!important;line-height:1!important;margin:0!important}
+.java-api-tray .tray-subtitle{display:none!important}
+.java-api-tray .command-palette{display:none!important}
+.java-api-tray.tray-open,.java-api-tray.open{max-height:210px!important;overflow:auto!important}
+.java-api-tray.tray-open .command-palette,.java-api-tray.open .command-palette{display:grid!important}
+.java-api-tray .command-tray-toggle{width:26px!important;height:24px!important}
+.java-program-panel .monaco-editor .view-lines{font-size:13px!important}
