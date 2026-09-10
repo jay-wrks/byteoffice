@@ -32,8 +32,9 @@
 
       await loadClassicScript('js/java/intellij-editor.js');
       await loadClassicScript('js/java/byteoffice-monaco-theme.js');
-      await loadClassicScript('js/java/ide-layout-controls.js');
       await loadClassicScript('js/java/java-ui.js');
+      await loadClassicScript('js/java/java-workspace-tabs.js');
+      await loadClassicScript('js/java/ide-layout-controls.js');
       await loadClassicScript('js/app/bindings.js');
     }catch(err){
       console.error('ByteOffice Java bootstrap failed:',err);
