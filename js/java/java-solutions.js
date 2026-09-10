@@ -5,13 +5,9 @@
     return String(value).replace(/^\s*\n/,'').replace(/\n\s*$/,'');
   }
 
-  function namedSlots(value){
-    return String(value).replace(/\b(bot\.(?:copyTo|copyFrom|place|pick|add|subtract|isEmpty)\()([0-9]+)(\))/g,(_,prefix,index,suffix)=>`${prefix}ByteBot.${String.fromCharCode(65+Number(index))}${suffix}`);
-  }
-
   function solution(body,helpers=''){
-    const formattedBody=namedSlots(trimBlankLines(body));
-    const formattedHelpers=namedSlots(trimBlankLines(helpers));
+    const formattedBody=trimBlankLines(body);
+    const formattedHelpers=trimBlankLines(helpers);
     const helperBlock=formattedHelpers ? `\n${formattedHelpers}\n` : '';
     return `import byteoffice.ByteBot;\n\npublic class Program {\n    public void program(ByteBot bot) {\n${formattedBody}\n    }${helperBlock}\n}\n`;
   }

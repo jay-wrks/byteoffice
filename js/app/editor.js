@@ -75,7 +75,7 @@ function moveInstruction(from,to){
   selectedRow=to; renderProgram(); resetMachine(false);
 }
 
-function memoryName(i){ return String.fromCharCode(65+i); }
+function memoryName(i){ return String(i); }
 function lineName(i){
   const ins=program[i];
   return ins ? `${String(i+1).padStart(2,"0")} ${defs[ins.op]?.label||ins.op}` : `Line ${i+1}`;
@@ -252,4 +252,3 @@ function editRow(i,act){
   if(act==="dup"){ const oldLength=program.length; adjustTargetsForInsert(i+1,oldLength); program.splice(i+1,0,{op:program[i].op,arg:program[i].arg}); selectedRow=i+1; }
   renderProgram(); resetMachine(false);
 }
-
