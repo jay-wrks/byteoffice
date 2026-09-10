@@ -39,9 +39,10 @@
     ['compactBtn','shareBtn','testBtn','analyzeBtn','runBtn','stepBtn','pauseBtn','resetBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=false;});
     const copy=document.getElementById('copyAnswerBtn');
     if(copy){
+      const label=`Copy to Program ${String.fromCharCode(65+(typeof workspaceIndex==='number'?workspaceIndex:0))}`;
       copy.hidden=!on;
       copy.disabled=!on;
-      copy.textContent=`Copy to Program ${String.fromCharCode(65+(typeof workspaceIndex==='number'?workspaceIndex:0))}`;
+      if(copy.textContent!==label) copy.textContent=label;
     }
     try{window.ByteOfficeIDE?.editor?.updateOptions({readOnly:!!on,domReadOnly:!!on});}catch(_){}
   }
@@ -145,8 +146,11 @@
     if(e.target.closest('#copyAnswerBtn')) copyAnswerToDraft();
   });
 
-  const observer=new MutationObserver(()=>renderIdeTabs());
-  observer.observe(document.body,{childList:true,subtree:true});
+  const host=document.querySelector('#programList');
+  if(host){
+    const observer=new MutationObserver(()=>renderIdeTabs());
+    observer.observe(host,{childList:true});
+  }
   renderIdeTabs();
 
   window.ByteOfficeJavaWorkspaceTabs={refresh:renderIdeTabs,answerSource:javaAnswerSource};
