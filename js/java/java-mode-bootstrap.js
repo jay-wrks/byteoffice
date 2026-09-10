@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const ASSET_VERSION='20260911-0063';
+  const ASSET_VERSION='20260911-0064';
 
   function versioned(src){
     return src + (src.includes('?')?'&':'?') + 'v=' + encodeURIComponent(ASSET_VERSION);
@@ -26,7 +26,25 @@
 
       source=source
         .replaceAll('/str/byteoffice/ByteBot.java','/str/ByteBot.java')
-        .replaceAll('/str/byteoffice/GameRunner.java','/str/GameRunner.java');
+        .replaceAll('/str/byteoffice/GameRunner.java','/str/GameRunner.java')
+        // The Java runtime keeps its source-line highlighter private inside
+        // java-mode.js. Mirror those exact runtime lines into Monaco directly
+        // so every physical ByteBot action highlights Program.java before the
+        // corresponding bot animation starts.
+        .replace(
+          'if(!headless) highlightJavaLine(line);',
+          'if(!headless){ highlightJavaLine(line); window.ByteOfficeIDE?.highlightLine?.(line); }'
+        )
+        .replace(
+          'if(!headless) highlightJavaLine(javaMachine.lastLine);',
+          'if(!headless){ highlightJavaLine(javaMachine.lastLine); window.ByteOfficeIDE?.highlightLine?.(javaMachine.lastLine); }'
+        )
+        // Reset must also clear the Monaco execution marker, otherwise a
+        // completed/aborted run can leave the previous statement highlighted.
+        .replace(
+          "stopRun(); animating=false; activeJavaLine=-1; clearTransientBoxes?.();",
+          "stopRun(); animating=false; activeJavaLine=-1; window.ByteOfficeIDE?.clearExecution?.(); clearTransientBoxes?.();"
+        );
 
       (0,eval)(source+'\n//# sourceURL=js/java/java-mode.patched.js?v='+ASSET_VERSION);
 
