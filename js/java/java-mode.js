@@ -22,7 +22,11 @@ public final class ByteBot {
     private static native boolean nIsEmpty(int slot, int line);
 
     private static int sourceLine() {
-        StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+        // Capture the Java stack at the native call boundary. CheerpJ's
+        // Thread.getStackTrace() can omit the caller while dispatching a
+        // native method, whereas Throwable captures the current Java frame
+        // and preserves javac's LineNumberTable entries.
+        StackTraceElement[] trace = new Throwable().getStackTrace();
         for (StackTraceElement element : trace) {
             String name = element.getClassName();
             String file = element.getFileName();
