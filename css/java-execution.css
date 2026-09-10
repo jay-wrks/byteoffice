@@ -3,7 +3,19 @@
   background:linear-gradient(90deg,rgba(191,155,78,.26),rgba(191,155,78,.10) 72%,transparent)!important;
   box-shadow:inset 4px 0 0 #bf9b4e!important;
   outline:1px solid rgba(191,155,78,.18)!important;
-  animation:byteExecutionLineEnter 180ms ease-out;
+}
+.java-program-panel .byte-exec-motion-marker{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:21px;
+  pointer-events:none;
+  z-index:6;
+  border-left:4px solid #d3ae56;
+  background:linear-gradient(90deg,rgba(211,174,86,.16),rgba(211,174,86,.04) 72%,transparent);
+  box-shadow:0 0 10px rgba(211,174,86,.35);
+  will-change:transform;
 }
 .java-program-panel .monaco-editor .byte-active-exec-glyph{
   position:relative!important;
@@ -28,10 +40,7 @@
   0%{transform:scale(.7);opacity:.8}
   75%,100%{transform:scale(1.55);opacity:0}
 }
-@keyframes byteExecutionLineEnter{
-  from{opacity:.35}
-  to{opacity:1}
-}
 @media (prefers-reduced-motion:reduce){
   .java-program-panel .monaco-editor .byte-active-exec-glyph:after{animation:none}
+  .java-program-panel .byte-exec-motion-marker{transition:none!important}
 }

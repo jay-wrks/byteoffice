@@ -3,7 +3,17 @@
 
   // Monaco is vendored into the repository so the IDE does not depend on a CDN.
   const MONACO='libs/monaco/vs';
-  let editor=null, model=null, textarea=null, decorations=[], loading=null, pendingExecutionLine=-1, scrollAnimation=0;
+  let editor=null, model=null, textarea=null, decorations=[], loading=null, pendingExecutionLine=-1, scrollAnimation=0, executionMarker=null, executionMarkerLine=-1;
+
+  function positionExecutionMarker(line, animate){
+    if(!executionMarker||!editor||!Number.isInteger(line)||line<1) return;
+    const lineHeight=editor.getOption?.(window.monaco?.editor?.EditorOption?.lineHeight)||21;
+    const top=editor.getTopForLineNumber(line)-editor.getScrollTop();
+    executionMarker.style.height=`${lineHeight}px`;
+    executionMarker.style.transition=animate?'transform 220ms cubic-bezier(.22,.61,.36,1)':'none';
+    executionMarker.style.transform=`translate3d(0,${top}px,0)`;
+    executionMarker.hidden=false;
+  }
 
   function overflowHost(){
     let host=document.querySelector('#byteMonacoOverflowHost');
@@ -171,6 +181,14 @@
       find:{addExtraSpaceOnTop:false,autoFindInSelection:'never'},lightbulb:{enabled:'on'},occurrencesHighlight:'singleFile',selectionHighlight:true
     });
 
+    executionMarker=document.createElement('div');
+    executionMarker.className='byte-exec-motion-marker';
+    executionMarker.setAttribute('aria-hidden','true');
+    executionMarker.hidden=true;
+    mount.appendChild(executionMarker);
+    editor.onDidScrollChange(()=>positionExecutionMarker(executionMarkerLine,false));
+    editor.onDidLayoutChange(()=>positionExecutionMarker(executionMarkerLine,false));
+
     // Keep the primary run shortcut inside Monaco so Ctrl+Enter is consumed
     // by the editor instead of inserting a newline or being handled twice by
     // the page-level keyboard shortcuts.
@@ -205,6 +223,9 @@
         if(!editor||!model||!count){ pendingExecutionLine=n; return; }
         if(n>count) return;
         decorations=editor.deltaDecorations(decorations,[{range:new monaco.Range(n,1,n,1),options:{isWholeLine:true,className:'byte-active-exec-line',glyphMarginClassName:'byte-active-exec-glyph'}}]);
+        const firstExecutionLine=executionMarkerLine<1;
+        executionMarkerLine=n;
+        positionExecutionMarker(n,!firstExecutionLine);
         const layout=editor.getLayoutInfo();
         const lineHeight=21;
         const lineTop=editor.getTopForLineNumber(n);
@@ -224,7 +245,7 @@
           scrollAnimation=requestAnimationFrame(animateScroll);
         }
       },
-      clearExecution(){cancelAnimationFrame(scrollAnimation);decorations=editor.deltaDecorations(decorations,[]);}
+      clearExecution(){cancelAnimationFrame(scrollAnimation);decorations=editor.deltaDecorations(decorations,[]);executionMarkerLine=-1;if(executionMarker){executionMarker.hidden=true;executionMarker.style.transition='none';}}
     };
     if(pendingExecutionLine>0){
       const line=pendingExecutionLine;
@@ -236,7 +257,7 @@
   const oldRender=window.renderProgram;
   if(typeof oldRender==='function'){
     window.renderProgram=function(){
-      if(editor){editor.dispose();model?.dispose();editor=null;model=null;window.ByteOfficeIDE=null;}
+      if(editor){editor.dispose();model?.dispose();executionMarker?.remove();executionMarker=null;executionMarkerLine=-1;editor=null;model=null;window.ByteOfficeIDE=null;}
       oldRender.apply(this,arguments);
       queueMicrotask(()=>mountEditor().catch(err=>{console.error('ByteOffice IDE failed:',err);const host=document.querySelector('#programList');if(host){const ta=host.querySelector('#javaEditor');if(ta){ta.classList.remove('byte-java-source-bridge');ta.style.display='block';}}}));
     };
