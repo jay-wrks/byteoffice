@@ -1,0 +1,52 @@
+/* ByteOffice gameplay-first redesign. Loaded last so mechanics/animation CSS stays intact. */
+:root{
+  --bo-bg:#111713;--bo-surface:#1a211c;--bo-surface-2:#222b24;--bo-panel:#d9caa5;
+  --bo-panel-hi:#f4e8c7;--bo-ink:#241f19;--bo-line:#6e6654;--bo-green:#87a56f;
+  --bo-amber:#d7ad5b;--bo-red:#a85242;--bo-cream:#eee1be;--bo-muted:#9d9b8b;
+}
+body{background:radial-gradient(circle at 50% -10%,#334036 0,transparent 34%),linear-gradient(180deg,#161d18,#0f130f 70%);overflow-x:hidden}
+.app-shell{min-height:100vh;background:transparent}
+
+/* compact game chrome */
+.topbar{height:58px;padding:0 18px;background:rgba(14,18,15,.96);border-bottom:1px solid #394239;box-shadow:0 8px 30px #0005;position:relative;z-index:20}
+.brand{gap:9px}.brand-mark{width:34px;height:34px;font-size:20px;border-radius:9px;transform:none;background:linear-gradient(145deg,#303a30,#1d241f);box-shadow:inset 0 0 0 1px #ffffff0b}.brand-name{font-size:12px}.brand-sub{font-size:10px;margin-top:1px;color:#858b80}
+.top-actions{gap:5px}.top-btn{background:transparent;border:1px solid transparent;color:#cfcab9;padding:8px 10px;border-radius:8px;letter-spacing:.02em}.top-btn:hover{background:#ffffff0b;border-color:#ffffff12}.top-btn.secondary-hidden{display:none}.icon-btn{width:36px}
+
+.game-layout{flex:1;display:grid;grid-template-columns:190px minmax(560px,1fr) minmax(300px,360px);gap:10px;padding:10px;max-width:none;min-height:0;height:calc(100vh - 92px)}
+
+/* mission becomes a quiet briefing strip, not a giant paper card */
+.mission-panel.paper-panel{transform:none;background:linear-gradient(180deg,#d9cba8,#cbbb94);padding:20px 14px 14px;border:1px solid #877d65;border-radius:12px;box-shadow:0 8px 24px #0005;overflow:auto;background-image:none}
+.mission-panel .paper-pin{display:none}.mission-kicker{color:#6d4938;font-size:9px}.mission-panel h1{font-family:"Libre Franklin",system-ui,sans-serif;font-size:20px;line-height:1.05;margin:6px 0 10px;letter-spacing:-.03em}.mission-story{font-family:"Libre Franklin",system-ui,sans-serif;font-size:11px;line-height:1.5;color:#5f5749;margin:0 0 12px}.objective-box{margin:10px 0;padding:11px;background:#f3e8c7;border:1px solid #aa9b76;border-radius:9px;box-shadow:none}.objective-label{font-size:8px}.objective-box p{font-size:11px;line-height:1.4}.examples-box{margin-top:12px}.examples-title{font-size:8px;letter-spacing:.13em}.goal-row{margin-top:13px;gap:6px}.goal-row>div{padding:8px;border-radius:8px;background:#c5b58f}.goal-row strong{font-size:16px}.paper-button{margin-top:12px;border-radius:8px;box-shadow:none;padding:9px;font-family:"Libre Franklin",system-ui,sans-serif}
+
+/* factory is the hero */
+.factory-panel{border:1px solid #566057;border-radius:14px;overflow:hidden;background:#202820;box-shadow:0 14px 34px #0007;min-height:0}
+.room-sign{height:27px;border:0;border-bottom:1px solid #525b52;background:#1b221d;color:#9fa99d;font-size:9px;letter-spacing:.18em}
+.factory-scene{min-height:0;grid-template-columns:100px 1fr 100px;background:linear-gradient(90deg,#403f37 0 100px,#9d9278 100px calc(100% - 100px),#403f37 calc(100% - 100px));box-shadow:inset 0 30px 70px #0002}
+.factory-scene:before{background-image:linear-gradient(#0000 96%,#5b584e 97%),linear-gradient(90deg,#0000 96%,#686457 97%);background-size:64px 64px;opacity:.18}
+.factory-scene:after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,#f5dca326,transparent 38%),linear-gradient(180deg,#ffffff08,transparent 18%,#00000020 100%)}
+.conveyor{padding:14px 8px;border-color:#292d29;background:linear-gradient(90deg,#343630,#4b4a40 48%,#343630)}.outbox-zone{border-color:#292d29}.zone-label{border:1px solid #151715;border-radius:7px;box-shadow:0 3px 9px #0004;background:#222722;padding:6px 8px;font-size:9px}
+.work-floor{padding:20px 10px;justify-content:center}.memory-title{margin-top:24px;color:#4f493c;font-size:8px}.memory-grid{gap:8px}.memory-tile{width:66px;height:56px;border:1px solid #514c40;border-radius:9px;box-shadow:inset 0 0 0 2px #b0a58c,0 5px 10px #0003;background:linear-gradient(145deg,#a39983,#817864)}
+.value-box{width:56px;height:44px;border-radius:8px;box-shadow:0 5px 8px #0004;border-width:1px}
+
+/* execution console: primary RUN, quieter utilities */
+.machine-console{min-height:72px;border-top:1px solid #566057;background:#171d19;padding:9px 11px;gap:11px}.status-lamp{min-width:74px}.speed-control{min-width:132px}.speed-control input{width:120px}.speed-scale{opacity:.45}.console-actions{gap:5px}.machine-btn{border:1px solid #111510;border-radius:8px;box-shadow:none;padding:9px 10px;background:#303932;font-size:9px}.machine-btn.run{background:linear-gradient(180deg,#7f9f69,#607c51);color:white;min-width:78px}.machine-btn:hover{filter:brightness(1.08)}
+
+/* editor: workstation rather than another paper sheet */
+.program-panel{border:1px solid #5d665d;border-radius:14px;overflow:hidden;background:#191f1a;box-shadow:0 14px 34px #0007;color:#e6dec4;min-height:0}.program-header{background:#202820;border-bottom:1px solid #424b43;padding:11px 12px}.program-header h2{font-family:"Libre Franklin",system-ui,sans-serif;font-size:17px;margin:2px 0 0;color:#f1e8cf}.small-cap{color:#899286;font-size:8px}.clear-btn{background:transparent;border:1px solid #596158;border-radius:7px;color:#aaa999;padding:6px 8px}.clear-btn:hover{color:#efe6cf;border-color:#7b877a}
+.workspace-switcher{background:#171d18;border-bottom:1px solid #3a433b}.workspace-tabs{padding:0 8px}.workspace-tab{border-radius:8px 8px 0 0}
+.editor-toolbar{background:#1b221d;border-bottom:1px solid #3d463f;padding:7px;gap:4px}.editor-toolbar button{background:#252e27;color:#bdbbaa;border:1px solid #3b463d;border-radius:6px;padding:6px 7px;font-size:9px}.editor-toolbar button:hover{background:#303a32;color:#f3ead1}.editor-tip{display:none}
+.program-list{background:linear-gradient(180deg,#202820,#1a211c);padding:9px;min-height:200px}.program-row{height:40px;background:#eee1bd;border:0;border-radius:8px;box-shadow:0 3px 9px #0005;margin-bottom:5px}.program-row.active{background:#fff1bd;outline:2px solid #d77653;transform:none}.empty-program{color:#7f877d}
+.command-tray{border-top:1px solid #424b43;background:#171d18;padding:9px}.tray-title{color:#858e82;margin:0}.tray-head{margin-bottom:7px}.command-palette{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.command-card{min-height:46px;background:#2a332c;color:#e7dec5;border:1px solid #444f46;border-radius:8px;box-shadow:none;padding:7px}.command-card strong{color:#e3b167}.command-card span{color:#979e94}.command-card:hover{background:#354138;transform:translateY(-1px)}
+
+.footerbar{height:34px;min-height:34px;padding:0 14px;background:#0f130f;border-top:1px solid #303730;color:#777f76;gap:18px;font-size:9px}.footer-message{color:#989f93}
+
+/* Home: one strong terminal card, less paperwork */
+.home-screen{background:radial-gradient(circle at 50% 30%,#58605244,transparent 35%),linear-gradient(160deg,#171e18,#0d110e);color:#eee5ce}.home-backdrop-grid{opacity:.08}.home-desk{max-width:980px;margin:auto}.home-brand-row{margin-bottom:24px}.home-brand-mark{border-radius:16px!important;transform:none!important}.home-brand-row h1{letter-spacing:.08em}.home-file-card{border-radius:18px!important;overflow:hidden;box-shadow:0 24px 60px #0008!important;transform:none!important}.home-file-tab{letter-spacing:.18em}.home-actions{gap:8px}.home-primary,.home-action{border-radius:11px!important;transition:transform .18s ease,filter .18s ease}.home-primary:hover,.home-action:hover{transform:translateY(-2px);filter:brightness(1.04)}
+
+/* roadmap and overlays visually belong to the same world */
+.map-screen{background:#101511}.map-overlay{background:linear-gradient(180deg,#0d120d55,#0d120daa)}
+.modal{backdrop-filter:blur(6px)}.modal-card{border-radius:15px;border:1px solid #857a62;box-shadow:0 24px 70px #0009;transform:none}
+
+/* responsive: preserve playability instead of crushing three columns */
+@media(max-width:1100px){.game-layout{grid-template-columns:160px minmax(480px,1fr) 300px}.brand-sub{display:none}.top-btn{padding:7px 8px}}
+@media(max-width:900px){body{overflow:auto}.game-layout{height:auto;grid-template-columns:1fr;min-height:0}.mission-panel.paper-panel{max-height:none}.factory-panel{min-height:620px}.program-panel{min-height:620px}.footerbar{position:sticky;bottom:0}.topbar{position:sticky;top:0}.brand-name{font-size:11px}}
