@@ -31,5 +31,15 @@
 .java-api-tray.collapsed .java-api-palette,.java-api-tray.collapsed .tray-subtitle{display:none!important}
 .java-api-tray.collapsed{max-height:none}
 .java-program-panel.answer-mode .java-editor{pointer-events:auto;opacity:1}
+.java-compile-error-modal{z-index:220!important;background:rgba(8,10,8,.9)!important}
+.java-compile-error-modal .modal-card{width:min(980px,94vw)!important;max-height:90vh!important;padding:34px!important;background:#171a16!important;color:#efe5c9!important;border:5px solid #8f4035!important;box-shadow:14px 16px 0 #000b!important}
+.java-compile-error-modal .modal-close{color:#f2d8b8!important;font-size:32px!important}
+.java-compile-error-sheet{display:flex;flex-direction:column;gap:0}
+.java-compile-error-kicker{color:#e29a82;font:800 11px/1.2 "DM Mono",monospace;letter-spacing:.2em}
+.java-compile-error-sheet h2{margin:9px 0 8px;color:#fff0d3;font:32px/1.1 "Special Elite",serif}
+.java-compile-error-sheet p{margin:0;color:#c6c5b5;font-size:14px;line-height:1.5}
+.java-compile-error-status{align-self:flex-start;margin-top:22px;padding:8px 11px;background:#8f4035;color:#fff0d3;font:800 10px/1 "DM Mono",monospace;letter-spacing:.14em}
+.java-compile-error-sheet pre{max-height:52vh;overflow:auto;white-space:pre-wrap;word-break:break-word;margin:14px 0 25px;padding:18px;background:#0d100d;border:1px solid #734038;color:#ffd7be;font:13px/1.55 "DM Mono",monospace}
+.java-compile-error-close{align-self:flex-start;margin:0!important;background:#70845e!important;color:#fff4dc!important}
 @media(max-width:1180px){.java-api-palette{grid-template-columns:1fr}.java-editor-toolbar .editor-tip{display:none}}
 @media(max-width:760px){.java-editor-body{grid-template-columns:38px minmax(0,1fr)}.java-line-numbers,.java-editor{font-size:12px;line-height:20px}.java-line-numbers span{height:20px}.java-editor{padding-left:11px}.java-version-badge{display:none}}

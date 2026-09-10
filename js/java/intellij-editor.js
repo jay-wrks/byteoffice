@@ -204,6 +204,7 @@
       window.ByteOfficeExecutionHighlight?.clear?.();
       window.highlightLine?.(-1);
       const value=model.getValue();syncToLegacy(value);structuralMarkers(monaco,value);window.ByteOfficeIDE?.clearExecution?.();
+      window.ByteOfficeJava?.scheduleCompile?.();
     });
     editor.onDidChangeCursorPosition(e=>{const el=document.querySelector('#ideCursor');if(el)el.textContent=`Ln ${e.position.lineNumber}, Col ${e.position.column}`;});
     document.querySelector('#ideFind')?.addEventListener('click',()=>{editor.focus();editor.getAction('actions.find')?.run();});
@@ -251,6 +252,7 @@
     };
     document.querySelector('.java-program-panel')?.classList.remove('byte-workspace-switching');
     window.dispatchEvent(new Event('byteoffice-ide-ready'));
+    window.ByteOfficeJava?.scheduleCompile?.(0);
     if(pendingExecutionLine>0){
       const line=pendingExecutionLine;
       pendingExecutionLine=-1;

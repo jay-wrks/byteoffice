@@ -95,6 +95,9 @@ public final class GameRunner {
   let lastRunMs=null;
   let runStartedAt=null;
   let editTimer=null;
+  let compileTimer=null;
+  let compileJob=null;
+  let lastCompileDiagnostics='';
   const javaUndo=[];
   const javaRedo=[];
 
@@ -275,6 +278,7 @@ public final class GameRunner {
         javaRedo.length=0;
         saveWorkspace(); updateEditorButtons();
       },300);
+      scheduleCompile();
     });
     if(els.size) els.size.textContent=botCallCount();
     updateEditorButtons();
@@ -478,36 +482,128 @@ public final class GameRunner {
     cheerpOSAddStringFile('/str/byteoffice/GameRunner.java',RUNNER_SOURCE);
   }
 
-  async function compileCurrentSource(force=false){
-    const source=sourceFromProgram();
-    if(!force && compiledSource===source){ updateTimingStatus(); return true; }
+  function compilerMessage(args){
+    return args.map(value=>{
+      if(typeof value==='string') return value;
+      if(value&&typeof value.message==='string') return value.message;
+      try{return JSON.stringify(value);}catch(_){return String(value);}
+    }).join(' ');
+  }
+
+  function looksLikeCompilerDiagnostic(text){
+    return /(?:Program\.java|error:|warning:|expected|found|illegal|cannot find symbol|\^\s*$)/im.test(text);
+  }
+
+  async function runJavaCompiler(){
+    const original={log:console.log,warn:console.warn,error:console.error};
+    const diagnostics=[];
+    const capture=(method)=>(...args)=>{
+      const text=compilerMessage(args);
+      if(text&&looksLikeCompilerDiagnostic(text)) diagnostics.push(text);
+      else original[method].apply(console,args);
+    };
+    console.log=capture('log');
+    console.warn=capture('warn');
+    console.error=capture('error');
+    try{
+      const exit=await cheerpjRunMain(
+        'com.sun.tools.javac.Main',
+        '/app/java/tools.jar:/files/',
+        '-g:lines,source','-d','/files',
+        '/str/byteoffice/ByteBot.java','/str/byteoffice/GameRunner.java','/str/Program.java'
+      );
+      return {exit,diagnostics:[...new Set(diagnostics)].join('\n')};
+    }finally{
+      console.log=original.log;
+      console.warn=original.warn;
+      console.error=original.error;
+    }
+  }
+
+  function finishCompileFailure(startedAt,diagnostics){
+    lastCompileMs=performance.now()-startedAt;
+    lastCompileDiagnostics=String(diagnostics||'').trim()||'The Java compiler rejected Program.java. Check the source and try again.';
+    updateTimingStatus();
+    compiledSource=null;
+    updateJavaStatus('Compile error','error');
+    setStatus('COMPILE ERROR','error');
+    els.footer.textContent='Java compilation failed. Fix the compiler errors, then run again.';
+    return false;
+  }
+
+  async function compileSource(source){
     const startedAt=performance.now();
     updateTimingStatus('compile');
-    await ensureJavaRuntime();
-    updateJavaStatus('Compiling Program.java…','loading');
-    els.footer.textContent='Compiling your Java source inside the browser…';
-    mountSources(instrumentJavaSource(source));
-    const exit=await cheerpjRunMain(
-      'com.sun.tools.javac.Main',
-      '/app/java/tools.jar:/files/',
-      '-g:lines,source','-d','/files',
-      '/str/byteoffice/ByteBot.java','/str/byteoffice/GameRunner.java','/str/Program.java'
-    );
-    if(exit!==0){
+    try{
+      await ensureJavaRuntime();
+      updateJavaStatus('Compiling Program.java…','loading');
+      els.footer.textContent='Compiling your Java source inside the browser…';
+      mountSources(instrumentJavaSource(source));
+      const result=await runJavaCompiler();
+      if(result.exit!==0) return finishCompileFailure(startedAt,result.diagnostics);
       lastCompileMs=performance.now()-startedAt;
+      lastCompileDiagnostics='';
       updateTimingStatus();
-      compiledSource=null;
-      updateJavaStatus('Compile error','error');
-      setStatus('COMPILE ERROR','error');
-      els.footer.textContent='Java compilation failed. Fix the compiler errors shown by the JVM and build again.';
-      return false;
+      if(sourceFromProgram()===source) compiledSource=source;
+      updateJavaStatus('Compiled · Java 8','ready');
+      els.footer.textContent='Java compiled successfully. Ready to run ByteBot.';
+      return true;
+    }catch(err){
+      return finishCompileFailure(startedAt,err?.message||String(err));
     }
-    lastCompileMs=performance.now()-startedAt;
-    updateTimingStatus();
-    compiledSource=source;
-    updateJavaStatus('Compiled · Java 8','ready');
-    els.footer.textContent='Java compiled successfully. Ready to run ByteBot.';
-    return true;
+  }
+
+  function showCompileErrorPopup(diagnostics){
+    const detail=String(diagnostics||lastCompileDiagnostics||'Compilation failed.').trim();
+    showModal(`<div class="java-compile-error-sheet">
+      <div class="java-compile-error-kicker">JAVA COMPILER</div>
+      <h2>Program cannot run</h2>
+      <p>Fix the compilation errors below, then click RUN again.</p>
+      <div class="java-compile-error-status">COMPILATION FAILED</div>
+      <pre>${escapeHtml(detail)}</pre>
+      <button type="button" class="modal-primary java-compile-error-close" id="javaCompileErrorClose">Back to Program.java</button>
+    </div>`);
+    const modal=document.querySelector('#modal');
+    modal?.classList.add('java-compile-error-modal');
+    document.querySelector('#javaCompileErrorClose')?.addEventListener('click',()=>{
+      closeModal();
+      window.ByteOfficeIDE?.focus?.();
+    },{once:true});
+  }
+
+  async function compileCurrentSource(force=false,{showError=false}={}){
+    const source=sourceFromProgram();
+    if(!force && compiledSource===source){ updateTimingStatus(); return true; }
+    if(compileJob){
+      const result=await compileJob;
+      if(sourceFromProgram()!==source) return compileCurrentSource(false,{showError});
+      if(!result&&showError) showCompileErrorPopup(lastCompileDiagnostics);
+      return result;
+    }
+    const job=compileSource(source);
+    compileJob=job;
+    let result=false;
+    try{ result=await job; }
+    finally{ if(compileJob===job) compileJob=null; }
+    if(sourceFromProgram()!==source) return compileCurrentSource(false,{showError});
+    if(!result&&showError) showCompileErrorPopup(lastCompileDiagnostics);
+    return result;
+  }
+
+  function scheduleCompile(delay=650){
+    if(compileTimer) clearTimeout(compileTimer);
+    compileTimer=setTimeout(async()=>{
+      compileTimer=null;
+      try{
+        const pending=window.stopRun?.();
+        if(pending&&typeof pending.then==='function') await pending;
+        await compileCurrentSource();
+      }catch(err){
+        updateJavaStatus('Compile error','error');
+        setStatus('COMPILE ERROR','error');
+        els.footer.textContent=err?.message||String(err);
+      }
+    },Math.max(0,Number(delay)||0));
   }
 
   async function finishExecution(exitCode){
@@ -552,7 +648,7 @@ public final class GameRunner {
       setStatus(mode==='run'?'WORKING':'STEP','working');
       return execution.task;
     }
-    if(!(await compileCurrentSource())) return null;
+    if(!(await compileCurrentSource(false,{showError:true}))) return null;
     resetJavaState(level().input);
     resetPhysicalScene(machineSnapshot());
     recordRunStart?.();
@@ -685,6 +781,7 @@ public final class GameRunner {
     version:JAVA_MODE_VERSION,
     starterSource,
     compile:compileCurrentSource,
+    scheduleCompile,
     ensureRuntime:ensureJavaRuntime,
     apiSource:BYTEBOT_SOURCE
   };
