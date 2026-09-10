@@ -193,8 +193,10 @@
       setValue(v){if(model.getValue()!==v)model.setValue(v);},
       revealLine(line){editor.revealLineInCenterIfOutsideViewport(line);},
       highlightLine(line){
-        decorations=editor.deltaDecorations(decorations,[{range:new monaco.Range(line,1,line,1),options:{isWholeLine:true,className:'byte-active-exec-line',glyphMarginClassName:'byte-active-exec-glyph'}}]);
-        editor.revealLineInCenterIfOutsideViewport(line);
+        const n=Number(line), count=model?.getLineCount?.()||0;
+        if(!Number.isInteger(n)||n<1||n>count) return;
+        decorations=editor.deltaDecorations(decorations,[{range:new monaco.Range(n,1,n,1),options:{isWholeLine:true,className:'byte-active-exec-line',glyphMarginClassName:'byte-active-exec-glyph'}}]);
+        editor.revealLineInCenterIfOutsideViewport(n);
       },
       clearExecution(){decorations=editor.deltaDecorations(decorations,[]);}
     };

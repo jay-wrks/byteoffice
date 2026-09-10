@@ -25,9 +25,9 @@ public final class ByteBot {
         StackTraceElement[] trace = Thread.currentThread().getStackTrace();
         for (StackTraceElement element : trace) {
             String name = element.getClassName();
-            if (!name.equals(ByteBot.class.getName()) &&
-                !name.equals(Thread.class.getName())) {
-                return element.getLineNumber();
+            if (name.equals("Program") || name.endsWith(".Program")) {
+                int line = element.getLineNumber();
+                return line > 0 ? line : -1;
             }
         }
         return -1;
@@ -446,7 +446,7 @@ public final class GameRunner {
     const exit=await cheerpjRunMain(
       'com.sun.tools.javac.Main',
       '/app/java/tools.jar:/files/',
-      '-g','-d','/files',
+      '-g:lines,source','-d','/files',
       '/str/byteoffice/ByteBot.java','/str/byteoffice/GameRunner.java','/str/Program.java'
     );
     if(exit!==0){
