@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const ASSET_VERSION='20260911-0062';
+  const ASSET_VERSION='20260911-0063';
 
   function versioned(src){
     return src + (src.includes('?')?'&':'?') + 'v=' + encodeURIComponent(ASSET_VERSION);
@@ -36,6 +36,7 @@
       await loadClassicScript('js/java/java-workspace-tabs.js');
       await loadClassicScript('js/java/ide-layout-controls.js');
       await loadClassicScript('js/app/bindings.js');
+      await loadClassicScript('js/java/execution-highlighter.js');
     }catch(err){
       console.error('ByteOffice Java bootstrap failed:',err);
       const footer=document.querySelector('#footerMessage');
