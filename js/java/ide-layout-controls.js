@@ -56,6 +56,11 @@
       return;
     }
 
+    // The maximized IDE covers the processing floor. Pause at the next safe
+    // ByteBot boundary before expanding it, so execution never continues
+    // invisibly underneath the editor.
+    if(maximized) window.pause?.();
+
     if(activeAnimation){
       try{activeAnimation.cancel();}catch(_){}
       activeAnimation=null;
