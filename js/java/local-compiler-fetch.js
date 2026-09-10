@@ -2,7 +2,7 @@
   'use strict';
 
   const REMOTE_ECJ = 'https://repo.maven.apache.org/maven2/org/eclipse/jdt/ecj/3.46.0/ecj-3.46.0.jar';
-  const LOCAL_COMPILER = 'java/tools.jar';
+  const LOCAL_COMPILER = 'java/ecj.jar';
   const nativeFetch = window.fetch.bind(window);
 
   // Keep the compiler JAR same-origin so browsers do not block it with CORS.
@@ -17,7 +17,7 @@
         return response;
       }).catch(error => {
         if(location.protocol === 'file:'){
-          throw new Error('ByteOffice Java mode cannot fetch java/tools.jar from file://. Open the game from static HTTP/HTTPS hosting so the bundled compiler can be loaded same-origin.');
+          throw new Error('ByteOffice Java mode cannot fetch java/ecj.jar from file://. Open the game from static HTTP/HTTPS hosting so the bundled compiler can be loaded same-origin.');
         }
         throw error;
       });
