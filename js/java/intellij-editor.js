@@ -261,6 +261,7 @@
     window.renderProgram=function(){
       if(editor){editor.dispose();model?.dispose();executionMarker?.remove();executionMarker=null;executionMarkerLine=-1;editor=null;model=null;window.ByteOfficeIDE=null;}
       oldRender.apply(this,arguments);
+      document.querySelector('#programList .java-editor-shell')?.classList.add('byte-monaco-pending');
       queueMicrotask(()=>mountEditor().catch(err=>{console.error('ByteOffice IDE failed:',err);const host=document.querySelector('#programList');if(host){const ta=host.querySelector('#javaEditor');if(ta){ta.classList.remove('byte-java-source-bridge');ta.style.display='block';}}}));
     };
   }
