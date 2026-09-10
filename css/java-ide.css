@@ -17,7 +17,8 @@
 .java-editor-toolbar button:hover{background:#696d60!important;color:#fff5db!important}.java-editor-toolbar button:active{transform:translateY(1px)!important;box-shadow:0 1px 0 #20221e!important}
 .java-editor-toolbar .editor-tip{display:none!important}
 .java-action-menu-wrap{position:relative;z-index:40}
-.java-action-menu-button{display:inline-flex!important;align-items:center;justify-content:center;gap:6px;min-width:70px!important;background:#6b705f!important;color:#fff0d0!important}
+.java-action-menu-button{display:grid!important;place-items:center;width:27px!important;min-width:27px!important;height:25px!important;padding:0!important;border:1px solid #282a25!important;border-radius:3px!important;background:#55584e!important;color:#ded5bd!important;box-shadow:0 2px #242620!important;font-size:12px!important}
+.java-action-menu-button:hover{background:#676b5f!important;color:#fff3d2!important}
 .java-action-menu-button svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 .java-action-menu{position:absolute;top:calc(100% + 7px);right:0;width:210px;padding:9px;background:#262923;border:2px solid #11140f;box-shadow:6px 7px 0 rgba(10,11,9,.45);z-index:1000}
 .java-action-menu[hidden]{display:none!important}
