@@ -1,0 +1,56 @@
+/* ByteOffice Java workspace proportions */
+@media (min-width:1101px){
+  .game-layout{
+    grid-template-columns:260px minmax(420px,1fr) 400px!important;
+    gap:12px!important;
+    transition:grid-template-columns .22s ease,gap .22s ease;
+  }
+
+  .game-layout>.mission-panel,
+  .game-layout>.factory-panel,
+  .game-layout>.java-program-panel{
+    min-width:0;
+    transition:opacity .16s ease,transform .22s ease;
+  }
+
+  .game-layout.ide-maximized{
+    grid-template-columns:0 minmax(340px,.62fr) minmax(620px,1.38fr)!important;
+    gap:10px!important;
+  }
+
+  .game-layout.ide-maximized>.mission-panel{
+    opacity:0;
+    overflow:hidden;
+    pointer-events:none;
+    transform:translateX(-18px);
+  }
+
+  .game-layout.ide-maximized>.factory-panel{
+    min-width:340px;
+  }
+
+  .game-layout.ide-maximized>.java-program-panel{
+    min-width:620px;
+  }
+}
+
+.ide-layout-toggle{
+  font-family:"DM Mono",monospace!important;
+  font-size:13px!important;
+  font-weight:700!important;
+}
+
+.byte-ide-maximized .java-program-panel .byte-ide-project span,
+.byte-ide-maximized .java-program-panel .byte-ide-breadcrumb span{
+  opacity:.88;
+}
+
+@media (max-width:1100px){
+  .game-layout,
+  .game-layout.ide-maximized{
+    grid-template-columns:1fr!important;
+  }
+  .game-layout.ide-maximized>.mission-panel{display:none!important}
+  .game-layout.ide-maximized>.factory-panel{display:none!important}
+  .game-layout.ide-maximized>.java-program-panel{min-height:calc(100vh - 150px)}
+}
