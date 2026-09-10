@@ -3,7 +3,7 @@
 
   // Monaco is vendored into the repository so the IDE does not depend on a CDN.
   const MONACO='libs/monaco/vs';
-  let editor=null, model=null, textarea=null, decorations=[], loading=null, pendingExecutionLine=-1;
+  let editor=null, model=null, textarea=null, decorations=[], loading=null, pendingExecutionLine=-1, scrollAnimation=0;
 
   function overflowHost(){
     let host=document.querySelector('#byteMonacoOverflowHost');
@@ -205,9 +205,26 @@
         if(!editor||!model||!count){ pendingExecutionLine=n; return; }
         if(n>count) return;
         decorations=editor.deltaDecorations(decorations,[{range:new monaco.Range(n,1,n,1),options:{isWholeLine:true,className:'byte-active-exec-line',glyphMarginClassName:'byte-active-exec-glyph'}}]);
-        editor.revealLineInCenterIfOutsideViewport(n);
+        const layout=editor.getLayoutInfo();
+        const lineHeight=21;
+        const lineTop=editor.getTopForLineNumber(n);
+        const currentTop=editor.getScrollTop();
+        const currentBottom=currentTop+layout.height;
+        if(lineTop<currentTop||lineTop+lineHeight>currentBottom){
+          const maxScroll=Math.max(0,editor.getScrollHeight()-layout.height);
+          const target=Math.max(0,Math.min(maxScroll,lineTop-(layout.height-lineHeight)/2));
+          const start=currentTop, distance=target-start, started=performance.now();
+          cancelAnimationFrame(scrollAnimation);
+          const animateScroll=now=>{
+            const progress=Math.min(1,(now-started)/220);
+            const eased=1-Math.pow(1-progress,3);
+            editor.setScrollTop(start+distance*eased);
+            if(progress<1) scrollAnimation=requestAnimationFrame(animateScroll);
+          };
+          scrollAnimation=requestAnimationFrame(animateScroll);
+        }
       },
-      clearExecution(){decorations=editor.deltaDecorations(decorations,[]);}
+      clearExecution(){cancelAnimationFrame(scrollAnimation);decorations=editor.deltaDecorations(decorations,[]);}
     };
     if(pendingExecutionLine>0){
       const line=pendingExecutionLine;

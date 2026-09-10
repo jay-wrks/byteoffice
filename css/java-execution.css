@@ -3,6 +3,7 @@
   background:linear-gradient(90deg,rgba(191,155,78,.26),rgba(191,155,78,.10) 72%,transparent)!important;
   box-shadow:inset 4px 0 0 #bf9b4e!important;
   outline:1px solid rgba(191,155,78,.18)!important;
+  animation:byteExecutionLineEnter 180ms ease-out;
 }
 .java-program-panel .monaco-editor .byte-active-exec-glyph{
   position:relative!important;
@@ -26,6 +27,10 @@
 @keyframes byteExecutionPulse{
   0%{transform:scale(.7);opacity:.8}
   75%,100%{transform:scale(1.55);opacity:0}
+}
+@keyframes byteExecutionLineEnter{
+  from{opacity:.35}
+  to{opacity:1}
 }
 @media (prefers-reduced-motion:reduce){
   .java-program-panel .monaco-editor .byte-active-exec-glyph:after{animation:none}
