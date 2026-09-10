@@ -1,0 +1,87 @@
+/* Java workspace switching lives inside the IDE file-tab strip. */
+.java-program-panel .workspace-switcher{display:none!important}
+
+.java-program-panel .byte-ide-tabbar{
+  align-items:stretch!important;
+  gap:0!important;
+  padding-left:4px!important;
+}
+
+.java-program-panel .byte-ide-tab{
+  appearance:none;
+  -webkit-appearance:none;
+  flex:0 1 142px;
+  min-width:104px!important;
+  max-width:180px;
+  height:100%!important;
+  margin:0!important;
+  transform:none!important;
+  justify-content:flex-start;
+  cursor:pointer;
+  outline:none;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.java-program-panel .byte-ide-tab span{
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.java-program-panel .byte-ide-tab:hover{
+  background:#eadcba!important;
+}
+
+.java-program-panel .byte-ide-tab.active{
+  background:#f1e4c3!important;
+  color:#28251f!important;
+}
+
+.java-program-panel .byte-ide-tab.answer-ide-tab{
+  margin-left:4px!important;
+  background:#c9c09d!important;
+  color:#443f34!important;
+  border-left:2px solid #6f755f!important;
+}
+
+.java-program-panel .byte-ide-tab.answer-ide-tab:before{
+  content:"✓"!important;
+  background:#5f745d!important;
+  border-color:#38483a!important;
+  color:#f4ead0!important;
+}
+
+.java-program-panel .byte-ide-tab.answer-ide-tab.active{
+  background:#dcd3b1!important;
+}
+
+.java-program-panel .byte-ide-tab.answer-ide-tab.active:after{
+  background:#6f8a68!important;
+}
+
+.java-program-panel.answer-mode .byte-monaco-wrap:after{
+  content:"READ ONLY · OFFICIAL ANSWER";
+  position:absolute;
+  right:12px;
+  bottom:10px;
+  z-index:5;
+  pointer-events:none;
+  padding:3px 6px;
+  border:1px solid #5c6754;
+  background:rgba(41,46,38,.88);
+  color:#cfd8bd;
+  font:700 7px "DM Mono",monospace;
+  letter-spacing:.08em;
+}
+
+.java-program-panel .copy-answer-btn:not([hidden]){
+  display:inline-flex!important;
+  align-items:center;
+  background:#65745c!important;
+  color:#f1e7cc!important;
+}
+
+@media(max-width:1350px){
+  .java-program-panel .byte-ide-tab{flex-basis:122px;min-width:92px!important;padding-inline:6px!important}
+}
