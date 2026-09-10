@@ -25,7 +25,7 @@
 }
 .java-program-panel .byte-exec-progress-running .byte-exec-motion-shimmer{
   opacity:1;
-  animation:byteExecutionShimmer .9s linear infinite;
+  animation:byteExecutionShimmer 1.8s linear 1 both;
 }
 .java-program-panel .byte-exec-progress-done .byte-exec-motion-shimmer{
   opacity:.9;
