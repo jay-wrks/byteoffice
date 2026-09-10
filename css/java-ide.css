@@ -39,6 +39,16 @@
 .monaco-editor .overflowingContentWidgets,.monaco-editor .suggest-widget,.monaco-editor .monaco-hover,.monaco-editor .parameter-hints-widget,.monaco-editor .find-widget{z-index:10000!important}
 body>.overflowingContentWidgets{position:absolute!important;z-index:100000!important;pointer-events:none}
 body>.overflowingContentWidgets .suggest-widget,body>.overflowingContentWidgets .monaco-hover,body>.overflowingContentWidgets .parameter-hints-widget,body>.overflowingContentWidgets .find-widget{z-index:100001!important;pointer-events:auto!important;border:1px solid #655f50!important;box-shadow:5px 6px 0 rgba(10,11,9,.42)!important;border-radius:3px!important}
+/* Monaco's bundled stylesheet scopes suggestion internals to .monaco-editor.
+   Portaled widgets need the same layout rules at the document root. */
+body>.overflowingContentWidgets .suggest-widget{width:430px!important;display:flex!important;flex-direction:column!important;background:#353730!important;color:#ded6c2!important}
+body>.overflowingContentWidgets .suggest-widget>.tree{width:100%!important;height:100%!important}
+body>.overflowingContentWidgets .suggest-widget .monaco-list{width:100%!important;height:100%!important;color:#ded6c2!important}
+body>.overflowingContentWidgets .suggest-widget .monaco-list .monaco-list-row{display:flex!important;box-sizing:border-box!important;padding-right:10px!important;white-space:nowrap!important;cursor:pointer!important}
+body>.overflowingContentWidgets .suggest-widget .monaco-list .monaco-list-row>.contents{flex:1!important;height:100%!important;overflow:hidden!important;padding-left:2px!important}
+body>.overflowingContentWidgets .suggest-widget .monaco-list .monaco-list-row>.contents>.main{display:flex!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:pre!important;justify-content:space-between!important}
+body>.overflowingContentWidgets .suggest-widget .monaco-list .monaco-list-row:not(.focused) .monaco-icon-label{color:#ded6c2!important}
+body>.overflowingContentWidgets .suggest-widget .monaco-list .monaco-list-row.focused{background:#665a35!important;color:#fff1cf!important}
 .java-program-panel .monaco-editor .suggest-widget .monaco-list-row.focused{outline:1px solid #a34939!important}
 .monaco-editor .byte-active-exec-line{background:rgba(191,155,78,.14)!important;box-shadow:inset 3px 0 #bf9b4e}.monaco-editor .byte-active-exec-glyph{background:#bf9b4e;border:2px solid #443b26;border-radius:50%;width:8px!important;height:8px!important;margin-left:4px;margin-top:6px;box-shadow:0 0 6px rgba(191,155,78,.65)}
 
