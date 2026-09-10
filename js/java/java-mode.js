@@ -120,7 +120,7 @@ public final class GameRunner {
     let declarationMatch;
     while((declarationMatch=declaration.exec(source))) names.add(declarationMatch[1]);
     const receiver=Array.from(names).sort((a,b)=>b.length-a.length).map(name=>name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|');
-    const call=new RegExp('\\b('+receiver+')\\s*\\.\\s*(?:'+methods+')\\s*\\(','y');
+    const call=new RegExp('((?:this\\.)?(?:'+receiver+'))\\s*\\.\\s*(?:'+methods+')\\s*\\(','y');
     let blockComment=false;
     return source.split(/(\r?\n)/).map((part,index,parts)=>{
       if(/^\r?\n$/.test(part)) return part;
