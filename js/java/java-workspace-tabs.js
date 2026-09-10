@@ -1,0 +1,149 @@
+(function(){
+  'use strict';
+
+  const originalSwitchWorkspace=window.switchWorkspace;
+  const originalSaveSettings=window.saveSettings;
+
+  function javaAnswerSource(){
+    const answer=(typeof level==='function' && level()?.answer) || [];
+    const nextPc=i=>i+1<answer.length ? String(i+1) : '-1';
+    const line=(ins,i)=>{
+      const next=nextPc(i), arg=Number(ins.arg);
+      switch(ins.op){
+        case 'READ': return `                bot.take(); pc = ${next}; break;`;
+        case 'WRITE': return `                bot.send(); pc = ${next}; break;`;
+        case 'STORE': return `                bot.copyTo(${arg}); pc = ${next}; break;`;
+        case 'LOAD': return `                bot.copyFrom(${arg}); pc = ${next}; break;`;
+        case 'PLACE': return `                bot.place(${arg}); pc = ${next}; break;`;
+        case 'TAKE': return `                bot.pick(${arg}); pc = ${next}; break;`;
+        case 'ADD': return `                bot.add(${arg}); pc = ${next}; break;`;
+        case 'SUB': return `                bot.subtract(${arg}); pc = ${next}; break;`;
+        case 'JUMP': return `                pc = ${arg}; break;`;
+        case 'JNEG': return `                pc = bot.isNegative() ? ${arg} : ${next}; break;`;
+        case 'JZERO': return `                pc = bot.isZero() ? ${arg} : ${next}; break;`;
+        default: return `                pc = ${next}; break;`;
+      }
+    };
+
+    if(!answer.length){
+      return `import byteoffice.ByteBot;\n\npublic class Program {\n    public void program(ByteBot bot) {\n        // No official answer is available for this level.\n    }\n}\n`;
+    }
+
+    const cases=answer.map((ins,i)=>`            case ${i}:\n${line(ins,i)}`).join('\n');
+    return `import byteoffice.ByteBot;\n\npublic class Program {\n    public void program(ByteBot bot) {\n        // Official ByteOffice solution — generated from the canonical machine program.\n        int pc = 0;\n        while (pc >= 0) {\n            switch (pc) {\n${cases}\n                default:\n                    return;\n            }\n        }\n    }\n}\n`;
+  }
+
+  function setJavaAnswerControls(on){
+    document.querySelector('.program-panel')?.classList.toggle('answer-mode',!!on);
+    ['clearBtn','undoBtn','redoBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!!on;});
+    ['compactBtn','shareBtn','testBtn','analyzeBtn','runBtn','stepBtn','pauseBtn','resetBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=false;});
+    const copy=document.getElementById('copyAnswerBtn');
+    if(copy){
+      copy.hidden=!on;
+      copy.disabled=!on;
+      copy.textContent=`Copy to Program ${String.fromCharCode(65+(typeof workspaceIndex==='number'?workspaceIndex:0))}`;
+    }
+    try{window.ByteOfficeIDE?.editor?.updateOptions({readOnly:!!on,domReadOnly:!!on});}catch(_){}
+  }
+
+  function tabMarkup(slot,label,active,extra=''){
+    return `<button type="button" class="byte-ide-tab ${active?'active':''} ${extra}" data-ide-workspace="${slot}" role="tab" aria-selected="${active?'true':'false'}"><span>${label}</span><i class="dirty" aria-hidden="true"></i></button>`;
+  }
+
+  function renderIdeTabs(){
+    const bar=document.querySelector('.byte-ide-tabbar');
+    if(!bar) return;
+    const currentAnswer=typeof answerMode!=='undefined' && answerMode;
+    const current=typeof workspaceIndex==='number'?workspaceIndex:0;
+    const showAnswer=typeof settings!=='undefined' && !!settings.showAnswers;
+    const html=[
+      tabMarkup('0','Program A.java',!currentAnswer&&current===0),
+      tabMarkup('1','Program B.java',!currentAnswer&&current===1)
+    ];
+    if(showAnswer) html.push(tabMarkup('answer','Answer.java',currentAnswer,'answer-ide-tab'));
+    bar.innerHTML=html.join('');
+    bar.querySelectorAll('[data-ide-workspace]').forEach(tab=>{
+      tab.addEventListener('click',()=>window.switchWorkspace(tab.dataset.ideWorkspace));
+    });
+    setJavaAnswerControls(currentAnswer);
+  }
+
+  function enterAnswer(){
+    if(typeof settings==='undefined' || !settings.showAnswers || (typeof answerMode!=='undefined'&&answerMode)) return;
+    if(typeof saveWorkspace==='function') saveWorkspace(false);
+    if(typeof stopRun==='function') stopRun();
+    answerMode=true;
+    program=[{op:'JAVA',source:javaAnswerSource()}];
+    if(typeof renderProgram==='function') renderProgram();
+    if(typeof resetMachine==='function') resetMachine(false);
+    setJavaAnswerControls(true);
+    renderIdeTabs();
+    if(typeof els!=='undefined'&&els.footer) els.footer.textContent='Official Java answer loaded read-only. RUN or STEP executes it on the same Byte machine.';
+  }
+
+  function returnToDraft(target){
+    target=Math.max(0,Math.min(1,parseInt(target,10)||0));
+    if(typeof answerMode!=='undefined' && answerMode){
+      // Reloading the current level is the safest way to leave Answer mode:
+      // it restores the saved Java draft and also clears the Java undo/redo stacks.
+      if(typeof loadLevel==='function') loadLevel(levelIndex);
+      if(target!==workspaceIndex && typeof originalSwitchWorkspace==='function') originalSwitchWorkspace(target);
+      setJavaAnswerControls(false);
+      renderIdeTabs();
+      return;
+    }
+    if(typeof originalSwitchWorkspace==='function') originalSwitchWorkspace(target);
+    renderIdeTabs();
+  }
+
+  window.switchWorkspace=function(next){
+    if(next==='answer') return enterAnswer();
+    return returnToDraft(next);
+  };
+
+  window.refreshWorkspaceTabs=function(){
+    renderIdeTabs();
+  };
+
+  window.setAnswerModeControls=function(on){
+    setJavaAnswerControls(!!on);
+    renderIdeTabs();
+  };
+
+  window.saveSettings=function(){
+    // If Show solution is switched off while Answer.java is open, restore the
+    // saved player draft before the normal settings code re-renders the editor.
+    if(typeof answerMode!=='undefined' && answerMode && typeof settings!=='undefined' && !settings.showAnswers){
+      if(typeof loadLevel==='function') loadLevel(levelIndex);
+    }
+    const result=typeof originalSaveSettings==='function' ? originalSaveSettings.apply(this,arguments) : undefined;
+    renderIdeTabs();
+    return result;
+  };
+
+  function copyAnswerToDraft(){
+    if(typeof answerMode==='undefined' || !answerMode) return;
+    const source=program?.find?.(x=>x?.op==='JAVA')?.source || javaAnswerSource();
+    answerMode=false;
+    program=[{op:'JAVA',source}];
+    const bucket=workspaceBucket(level().id);
+    bucket.active=workspaceIndex;
+    bucket.slots[workspaceIndex]=[{op:'JAVA',source}];
+    if(typeof saveWorkspace==='function') saveWorkspace(false);
+    if(typeof renderProgram==='function') renderProgram();
+    if(typeof resetMachine==='function') resetMachine(false);
+    setJavaAnswerControls(false);
+    renderIdeTabs();
+    if(typeof els!=='undefined'&&els.footer) els.footer.textContent=`Answer copied to Program ${String.fromCharCode(65+workspaceIndex)}. It is now editable.`;
+  }
+
+  document.addEventListener('click',e=>{
+    if(e.target.closest('#copyAnswerBtn')) copyAnswerToDraft();
+  });
+
+  const observer=new MutationObserver(()=>renderIdeTabs());
+  observer.observe(document.body,{childList:true,subtree:true});
+  renderIdeTabs();
+
+  window.ByteOfficeJavaWorkspaceTabs={refresh:renderIdeTabs,answerSource:javaAnswerSource};
+})();
