@@ -112,8 +112,14 @@ public final class GameRunner {
   let lastRunMs=null;
   let runStartedAt=null;
   let editTimer=null;
+  const JAVA_LINE_TRACE=true;
   const javaUndo=[];
   const javaRedo=[];
+
+  function traceJavaLine(kind,line){
+    if(!JAVA_LINE_TRACE) return;
+    console.info('[ByteOffice Java line]',{kind,line:Number(line),valid:Number.isInteger(Number(line))&&Number(line)>0});
+  }
 
   function sourceFromProgram(){
     const entry=Array.isArray(program) ? program.find(x=>x&&x.op==='JAVA'&&typeof x.source==='string') : null;
@@ -347,6 +353,7 @@ public final class GameRunner {
     if(!javaMachine||javaMachine.cancelled||execution?.cancelled) return 7;
     if(javaMachine.halted) return 7;
     line=Number.isFinite(+line)?+line:-1;
+    traceJavaLine(op,line);
     javaMachine.lastLine=line;
     if(!headless) highlightJavaLine(line);
     if(javaMachine.steps>=1500) return actionError(5,'Safety stop: your Java program performed more than 1500 ByteBot actions.',line);
@@ -400,6 +407,7 @@ public final class GameRunner {
   function safeBoolLine(line){
     if(!javaMachine||javaMachine.cancelled||execution?.cancelled) return false;
     javaMachine.lastLine=Number(line)||-1;
+    traceJavaLine('predicate',javaMachine.lastLine);
     if(!headless) highlightJavaLine(javaMachine.lastLine);
     return true;
   }
