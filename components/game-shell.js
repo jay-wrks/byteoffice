@@ -12,9 +12,14 @@ window.ByteOfficeComponents.gameShell = String.raw`
 <div class="top-actions">
 <button class="top-btn" id="homeBtn">Home</button>
 <button class="top-btn" id="levelBtn">Map</button>
-<button class="top-btn secondary-hidden" id="dashboardBtn">Dashboard</button>
-<button class="top-btn secondary-hidden" id="achievementsBtn">Badges</button>
 <button class="top-btn" id="helpBtn">Help</button>
+<details class="top-more-menu">
+<summary class="top-btn icon-btn" aria-label="More game options" title="More">•••</summary>
+<div class="top-more-popover">
+<button class="top-btn" id="dashboardBtn"><span>▥</span>Dashboard</button>
+<button class="top-btn" id="achievementsBtn"><span>★</span>Badges</button>
+</div>
+</details>
 <button aria-label="Toggle sound" class="top-btn icon-btn" id="soundBtn">🔊</button>
 </div>
 </header>
@@ -24,8 +29,8 @@ window.ByteOfficeComponents.gameShell = String.raw`
 <div data-component="components/program-panel.html"></div>
 </main>
 <footer class="footerbar">
-<div>Size <b id="programSize">0</b></div>
-<div>Steps <b id="stepCount">0</b></div>
+<div class="footer-stat"><span>PROGRAM</span><b id="programSize">0</b></div>
+<div class="footer-stat"><span>STEPS</span><b id="stepCount">0</b></div>
 <div class="footer-message" id="footerMessage">Build a program, then press Run.</div>
 </footer>
 </div>
