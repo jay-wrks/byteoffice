@@ -87,13 +87,9 @@
 .program-panel.answer-mode .editor-tip{opacity:.55}
 .program-panel.answer-mode .clear-btn{opacity:.42;cursor:not-allowed}
 .program-panel.answer-mode .editor-toolbar button:disabled{opacity:.38;cursor:not-allowed}
-.program-panel.answer-mode .editor-toolbar #compactBtn,
+.program-panel.answer-mode .editor-toolbar #formatBtn,
 .program-panel.answer-mode .editor-toolbar #shareBtn,
-.program-panel.answer-mode .editor-toolbar #testBtn,
-.program-panel.answer-mode .editor-toolbar #analyzeBtn,
-.program-panel.answer-mode .editor-toolbar #copyAnswerBtn{opacity:1;cursor:pointer}
-.copy-answer-btn{font-weight:900!important;border-color:#5e7058!important;background:#d7e0c8!important;color:#364431!important}
-.copy-answer-btn[hidden]{display:none!important}
+.program-panel.answer-mode .editor-toolbar #testBtn{opacity:1;cursor:pointer}
 .answer-program-row{cursor:default!important}
 .answer-program-row .drag-grip{cursor:default!important;color:#918773}
 .answer-program-row .line-num{cursor:default!important}
@@ -108,4 +104,3 @@
   .workspace-tab{flex:1 0 92px;padding-inline:7px}
   .answer-copy-choices{grid-template-columns:1fr}
 }
-

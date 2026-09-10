@@ -45,13 +45,4 @@
     </div>`);
   };
 
-  if(window.ByteOfficeJava){
-    window.ByteOfficeJava.format=function(){
-      const tray=els.commandTray;
-      if(!tray) return;
-      const collapsed=tray.classList.contains('collapsed');
-      setCommandTrayCollapsed(!collapsed,{remember:true});
-      els.footer.textContent=collapsed?'ByteBot API reference opened.':'ByteBot API reference minimized.';
-    };
-  }
 })();

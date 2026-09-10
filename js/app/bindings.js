@@ -16,7 +16,7 @@ els.undo.addEventListener("click",undoEdit); els.redo.addEventListener("click",r
 els.compact.addEventListener("click",()=>{ if(window.ByteOfficeJava?.format) window.ByteOfficeJava.format(); else renderProgram(); });
 $("#homeBtn").addEventListener("click",()=>goHome());
 $("#levelBtn").addEventListener("click",()=>openRoadmap('game')); $("#dashboardBtn").addEventListener("click",showDashboard); $("#achievementsBtn").addEventListener("click",showAchievements); $("#helpBtn").addEventListener("click",showHelp); $("#hintBtn").addEventListener("click",showHint);
-$("#testBtn").addEventListener("click",()=>{metaStore.usedTestLab=true;saveMeta();showTestLab();}); $("#analyzeBtn").addEventListener("click",analyzeProgram); $("#shareBtn").addEventListener("click",showShare); $("#copyAnswerBtn").addEventListener("click",()=>{});
+$("#testBtn").addEventListener("click",()=>{metaStore.usedTestLab=true;saveMeta();showTestLab();}); $("#shareBtn").addEventListener("click",showShare);
 $("#modalClose").addEventListener("click",()=>closeModal());
 els.modal.addEventListener("click",e=>{if(e.target===els.modal){ if(currentPage==='map'&&els.modal.classList.contains('roadmap-modal')) closeRoadmapRoute(); else closeModal(); }});
 $("#soundBtn").addEventListener("click",e=>{settings.sfx=!settings.sfx;saveSettings();e.currentTarget.textContent=settings.sfx?'🔊':'🔇';});
@@ -30,6 +30,17 @@ if(els.commandTrayToggle) els.commandTrayToggle.addEventListener("click",()=>{
   const next=!els.commandTray?.classList.contains("collapsed");
   setCommandTrayCollapsed(next,{remember:true});
 });
+const javaActionMenuButton=$("#javaActionMenuButton"),javaActionMenu=$("#javaActionMenu");
+if(javaActionMenuButton&&javaActionMenu){
+  const setJavaActionMenu=(open)=>{
+    javaActionMenu.hidden=!open;
+    javaActionMenuButton.setAttribute("aria-expanded",open?"true":"false");
+  };
+  javaActionMenuButton.addEventListener("click",e=>{e.stopPropagation();setJavaActionMenu(javaActionMenu.hidden);});
+  javaActionMenu.addEventListener("click",e=>{if(e.target.closest("button")) setJavaActionMenu(false);});
+  document.addEventListener("click",e=>{if(!e.target.closest(".java-action-menu-wrap")) setJavaActionMenu(false);});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!javaActionMenu.hidden){setJavaActionMenu(false);javaActionMenuButton.focus();}});
+}
 setCommandTrayCollapsed(draftCommandTrayCollapsed,{remember:false});
 window.addEventListener("keydown",e=>{
   const typing=/INPUT|TEXTAREA/.test(document.activeElement.tagName);

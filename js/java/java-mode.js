@@ -768,6 +768,68 @@ public final class GameRunner {
     showModal(`<div class="modal-heading"><span>JAVA HINT</span><h2>${escapeHtml(level().title)}</h2><p>${escapeHtml(level().objective)}</p></div><div class="analysis-block"><p>Control Byte directly from Java. The usual loop is <code>while (bot.hasNext())</code>. Use floor slots only when the puzzle requires remembering box data; your Java variables are still available for your own counters, flags, objects and algorithm state.</p><p><strong>Important:</strong> ByteBot never exposes the numeric value inside a box. Use <code>bot.isZero()</code> and <code>bot.isNegative()</code> for the same physical tests Byte can perform.</p></div>`);
   };
 
+  function scanJavaBraces(line,inBlockComment){
+    let delta=0,quote='';
+    for(let i=0;i<line.length;i++){
+      const ch=line[i],next=line[i+1];
+      if(inBlockComment){
+        if(ch==='*'&&next==='/'){inBlockComment=false;i++;}
+        continue;
+      }
+      if(quote){
+        if(ch==='\\') i++;
+        else if(ch===quote) quote='';
+        continue;
+      }
+      if(ch==='/'&&next==='*'){inBlockComment=true;i++;continue;}
+      if(ch==='/'&&next==='/') break;
+      if(ch==='"'||ch==="'"){quote=ch;continue;}
+      if(ch==='{') delta++;
+      else if(ch==='}') delta--;
+    }
+    return {delta,inBlockComment};
+  }
+
+  function formatJavaSource(source){
+    let indent=0,inBlockComment=false;
+    return String(source).split(/\r?\n/).map(line=>{
+      const trimmed=line.trim();
+      if(!trimmed) return '';
+      let leadingClosers=0;
+      for(const ch of trimmed){
+        if(ch==='}') leadingClosers++;
+        else if(!/\s/.test(ch)) break;
+      }
+      const lineIndent=Math.max(0,indent-leadingClosers);
+      const formatted='    '.repeat(lineIndent)+trimmed;
+      const scanned=scanJavaBraces(trimmed,inBlockComment);
+      indent=Math.max(0,indent+scanned.delta);
+      inBlockComment=scanned.inBlockComment;
+      return formatted;
+    }).join('\n');
+  }
+
+  function formatJavaProgram(){
+    const ide=window.ByteOfficeIDE;
+    const editor=ide?.editor;
+    const model=ide?.model;
+    const source=editor?.getValue?.()||sourceFromProgram();
+    const formatted=formatJavaSource(source);
+    if(formatted===source){ editor?.focus?.(); return false; }
+    if(editor&&model){
+      editor.pushUndoStop?.();
+      editor.executeEdits('byteoffice-format',[{range:model.getFullModelRange(),text:formatted,forceMoveMarkers:true}]);
+      editor.pushUndoStop?.();
+      editor.focus();
+    }else{
+      const ta=document.querySelector('#javaEditor');
+      if(ta){ta.value=formatted;ta.dispatchEvent(new Event('input',{bubbles:true}));ta.focus();}
+      else{assignSource(formatted);renderProgram();saveWorkspace();}
+    }
+    if(els.footer) els.footer.textContent='Program.java formatted. Compiling the updated source…';
+    return true;
+  }
+
   const oldLoadLevel=window.loadLevel;
   if(typeof oldLoadLevel==='function'){
     window.loadLevel=function(index){
@@ -802,6 +864,7 @@ public final class GameRunner {
     version:JAVA_MODE_VERSION,
     starterSource,
     compile:compileCurrentSource,
+    format:formatJavaProgram,
     scheduleCompile,
     ensureRuntime:ensureJavaRuntime,
     apiSource:BYTEBOT_SOURCE

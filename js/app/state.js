@@ -41,7 +41,7 @@ const els = {
   held: $("#heldCard"), workerWrap: $("#workerWrap"), worker: $("#worker"), scene: $("#scene"), list: $("#programList"),
   palette: $("#commandPalette"), commandTray: $("#commandTray"), commandTrayToggle: $("#commandTrayToggle"), size: $("#programSize"), steps: $("#stepCount"), status: $("#statusText"), lamp: $("#lamp"),
   footer: $("#footerMessage"), speed: $("#speedRange"), speedReadout: $("#speedReadout"), modal: $("#modal"), modalContent: $("#modalContent"),
-  undo: $("#undoBtn"), redo: $("#redoBtn"), compact: $("#compactBtn"),
+  undo: $("#undoBtn"), redo: $("#redoBtn"), compact: $("#formatBtn"),
   workspaceTabs: Array.from(document.querySelectorAll(".workspace-tab")), workspaceSaveState: $("#workspaceSaveState"),
   app: $("#app"), home: $("#homeScreen"), map: $("#mapScreen"), mapContent: $("#mapContent"), mapOverlay: $("#mapOverlay"), curtain: $("#pageCurtain"), curtainLabel: $("#curtainLabel"),
   homeLevelTitle: $("#homeLevelTitle"), homeLevelSummary: $("#homeLevelSummary"), homeProgressLabel: $("#homeProgressLabel"), homeCompletion: $("#homeCompletion")
@@ -157,8 +157,7 @@ function setAnswerModeControls(on){
   document.querySelector('.program-panel')?.classList.toggle('answer-mode',on);
   // Answer is read-only for editing, but it runs through the exact same machine pipeline.
   ['clearBtn','undoBtn','redoBtn'].forEach(id=>{const el=$("#"+id); if(el) el.disabled=on;});
-  ['compactBtn','shareBtn','testBtn','analyzeBtn','runBtn','stepBtn','pauseBtn','resetBtn'].forEach(id=>{const el=$("#"+id); if(el) el.disabled=false;});
-  const copyBtn=$("#copyAnswerBtn"); if(copyBtn){ copyBtn.hidden=!on; copyBtn.disabled=!on; }
+  ['formatBtn','shareBtn','testBtn','runBtn','stepBtn','pauseBtn','resetBtn'].forEach(id=>{const el=$("#"+id); if(el) el.disabled=false;});
   document.querySelectorAll('.command-card').forEach(b=>b.disabled=on);
 }
 function renderAnswerProgram(){
@@ -236,4 +235,3 @@ function loadLevel(index){
     ? `New instruction${introduced.length>1?'s':''}: ${introduced.join(', ')}. Previously learned instructions remain available from now on.`
     : (program.length ? `Worktree ${String.fromCharCode(65+workspaceIndex)} restored. Continue where you left off.` : "Build a program, then press Run.");
 }
-

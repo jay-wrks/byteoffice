@@ -15,7 +15,17 @@
 .java-editor-toolbar{background:#3b3d36!important;border-bottom:3px solid #242620!important;padding:7px 8px!important;gap:5px!important;align-items:center!important;flex-wrap:nowrap!important;box-shadow:inset 0 1px #66685d}
 .java-editor-toolbar button{height:29px!important;min-width:29px!important;border:1px solid #20221e!important;border-radius:3px!important;background:#55584e!important;color:#ece2c7!important;font:700 10px "Libre Franklin",sans-serif!important;padding:0 9px!important;box-shadow:0 2px 0 #20221e!important;letter-spacing:.02em!important}
 .java-editor-toolbar button:hover{background:#696d60!important;color:#fff5db!important}.java-editor-toolbar button:active{transform:translateY(1px)!important;box-shadow:0 1px 0 #20221e!important}
-.java-editor-toolbar #testBtn{margin-left:auto!important;background:#637156!important}.java-editor-toolbar #analyzeBtn{background:#7e6b45!important}.java-editor-toolbar .editor-tip{display:none!important}
+.java-editor-toolbar .editor-tip{display:none!important}
+.java-action-menu-wrap{position:relative;z-index:40}
+.java-action-menu-button{display:inline-flex!important;align-items:center;justify-content:center;gap:6px;min-width:70px!important;background:#6b705f!important;color:#fff0d0!important}
+.java-action-menu-button svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.java-action-menu{position:absolute;top:calc(100% + 7px);left:0;width:210px;padding:9px;background:#262923;border:2px solid #11140f;box-shadow:6px 7px 0 rgba(10,11,9,.45);z-index:1000}
+.java-action-menu[hidden]{display:none!important}
+.java-action-menu-title{padding:2px 4px 8px;color:#c9b980;font:800 9px/1 "DM Mono",monospace;letter-spacing:.14em}
+.java-action-menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.java-action-menu-grid button{width:100%;min-width:0!important;height:30px!important;padding:0 6px!important;background:#4e5349!important;color:#f1e7cc!important;border:1px solid #171a15!important;box-shadow:2px 2px 0 #151713!important;font-size:9px!important}
+.java-action-menu-grid button:hover:not(:disabled){background:#737b68!important}
+.java-action-menu-grid button:disabled{opacity:.4;cursor:not-allowed}
 
 .java-program-list{background:#242620!important;border:0!important;border-radius:0!important;min-height:390px!important;overflow:hidden!important;padding:0!important;position:relative!important}
 .java-editor-shell.byte-monaco-pending{visibility:hidden!important;pointer-events:none!important}
@@ -59,7 +69,7 @@
 
 .java-api-tray{background:#c7b99a!important;border-top:3px solid #7f745f!important;box-shadow:inset 0 1px #eee0bc!important}.java-api-tray .tray-title{color:#514a3d!important}.java-api-tray .tray-subtitle{color:#6e6554!important}.java-api-palette{grid-template-columns:repeat(2,minmax(0,1fr))!important}.java-api-card{border-radius:2px!important;background:#eadcba!important;border:1px solid #8c7f64!important;box-shadow:2px 2px #756a55!important}.java-api-card strong{color:#934638!important}.java-api-card span{color:#655c4e!important}.java-api-card:hover{background:#f7e8bf!important}
 
-@media(max-width:900px){.byte-ide{min-height:340px}.java-editor-toolbar button{padding:0 5px!important}.java-editor-toolbar #shareBtn,.java-editor-toolbar #undoBtn,.java-editor-toolbar #redoBtn{display:none!important}.java-api-palette{grid-template-columns:1fr!important}}
+@media(max-width:900px){.byte-ide{min-height:340px}.java-editor-toolbar button{padding:0 5px!important}.java-api-palette{grid-template-columns:1fr!important}}
 
 /* Compact IDE density: keep the game controls readable while giving Program.java the space. */
 .java-program-panel{min-height:0!important;overflow:hidden!important}

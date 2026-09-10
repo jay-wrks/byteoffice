@@ -32,14 +32,7 @@
   function setJavaAnswerControls(on){
     document.querySelector('.program-panel')?.classList.toggle('answer-mode',!!on);
     ['clearBtn','undoBtn','redoBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!!on;});
-    ['compactBtn','shareBtn','testBtn','analyzeBtn','runBtn','stepBtn','pauseBtn','resetBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=false;});
-    const copy=document.getElementById('copyAnswerBtn');
-    if(copy){
-      const label=`Copy to Program ${String.fromCharCode(65+(typeof workspaceIndex==='number'?workspaceIndex:0))}`;
-      copy.hidden=!on;
-      copy.disabled=!on;
-      if(copy.textContent!==label) copy.textContent=label;
-    }
+    ['formatBtn','shareBtn','testBtn','runBtn','stepBtn','pauseBtn','resetBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=false;});
     try{window.ByteOfficeIDE?.editor?.updateOptions({readOnly:!!on,domReadOnly:!!on});}catch(_){}
   }
 
@@ -133,26 +126,6 @@
     renderIdeTabs();
     return result;
   };
-
-  function copyAnswerToDraft(){
-    if(typeof answerMode==='undefined' || !answerMode) return;
-    const source=program?.find?.(x=>x?.op==='JAVA')?.source || javaAnswerSource();
-    answerMode=false;
-    program=[{op:'JAVA',source}];
-    const bucket=workspaceBucket(level().id);
-    bucket.active=workspaceIndex;
-    bucket.slots[workspaceIndex]=[{op:'JAVA',source}];
-    if(typeof saveWorkspace==='function') saveWorkspace(false);
-    if(typeof renderProgram==='function') renderProgram();
-    if(typeof resetMachine==='function') resetMachine(false);
-    setJavaAnswerControls(false);
-    renderIdeTabs();
-    if(typeof els!=='undefined'&&els.footer) els.footer.textContent=`Answer copied to Program ${String.fromCharCode(65+workspaceIndex)}. It is now editable.`;
-  }
-
-  document.addEventListener('click',e=>{
-    if(e.target.closest('#copyAnswerBtn')) copyAnswerToDraft();
-  });
 
   window.addEventListener('byteoffice-ide-ready',restoreTransitionSpeed);
 
