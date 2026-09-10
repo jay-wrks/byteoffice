@@ -3,6 +3,38 @@
 
   const originalSwitchWorkspace=window.switchWorkspace;
   const originalSaveSettings=window.saveSettings;
+  let savedTransitionSpeed=null;
+
+  function showWorkspaceLoading(){
+    const curtain=document.querySelector('#pageCurtain');
+    const label=document.querySelector('#curtainLabel');
+    if(curtain){
+      curtain.classList.remove('entering','leaving');
+      curtain.classList.add('active','workspace-loading');
+      curtain.setAttribute('aria-hidden','false');
+    }
+    if(label) label.textContent='Loading program…';
+    const speed=document.querySelector('#speedRange');
+    if(speed && savedTransitionSpeed===null){
+      savedTransitionSpeed=speed.value;
+      speed.value=speed.max||'8';
+      window.refreshSpeedControl?.();
+    }
+  }
+
+  function hideWorkspaceLoading(){
+    const curtain=document.querySelector('#pageCurtain');
+    if(curtain){
+      curtain.classList.remove('active','workspace-loading','entering','leaving');
+      curtain.setAttribute('aria-hidden','true');
+    }
+    const speed=document.querySelector('#speedRange');
+    if(speed && savedTransitionSpeed!==null){
+      speed.value=savedTransitionSpeed;
+      savedTransitionSpeed=null;
+      window.refreshSpeedControl?.();
+    }
+  }
 
   function javaAnswerSource(){
     const id=typeof level==='function' ? Number(level()?.id) : -1;
@@ -31,7 +63,7 @@
   }
 
   async function resetBeforeWorkspaceChange(){
-    document.querySelector('.java-program-panel')?.classList.add('byte-workspace-switching');
+    showWorkspaceLoading();
     const pending=window.stopRun?.();
     window.ByteOfficeExecutionHighlight?.clear?.();
     if(pending&&typeof pending.then==='function') await pending;
@@ -135,6 +167,8 @@
   document.addEventListener('click',e=>{
     if(e.target.closest('#copyAnswerBtn')) copyAnswerToDraft();
   });
+
+  window.addEventListener('byteoffice-ide-ready',hideWorkspaceLoading);
 
   const host=document.querySelector('#programList');
   if(host){

@@ -19,20 +19,6 @@
 
 .java-program-list{background:#242620!important;border:0!important;border-radius:0!important;min-height:390px!important;overflow:hidden!important;padding:0!important;position:relative!important}
 .java-editor-shell.byte-monaco-pending{visibility:hidden!important;pointer-events:none!important}
-.java-program-panel.byte-workspace-switching{position:relative!important}
-.java-program-panel.byte-workspace-switching:after{
-  content:"Loading program…";
-  position:absolute;
-  inset:0;
-  z-index:100;
-  display:grid;
-  place-items:center;
-  background:rgba(30,31,27,.94);
-  color:#d7c79f;
-  font:13px "Special Elite",serif;
-  letter-spacing:.06em;
-  pointer-events:all;
-}
 .byte-java-source-bridge{position:absolute!important;left:-10000px!important;top:0!important;width:1px!important;height:1px!important;min-width:0!important;min-height:0!important;max-width:1px!important;max-height:1px!important;opacity:0!important;pointer-events:none!important;visibility:hidden!important;z-index:-1!important}
 .byte-ide{height:100%;min-height:390px;display:grid;grid-template-rows:36px 31px 25px minmax(0,1fr) 25px;background:var(--ide-dark);color:#ded6c2;font-family:"Libre Franklin",system-ui,sans-serif;border-top:1px solid #171814;position:relative;z-index:1}
 
