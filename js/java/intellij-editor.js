@@ -158,9 +158,13 @@
     textarea.tabIndex=-1;
     if(legacyShell) legacyShell.remove();
 
+    const actionMenu=document.querySelector('.java-action-menu-wrap');
+    // The action menu lives inside the IDE title bar after the first mount.
+    // Detach it before replacing Monaco's old title bar so tab switches do
+    // not delete the menu with the old IDE DOM.
+    if(actionMenu) actionMenu.remove();
     host.querySelector('.byte-ide')?.remove();
     host.insertAdjacentHTML('beforeend',chrome());
-    const actionMenu=document.querySelector('.java-action-menu-wrap');
     const titleActions=document.querySelector('.byte-ide-title-actions');
     if(actionMenu&&titleActions) titleActions.appendChild(actionMenu);
 
