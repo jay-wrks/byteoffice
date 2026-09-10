@@ -21,7 +21,7 @@ window.ByteOfficeComponents.programPanel = String.raw`
 <div class="editor-toolbar java-editor-toolbar">
 <button id="undoBtn" title="Undo source edit">↶ Undo</button>
 <button id="redoBtn" title="Redo source edit">↷ Redo</button>
-<button id="compactBtn" title="Format Java source">Format</button>
+<button id="compactBtn" title="Show or hide the ByteBot API reference">API</button>
 <button id="testBtn" title="Compile once and run against both examples">Test ×2</button>
 <button id="analyzeBtn" title="Compile and inspect the ByteBot contract">Build</button>
 <button id="shareBtn" title="Import or export Program.java">Share</button>
