@@ -1,0 +1,70 @@
+name: Vendor browser libraries
+
+on:
+  push:
+    branches: [java_based_laern]
+    paths:
+      - '.github/workflows/vendor-browser-libs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: java_based_laern
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Download browser dependencies
+        run: |
+          rm -rf .vendor-tmp libs/monaco libs/fonts
+          mkdir -p .vendor-tmp libs/monaco libs/fonts
+          npm install --prefix .vendor-tmp --no-package-lock --no-save \
+            monaco-editor@0.56.0 \
+            @fontsource/libre-franklin \
+            @fontsource/dm-mono \
+            @fontsource/special-elite
+
+          cp -R .vendor-tmp/node_modules/monaco-editor/dev/vs libs/monaco/vs
+          cp .vendor-tmp/node_modules/monaco-editor/LICENSE libs/monaco/LICENSE
+
+          cp .vendor-tmp/node_modules/@fontsource/libre-franklin/files/libre-franklin-latin-500-normal.woff2 libs/fonts/
+          cp .vendor-tmp/node_modules/@fontsource/libre-franklin/files/libre-franklin-latin-600-normal.woff2 libs/fonts/
+          cp .vendor-tmp/node_modules/@fontsource/libre-franklin/files/libre-franklin-latin-700-normal.woff2 libs/fonts/
+          cp .vendor-tmp/node_modules/@fontsource/libre-franklin/files/libre-franklin-latin-800-normal.woff2 libs/fonts/
+          cp .vendor-tmp/node_modules/@fontsource/dm-mono/files/dm-mono-latin-400-normal.woff2 libs/fonts/
+          cp .vendor-tmp/node_modules/@fontsource/dm-mono/files/dm-mono-latin-500-normal.woff2 libs/fonts/
+          cp .vendor-tmp/node_modules/@fontsource/special-elite/files/special-elite-latin-400-normal.woff2 libs/fonts/
+
+          cp .vendor-tmp/node_modules/@fontsource/libre-franklin/LICENSE libs/fonts/LICENSE-libre-franklin
+          cp .vendor-tmp/node_modules/@fontsource/dm-mono/LICENSE libs/fonts/LICENSE-dm-mono
+          cp .vendor-tmp/node_modules/@fontsource/special-elite/LICENSE libs/fonts/LICENSE-special-elite
+
+          cat > libs/fonts/fonts.css <<'CSS'
+          @font-face{font-family:'Libre Franklin';font-style:normal;font-display:swap;font-weight:500;src:url('./libre-franklin-latin-500-normal.woff2') format('woff2')}
+          @font-face{font-family:'Libre Franklin';font-style:normal;font-display:swap;font-weight:600;src:url('./libre-franklin-latin-600-normal.woff2') format('woff2')}
+          @font-face{font-family:'Libre Franklin';font-style:normal;font-display:swap;font-weight:700;src:url('./libre-franklin-latin-700-normal.woff2') format('woff2')}
+          @font-face{font-family:'Libre Franklin';font-style:normal;font-display:swap;font-weight:800;src:url('./libre-franklin-latin-800-normal.woff2') format('woff2')}
+          @font-face{font-family:'DM Mono';font-style:normal;font-display:swap;font-weight:400;src:url('./dm-mono-latin-400-normal.woff2') format('woff2')}
+          @font-face{font-family:'DM Mono';font-style:normal;font-display:swap;font-weight:500;src:url('./dm-mono-latin-500-normal.woff2') format('woff2')}
+          @font-face{font-family:'Special Elite';font-style:normal;font-display:swap;font-weight:400;src:url('./special-elite-latin-400-normal.woff2') format('woff2')}
+          CSS
+
+          rm -rf .vendor-tmp
+
+      - name: Commit vendored libraries
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add libs/monaco libs/fonts
+          if git diff --cached --quiet; then
+            echo 'Vendored libraries already current.'
+            exit 0
+          fi
+          git commit -m 'vendor: store Monaco and fonts locally [skip ci]'
+          git push origin HEAD:java_based_laern
