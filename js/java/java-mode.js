@@ -578,7 +578,7 @@ public final class GameRunner {
     },{once:true});
   }
 
-  async function compileCurrentSource(force=false,{showError=false}={}){
+  async function compileCurrentSource(force=false,{showError=false,quiet=false}={}){
     const source=sourceFromProgram();
     if(!force && compiledSource===source){ updateTimingStatus(); return true; }
     if(compileJob){
