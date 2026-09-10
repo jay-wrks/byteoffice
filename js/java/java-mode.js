@@ -583,7 +583,7 @@ public final class GameRunner {
     if(!force && compiledSource===source){ updateTimingStatus(); return true; }
     if(compileJob){
       const result=await compileJob;
-      if(sourceFromProgram()!==source) return compileCurrentSource(false,{showError});
+      if(sourceFromProgram()!==source) return compileCurrentSource(false,{showError,quiet});
       if(!result&&showError) showCompileErrorPopup(lastCompileDiagnostics);
       return result;
     }
@@ -592,7 +592,7 @@ public final class GameRunner {
     let result=false;
     try{ result=await job; }
     finally{ if(compileJob===job) compileJob=null; }
-    if(sourceFromProgram()!==source) return compileCurrentSource(false,{showError});
+    if(sourceFromProgram()!==source) return compileCurrentSource(false,{showError,quiet});
     if(!result&&showError) showCompileErrorPopup(lastCompileDiagnostics);
     return result;
   }
