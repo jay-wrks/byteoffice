@@ -1,0 +1,44 @@
+name: Repair empty Java workspaces
+
+on:
+  push:
+    branches: [java_based_laern]
+    paths:
+      - '.github/workflows/repair-empty-java-workspaces.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: java_based_laern
+          fetch-depth: 0
+      - name: Patch Java workspace recovery
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('js/java/java-mode.js')
+          s=p.read_text()
+          old="if(!program.some(x=>x?.op==='JAVA')) assignSource(starterSource());"
+          new="if(!program.some(x=>x?.op==='JAVA' && typeof x.source==='string' && x.source.trim())) assignSource(starterSource());"
+          if old not in s:
+              raise SystemExit('switchWorkspace target not found')
+          s=s.replace(old,new,1)
+          old="if(!slot.some(x=>x?.op==='JAVA')){"
+          new="if(!slot.some(x=>x?.op==='JAVA' && typeof x.source==='string' && x.source.trim())){"
+          if old not in s:
+              raise SystemExit('loadLevel target not found')
+          s=s.replace(old,new,1)
+          p.write_text(s)
+          PY
+      - name: Commit repair
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add js/java/java-mode.js
+          git commit -m 'fix(java): restore starter source for empty workspaces'
+          git push origin HEAD:java_based_laern
