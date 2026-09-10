@@ -171,6 +171,13 @@
       find:{addExtraSpaceOnTop:false,autoFindInSelection:'never'},lightbulb:{enabled:'on'},occurrencesHighlight:'singleFile',selectionHighlight:true
     });
 
+    // Keep the primary run shortcut inside Monaco so Ctrl+Enter is consumed
+    // by the editor instead of inserting a newline or being handled twice by
+    // the page-level keyboard shortcuts.
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,()=>{
+      window.startRun?.();
+    });
+
     document.querySelector('#byteIdeLoading')?.classList.add('hidden');
     structuralMarkers(monaco,initial);
 

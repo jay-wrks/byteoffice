@@ -19,7 +19,7 @@ window.ByteOfficeComponents.programPanel = String.raw`
 <button id="analyzeBtn" title="Compile and inspect the ByteBot contract">Build</button>
 <button id="shareBtn" title="Import or export Program.java">Share</button>
 <button class="copy-answer-btn" hidden id="copyAnswerBtn">Copy to Draft</button>
-<span class="editor-tip">Real Java • ByteOffice calls program(ByteBot bot) • F9 run • F10 step</span>
+<span class="editor-tip">Real Java • ByteOffice calls program(ByteBot bot) • Ctrl+Enter / F9 run • F10 step</span>
 </div>
 <div aria-label="Java source editor" class="program-list java-program-list" id="programList"></div>
 <div class="command-tray java-api-tray" id="commandTray">

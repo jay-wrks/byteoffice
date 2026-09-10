@@ -33,6 +33,13 @@ if(els.commandTrayToggle) els.commandTrayToggle.addEventListener("click",()=>{
 setCommandTrayCollapsed(draftCommandTrayCollapsed,{remember:false});
 window.addEventListener("keydown",e=>{
   const typing=/INPUT|TEXTAREA/.test(document.activeElement.tagName);
+  if((e.ctrlKey||e.metaKey)&&e.key==="Enter"){
+    e.preventDefault();
+    // Monaco owns the shortcut while the editor is focused. This fallback
+    // keeps Ctrl+Enter useful from the rest of the page as well.
+    if(!e.target?.closest?.(".monaco-editor")) startRun();
+    return;
+  }
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"&&!typing){e.preventDefault();undoEdit();return;}
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="y"&&!typing){e.preventDefault();redoEdit();return;}
   if(e.code==="Space" && !typing){ e.preventDefault(); running?pause():startRun(); }
