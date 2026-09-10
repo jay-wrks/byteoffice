@@ -39,10 +39,10 @@
       ],
       colors:{
         'editor.background':'#1E1F22','editor.foreground':'#BCBEC4','editorLineNumber.foreground':'#5A5D63','editorLineNumber.activeForeground':'#A4A7AD',
-        'editor.lineHighlightBackground':'#25272B','editorCursor.foreground':'#A9B7C6','editor.selectionBackground':'#214283','editor.inactiveSelectionBackground':'#243A5E',
+        'editor.lineHighlightBackground':'#25272B','editorCursor.foreground':'#F0D58A','editor.selectionBackground':'#5A4D2E','editor.inactiveSelectionBackground':'#3B3529',
         'editorIndentGuide.background1':'#2F3136','editorIndentGuide.activeBackground1':'#4B4D52','editorBracketMatch.background':'#314A3A','editorBracketMatch.border':'#5F8268',
         'editorGutter.background':'#1E1F22','editorWidget.background':'#2B2D30','editorWidget.border':'#45484E','input.background':'#1F2024','input.border':'#4A4D53',
-        'list.hoverBackground':'#383A3F','list.activeSelectionBackground':'#2F65CA','scrollbarSlider.background':'#5B5D6255','scrollbarSlider.hoverBackground':'#6E707688'
+        'list.hoverBackground':'#383A3F','list.activeSelectionBackground':'#6E5A33','scrollbarSlider.background':'#5B5D6255','scrollbarSlider.hoverBackground':'#6E707688'
       }
     });
   }
@@ -81,7 +81,7 @@
   function chrome(){
     return `<div class="byte-ide">
       <div class="byte-ide-titlebar"><div class="byte-ide-project"><span class="java-dot">J</span><b>ByteOffice</b><small>›</small><span>src</span><small>›</small><span>Program.java</span></div><div class="byte-ide-title-actions"><button class="byte-ide-iconbtn" id="ideFind" title="Find">⌕</button><button class="byte-ide-iconbtn" id="ideCommand" title="Command Palette">⌘</button></div></div>
-      <div class="byte-ide-tabbar"><div class="byte-ide-tab active" id="ideFileTab"><span class="java-file-icon">J</span><span>Program.java</span></div></div>
+      <div class="byte-ide-tabbar"><div class="byte-ide-tab active" id="ideFileTab"><span>Program.java</span><i class="dirty" aria-hidden="true"></i></div></div>
       <div class="byte-ide-breadcrumb"><span>ByteOffice</span><i>›</i><span>src</span><i>›</i><span>Program.java</span><i>›</i><b>program(ByteBot bot)</b></div>
       <div class="byte-monaco-wrap"><div id="byteMonaco" class="byte-monaco"></div><div id="byteIdeLoading" class="byte-ide-loading">Loading Java IDE…</div></div>
       <div class="byte-ide-status"><span>ByteOffice Java IDE</span><span id="ideCursor">Ln 1, Col 1</span><span>Spaces: 4</span><span>UTF-8</span><span>Java 8</span></div>
@@ -120,14 +120,34 @@
     if(!host) return;
     textarea=host.querySelector('#javaEditor');
     if(!textarea) return;
-    const initial=textarea.value;
-    textarea.style.display='none';
+
+    // Keep the legacy textarea only as the source/persistence bridge. The old
+    // visual editor shell must not remain layered above Monaco, otherwise it
+    // can intercept pointer focus and make Monaco appear read-only/no-caret.
+    const legacyShell=textarea.closest('.java-editor-shell');
+    let initial=textarea.value;
+    if(!initial.trim() && window.ByteOfficeJava?.starterSource){
+      initial=window.ByteOfficeJava.starterSource();
+      textarea.value=initial;
+      textarea.dispatchEvent(new Event('input',{bubbles:true}));
+    }
+    host.appendChild(textarea);
+    textarea.classList.add('byte-java-source-bridge');
+    textarea.setAttribute('aria-hidden','true');
+    textarea.tabIndex=-1;
+    if(legacyShell) legacyShell.remove();
+
+    host.querySelector('.byte-ide')?.remove();
     host.insertAdjacentHTML('beforeend',chrome());
+
     const monaco=await loadMonaco();
     defineTheme(monaco);registerCompletions(monaco);
     model=monaco.editor.createModel(initial,'java',monaco.Uri.parse('inmemory://byteoffice/Program.java'));
-    editor=monaco.editor.create(document.querySelector('#byteMonaco'),{
-      model,theme:'byteoffice-darcula',automaticLayout:true,fontSize:13,fontFamily:'DM Mono, Menlo, Monaco, Consolas, monospace',fontLigatures:false,
+    const mount=document.querySelector('#byteMonaco');
+    if(!mount) throw new Error('ByteOffice Monaco mount element is missing.');
+
+    editor=monaco.editor.create(mount,{
+      model,theme:'byteoffice-darcula',readOnly:false,domReadOnly:false,automaticLayout:true,fontSize:13,fontFamily:'DM Mono, Menlo, Monaco, Consolas, monospace',fontLigatures:false,
       lineHeight:21,letterSpacing:.1,tabSize:4,insertSpaces:true,detectIndentation:false,wordWrap:'off',smoothScrolling:true,
       minimap:{enabled:true,side:'right',showSlider:'mouseover',scale:1},scrollBeyondLastLine:false,padding:{top:10,bottom:18},
       folding:true,foldingHighlight:true,showFoldingControls:'mouseover',bracketPairColorization:{enabled:true},guides:{bracketPairs:true,indentation:true,highlightActiveIndentation:true},
@@ -136,6 +156,7 @@
       overviewRulerLanes:2,overviewRulerBorder:false,glyphMargin:true,lineNumbersMinChars:3,contextmenu:true,links:false,
       find:{addExtraSpaceOnTop:false,autoFindInSelection:'never'},lightbulb:{enabled:'on'},occurrencesHighlight:'singleFile',selectionHighlight:true
     });
+
     document.querySelector('#byteIdeLoading')?.classList.add('hidden');
     structuralMarkers(monaco,initial);
 
@@ -143,9 +164,13 @@
       const value=model.getValue();syncToLegacy(value);structuralMarkers(monaco,value);
     });
     editor.onDidChangeCursorPosition(e=>{const el=document.querySelector('#ideCursor');if(el)el.textContent=`Ln ${e.position.lineNumber}, Col ${e.position.column}`;});
-    editor.onDidFocusEditorText(()=>document.querySelector('#ideFileTab')?.classList.remove('modified'));
-    document.querySelector('#ideFind')?.addEventListener('click',()=>editor.getAction('actions.find')?.run());
-    document.querySelector('#ideCommand')?.addEventListener('click',()=>editor.getAction('editor.action.quickCommand')?.run());
+    document.querySelector('#ideFind')?.addEventListener('click',()=>{editor.focus();editor.getAction('actions.find')?.run();});
+    document.querySelector('#ideCommand')?.addEventListener('click',()=>{editor.focus();editor.getAction('editor.action.quickCommand')?.run();});
+
+    // Explicit pointer focus makes interaction reliable inside ByteOffice's
+    // nested game panels even when surrounding controls manipulate focus.
+    mount.addEventListener('pointerdown',()=>editor?.focus(),{capture:true});
+    requestAnimationFrame(()=>{editor.layout();editor.focus();});
 
     window.ByteOfficeIDE={
       editor,model,
@@ -166,7 +191,7 @@
     window.renderProgram=function(){
       if(editor){editor.dispose();model?.dispose();editor=null;model=null;window.ByteOfficeIDE=null;}
       oldRender.apply(this,arguments);
-      queueMicrotask(()=>mountEditor().catch(err=>{console.error('ByteOffice IDE failed:',err);const host=document.querySelector('#programList');if(host){const ta=host.querySelector('#javaEditor');if(ta)ta.style.display='block';}}));
+      queueMicrotask(()=>mountEditor().catch(err=>{console.error('ByteOffice IDE failed:',err);const host=document.querySelector('#programList');if(host){const ta=host.querySelector('#javaEditor');if(ta){ta.classList.remove('byte-java-source-bridge');ta.style.display='block';}}}));
     };
   }
 
