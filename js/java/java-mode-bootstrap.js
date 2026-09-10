@@ -23,9 +23,10 @@
 
       (0,eval)(source+'\n//# sourceURL=js/java/java-mode.patched.js');
 
-      // Upgrade the raw textarea into a real IDE before the remaining UI and
-      // key bindings attach. The hidden textarea remains the persistence/runtime bridge.
+      // Monaco provides the IDE behavior; the following theme layer makes it
+      // visually part of ByteOffice's paper/factory world instead of a generic IDE.
       await loadClassicScript('js/java/intellij-editor.js');
+      await loadClassicScript('js/java/byteoffice-monaco-theme.js');
       await loadClassicScript('js/java/java-ui.js');
       await loadClassicScript('js/app/bindings.js');
     }catch(err){
