@@ -251,7 +251,15 @@
       clearExecution(){cancelAnimationFrame(scrollAnimation);if(decorations.length) decorations=editor.deltaDecorations(decorations,[]);executionMarkerLine=-1;if(executionMarker){executionMarker.hidden=true;executionMarker.style.transition='none';executionMarker.classList.remove('byte-exec-progress-running','byte-exec-progress-done');}},
       startExecutionProgress(){
         if(!executionMarker) return;
+        const shimmer=executionMarker.querySelector('.byte-exec-motion-shimmer');
         executionMarker.classList.remove('byte-exec-progress-done');
+        executionMarker.classList.remove('byte-exec-progress-running');
+        if(shimmer){
+          shimmer.style.animation='none';
+          shimmer.style.transform='translateX(-110%)';
+          void shimmer.offsetWidth;
+          shimmer.style.animation='';
+        }
         executionMarker.classList.add('byte-exec-progress-running');
       },
       finishExecutionProgress(){
