@@ -112,7 +112,15 @@ public final class GameRunner {
   function sourceLines(){ return sourceFromProgram().split(/\r?\n/); }
   function instrumentJavaSource(source){
     const methods='take|send|copyTo|copyFrom|place|pick|add|subtract|hasNext|isZero|isNegative|isHolding|memorySize|isEmpty';
-    const call=new RegExp('\\bbot\\s*\\.\\s*(?:'+methods+')\\s*\\(','y');
+    // Discover every ByteBot variable, not just the required program
+    // parameter named `bot`. This also covers local ByteBot objects and
+    // helper-method parameters.
+    const names=new Set(['bot']);
+    const declaration=/\b(?:byteoffice\s*\.\s*)?ByteBot\s+([A-Za-z_$][\w$]*)/g;
+    let declarationMatch;
+    while((declarationMatch=declaration.exec(source))) names.add(declarationMatch[1]);
+    const receiver=Array.from(names).sort((a,b)=>b.length-a.length).map(name=>name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|');
+    const call=new RegExp('\\b('+receiver+')\\s*\\.\\s*(?:'+methods+')\\s*\\(','y');
     let blockComment=false;
     return source.split(/(\r?\n)/).map((part,index,parts)=>{
       if(/^\r?\n$/.test(part)) return part;
@@ -136,7 +144,7 @@ public final class GameRunner {
         if(ch==='/'&&part[i+1]==='*'){out+='/*';i+=2;blockComment=true;continue;}
         call.lastIndex=i;
         const match=call.exec(part);
-        if(match){out+='bot.__byteOfficeSourceLine('+lineNumber+'); '+match[0];i=call.lastIndex;continue;}
+        if(match){out+=match[1]+'.__byteOfficeSourceLine('+lineNumber+'); '+match[0];i=call.lastIndex;continue;}
         out+=ch;i++;
       }
       return out;
