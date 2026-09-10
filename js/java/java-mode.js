@@ -520,18 +520,24 @@ public final class GameRunner {
     }
   }
 
-  function finishCompileFailure(startedAt,diagnostics){
+  function finishCompileFailure(startedAt,diagnostics,quiet=false){
     lastCompileMs=performance.now()-startedAt;
     lastCompileDiagnostics=String(diagnostics||'').trim()||'The Java compiler rejected Program.java. Check the source and try again.';
     updateTimingStatus();
     compiledSource=null;
+    if(quiet){
+      setStatus('READY','ready');
+      updateJavaStatus('Editing · compile on Run','idle');
+      els.footer.textContent='Java source changed. Click RUN to check compilation.';
+      return false;
+    }
     updateJavaStatus('Compile error','error');
     setStatus('COMPILE ERROR','error');
     els.footer.textContent='Java compilation failed. Fix the compiler errors, then run again.';
     return false;
   }
 
-  async function compileSource(source){
+  async function compileSource(source,{quiet=false}={}){
     const startedAt=performance.now();
     updateTimingStatus('compile');
     try{
@@ -540,16 +546,17 @@ public final class GameRunner {
       els.footer.textContent='Compiling your Java source inside the browser…';
       mountSources(instrumentJavaSource(source));
       const result=await runJavaCompiler();
-      if(result.exit!==0) return finishCompileFailure(startedAt,result.diagnostics);
+      if(result.exit!==0) return finishCompileFailure(startedAt,result.diagnostics,quiet);
       lastCompileMs=performance.now()-startedAt;
       lastCompileDiagnostics='';
       updateTimingStatus();
       if(sourceFromProgram()===source) compiledSource=source;
+      setStatus('READY','ready');
       updateJavaStatus('Compiled · Java 8','ready');
       els.footer.textContent='Java compiled successfully. Ready to run ByteBot.';
       return true;
     }catch(err){
-      return finishCompileFailure(startedAt,err?.message||String(err));
+      return finishCompileFailure(startedAt,err?.message||String(err),quiet);
     }
   }
 
@@ -580,7 +587,7 @@ public final class GameRunner {
       if(!result&&showError) showCompileErrorPopup(lastCompileDiagnostics);
       return result;
     }
-    const job=compileSource(source);
+    const job=compileSource(source,{quiet});
     compileJob=job;
     let result=false;
     try{ result=await job; }
@@ -597,11 +604,11 @@ public final class GameRunner {
       try{
         const pending=window.stopRun?.();
         if(pending&&typeof pending.then==='function') await pending;
-        await compileCurrentSource();
+        await compileCurrentSource(false,{quiet:true});
       }catch(err){
-        updateJavaStatus('Compile error','error');
-        setStatus('COMPILE ERROR','error');
-        els.footer.textContent=err?.message||String(err);
+        setStatus('READY','ready');
+        updateJavaStatus('Editing · compile on Run','idle');
+        els.footer.textContent='Java source changed. Click RUN to check compilation.';
       }
     },Math.max(0,Number(delay)||0));
   }

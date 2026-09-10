@@ -197,13 +197,15 @@
     });
 
     document.querySelector('#byteIdeLoading')?.classList.add('hidden');
-    structuralMarkers(monaco,initial);
+    // Do not surface transient compiler-style errors while the user is
+    // editing. RUN owns compiler feedback and shows the complete diagnostic.
+    monaco.editor.setModelMarkers(model,'byteoffice-live',[]);
 
     editor.onDidChangeModelContent(()=>{
       window.stopRun?.();
       window.ByteOfficeExecutionHighlight?.clear?.();
       window.highlightLine?.(-1);
-      const value=model.getValue();syncToLegacy(value);structuralMarkers(monaco,value);window.ByteOfficeIDE?.clearExecution?.();
+      const value=model.getValue();syncToLegacy(value);monaco.editor.setModelMarkers(model,'byteoffice-live',[]);window.ByteOfficeIDE?.clearExecution?.();
       window.ByteOfficeJava?.scheduleCompile?.();
     });
     editor.onDidChangeCursorPosition(e=>{const el=document.querySelector('#ideCursor');if(el)el.textContent=`Ln ${e.position.lineNumber}, Col ${e.position.column}`;});
