@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cjrtnc.leaningtech.com; connect-src 'self' https://cjrtnc.leaningtech.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://cjrtnc.leaningtech.com; frame-src https://cjrtnc.leaningtech.com; font-src 'self' data:; img-src 'self' data: blob:; object-src 'none'; base-uri 'self'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; connect-src 'self'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; frame-src 'self'; font-src 'self' data:; img-src 'self' data: blob:; object-src 'none'; base-uri 'self'" />
   <title>Byte Office — Learn Java by Running the Machine</title>
   <link rel="stylesheet" href="libs/fonts/fonts.css?v=20260911-0070" />
   <link rel="stylesheet" href="css/core.css?v=20260911-0070" />
@@ -25,8 +25,8 @@
   <link rel="stylesheet" href="css/java-workspace-tabs.css?v=20260911-0070" />
   <link rel="stylesheet" href="css/java-execution.css?v=20260911-0070" />
   <link rel="stylesheet" href="css/ide-layout.css?v=20260911-0070" />
-  <!-- CheerpJ remains the only external runtime dependency. -->
-  <script src="https://cjrtnc.leaningtech.com/4.3/loader.js"></script>
+  <!-- Local CheerpJ runtime bundle. -->
+  <script src="libs/cheerpj/4.3/loader.js"></script>
 </head>
 <body>
   <div id="byteOfficeRoot"></div>
