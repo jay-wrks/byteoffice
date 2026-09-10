@@ -1,0 +1,43 @@
+name: Remove remote font import
+
+on:
+  push:
+    branches: [java_based_laern]
+    paths:
+      - '.github/workflows/remove-remote-font-import.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: java_based_laern
+
+      - name: Remove Google Fonts import from core.css
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('css/core.css')
+          text = p.read_text()
+          lines = text.splitlines(True)
+          if lines and 'fonts.googleapis.com' in lines[0]:
+              text = ''.join(lines[1:])
+              p.write_text(text)
+          PY
+
+      - name: Commit cleanup
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add css/core.css
+          if git diff --cached --quiet; then
+            echo 'No remote font import remains.'
+            exit 0
+          fi
+          git commit -m 'fix(css): remove remote Google Fonts import [skip ci]'
+          git push origin HEAD:java_based_laern
