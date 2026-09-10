@@ -30,9 +30,10 @@
     return `<button type="button" class="byte-ide-tab ${active?'active':''} ${extra}" data-ide-workspace="${slot}" role="tab" aria-selected="${active?'true':'false'}"><span>${label}</span><i class="dirty" aria-hidden="true"></i></button>`;
   }
 
-  function resetBeforeWorkspaceChange(){
-    window.stopRun?.();
+  async function resetBeforeWorkspaceChange(){
+    const pending=window.stopRun?.();
     window.ByteOfficeExecutionHighlight?.clear?.();
+    if(pending&&typeof pending.then==='function') await pending;
     window.resetMachine?.(false);
   }
 
@@ -88,8 +89,8 @@
     renderIdeTabs();
   }
 
-  window.switchWorkspace=function(next){
-    resetBeforeWorkspaceChange();
+  window.switchWorkspace=async function(next){
+    await resetBeforeWorkspaceChange();
     if(next==='answer') return enterAnswer();
     return returnToDraft(next);
   };

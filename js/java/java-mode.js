@@ -372,8 +372,9 @@ public final class GameRunner {
   }
 
   async function performAction(op,arg,line){
+    const actionExecution=execution;
     await waitForExecutionPermit();
-    if(!javaMachine||javaMachine.cancelled||execution?.cancelled) return 7;
+    if(!javaMachine||javaMachine.cancelled||!actionExecution||actionExecution.cancelled||execution!==actionExecution) return 7;
     if(javaMachine.halted) return 7;
     line=Number.isFinite(+line)?+line:-1;
     javaMachine.lastLine=line;
@@ -409,6 +410,11 @@ public final class GameRunner {
       animating=true;
       try{ await animateTransition(transition); } finally { animating=false; }
     }
+
+    // A tab change/reset may have cancelled this Java session while the
+    // physical animation was still finishing. Never continue the old action
+    // against the newly reset machine.
+    if(!javaMachine||javaMachine.cancelled||actionExecution.cancelled||execution!==actionExecution) return 7;
 
     if(event==='write'){
       const i=javaMachine.output.length-1;
@@ -582,6 +588,7 @@ public final class GameRunner {
     els.footer.textContent='Java execution paused. STEP executes one ByteBot action; RUN continues.';
   };
   window.stopRun=function(){
+    const pending=execution?.task;
     running=false;
     if(execution){
       execution.cancelled=true; execution.mode='run';
@@ -589,6 +596,7 @@ public final class GameRunner {
       while(execution.waiters.length) execution.waiters.shift()();
     }
     execution=null;
+    return pending&&typeof pending.then==='function' ? Promise.resolve(pending).catch(()=>{}) : Promise.resolve();
   };
 
   window.resetMachine=function(message=true){
