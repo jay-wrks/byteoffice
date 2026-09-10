@@ -43,17 +43,18 @@
     min-width:0!important;
     z-index:20!important;
     box-shadow:-12px 0 24px rgba(29,25,19,.26)!important;
-    animation:byteIdeExpandOverFloor .22s cubic-bezier(.2,.72,.2,1) both;
   }
 
   .game-layout.ide-maximized>.java-program-panel .java-program-list{
     min-height:0!important;
   }
-}
 
-@keyframes byteIdeExpandOverFloor{
-  from{clip-path:inset(0 0 0 45%);transform:translateX(18px)}
-  to{clip-path:inset(0 0 0 0);transform:translateX(0)}
+  .game-layout>.java-program-panel.ide-layout-animating{
+    will-change:transform,opacity,box-shadow;
+    backface-visibility:hidden;
+    transform-origin:top left;
+    z-index:40!important;
+  }
 }
 
 .ide-layout-toggle{
