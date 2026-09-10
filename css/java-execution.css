@@ -12,6 +12,31 @@
   box-shadow:0 0 10px rgba(211,174,86,.35);
   will-change:transform;
 }
+.java-program-panel .byte-exec-motion-shimmer{
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  width:24%;
+  opacity:0;
+  transform:translateX(-110%);
+  background:linear-gradient(90deg,transparent,rgba(255,239,169,.82),transparent);
+  pointer-events:none;
+}
+.java-program-panel .byte-exec-progress-running .byte-exec-motion-shimmer{
+  opacity:1;
+  animation:byteExecutionShimmer .9s linear infinite;
+}
+.java-program-panel .byte-exec-progress-done .byte-exec-motion-shimmer{
+  opacity:.9;
+  transform:translateX(430%);
+  transition:transform .16s linear,opacity .16s ease;
+}
+@keyframes byteExecutionShimmer{
+  from{transform:translateX(-110%)}
+  to{transform:translateX(430%)}
+}
 @media (prefers-reduced-motion:reduce){
   .java-program-panel .byte-exec-motion-marker{transition:none!important}
+  .java-program-panel .byte-exec-motion-shimmer{animation:none!important;transform:translateX(180%)!important;transition:none!important}
 }

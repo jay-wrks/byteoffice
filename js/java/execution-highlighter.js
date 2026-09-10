@@ -22,7 +22,12 @@
     async function wrapped(transition){
       const line=Number(transition?.executedPc);
       if(Number.isFinite(line)&&line>0) highlight(line);
-      return original.apply(this,arguments);
+      window.ByteOfficeIDE?.startExecutionProgress?.();
+      try{
+        return await original.apply(this,arguments);
+      }finally{
+        window.ByteOfficeIDE?.finishExecutionProgress?.();
+      }
     }
     wrapped.__byteOfficeExecutionHighlightWrapped=true;
     wrapped.__byteOfficeOriginal=original;
