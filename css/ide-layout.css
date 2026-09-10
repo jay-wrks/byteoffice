@@ -3,33 +3,57 @@
   .game-layout{
     grid-template-columns:260px minmax(420px,1fr) 400px!important;
     gap:12px!important;
-    transition:grid-template-columns .22s ease,gap .22s ease;
+    position:relative!important;
   }
 
   .game-layout>.mission-panel,
   .game-layout>.factory-panel,
   .game-layout>.java-program-panel{
     min-width:0;
-    transition:opacity .16s ease,transform .22s ease;
   }
 
-  /* Coding focus: give the IDE the whole work area. */
-  .game-layout.ide-maximized{
-    grid-template-columns:minmax(0,1fr)!important;
-    gap:0!important;
+  /*
+   * Coding focus is an overlay, not a layout teardown.
+   * Mission stays visible. The factory remains mounted and keeps running
+   * underneath while the IDE expands over columns 2 + 3.
+   */
+  .game-layout.ide-maximized>.mission-panel{
+    position:relative!important;
+    z-index:30!important;
   }
 
-  .game-layout.ide-maximized>.mission-panel,
   .game-layout.ide-maximized>.factory-panel{
-    display:none!important;
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:none!important;
+    position:relative!important;
+    z-index:1!important;
   }
 
   .game-layout.ide-maximized>.java-program-panel{
-    grid-column:1!important;
-    width:100%!important;
-    min-width:0!important;
+    display:flex!important;
+    position:absolute!important;
+    top:0!important;
+    right:0!important;
+    bottom:0!important;
+    left:272px!important; /* 260px mission + 12px grid gap */
+    width:auto!important;
     max-width:none!important;
+    min-width:0!important;
+    z-index:20!important;
+    box-shadow:-12px 0 24px rgba(29,25,19,.26)!important;
+    animation:byteIdeExpandOverFloor .22s cubic-bezier(.2,.72,.2,1) both;
   }
+
+  .game-layout.ide-maximized>.java-program-panel .java-program-list{
+    min-height:0!important;
+  }
+}
+
+@keyframes byteIdeExpandOverFloor{
+  from{clip-path:inset(0 0 0 45%);transform:translateX(18px)}
+  to{clip-path:inset(0 0 0 0);transform:translateX(0)}
 }
 
 .ide-layout-toggle{
@@ -43,20 +67,26 @@
   opacity:.88;
 }
 
-/* In coding focus mode the editor should feel like the main workspace. */
+/* The editor gets the full height of the game work area while overlaid. */
 .byte-ide-maximized .java-program-panel{
   min-width:0!important;
 }
 .byte-ide-maximized .java-program-list{
-  min-height:calc(100vh - 300px)!important;
+  min-height:0!important;
+  flex:1 1 auto!important;
 }
 
+/*
+ * On compact layouts there is no useful horizontal floor region to overlay.
+ * Keep the mission visible and show the IDE beneath it; do not destroy the
+ * factory state, merely hide its visual panel while focus mode is active.
+ */
 @media (max-width:1100px){
   .game-layout,
   .game-layout.ide-maximized{
     grid-template-columns:1fr!important;
   }
-  .game-layout.ide-maximized>.mission-panel{display:none!important}
-  .game-layout.ide-maximized>.factory-panel{display:none!important}
-  .game-layout.ide-maximized>.java-program-panel{min-height:calc(100vh - 150px)}
+  .game-layout.ide-maximized>.mission-panel{display:block!important}
+  .game-layout.ide-maximized>.factory-panel{visibility:hidden!important;height:0!important;min-height:0!important;overflow:hidden!important}
+  .game-layout.ide-maximized>.java-program-panel{min-height:calc(100vh - 240px)}
 }
