@@ -249,6 +249,7 @@
       },
       clearExecution(){cancelAnimationFrame(scrollAnimation);if(decorations.length) decorations=editor.deltaDecorations(decorations,[]);executionMarkerLine=-1;if(executionMarker){executionMarker.hidden=true;executionMarker.style.transition='none';}}
     };
+    document.querySelector('.java-program-panel')?.classList.remove('byte-workspace-switching');
     if(pendingExecutionLine>0){
       const line=pendingExecutionLine;
       pendingExecutionLine=-1;

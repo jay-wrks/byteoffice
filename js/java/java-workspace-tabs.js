@@ -31,6 +31,7 @@
   }
 
   async function resetBeforeWorkspaceChange(){
+    document.querySelector('.java-program-panel')?.classList.add('byte-workspace-switching');
     const pending=window.stopRun?.();
     window.ByteOfficeExecutionHighlight?.clear?.();
     if(pending&&typeof pending.then==='function') await pending;
@@ -90,6 +91,8 @@
   }
 
   window.switchWorkspace=async function(next){
+    if((next==='answer' && typeof answerMode!=='undefined' && answerMode) ||
+       (next!=='answer' && (typeof answerMode==='undefined'||!answerMode) && parseInt(next,10)===workspaceIndex)) return;
     await resetBeforeWorkspaceChange();
     if(next==='answer') return enterAnswer();
     return returnToDraft(next);
