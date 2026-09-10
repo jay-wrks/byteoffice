@@ -185,10 +185,6 @@
     executionMarker.className='byte-exec-motion-marker';
     executionMarker.setAttribute('aria-hidden','true');
     executionMarker.hidden=true;
-    const shimmer=document.createElement('span');
-    shimmer.className='byte-exec-motion-shimmer';
-    shimmer.setAttribute('aria-hidden','true');
-    executionMarker.appendChild(shimmer);
     mount.appendChild(executionMarker);
     editor.onDidScrollChange(()=>positionExecutionMarker(executionMarkerLine,false));
     editor.onDidLayoutChange(()=>positionExecutionMarker(executionMarkerLine,false));
@@ -248,25 +244,7 @@
           scrollAnimation=requestAnimationFrame(animateScroll);
         }
       },
-      clearExecution(){cancelAnimationFrame(scrollAnimation);if(decorations.length) decorations=editor.deltaDecorations(decorations,[]);executionMarkerLine=-1;if(executionMarker){executionMarker.hidden=true;executionMarker.style.transition='none';executionMarker.classList.remove('byte-exec-progress-running','byte-exec-progress-done');}},
-      startExecutionProgress(){
-        if(!executionMarker) return;
-        const shimmer=executionMarker.querySelector('.byte-exec-motion-shimmer');
-        executionMarker.classList.remove('byte-exec-progress-done');
-        executionMarker.classList.remove('byte-exec-progress-running');
-        if(shimmer){
-          shimmer.style.animation='none';
-          shimmer.style.transform='translateX(-110%)';
-          void shimmer.offsetWidth;
-          shimmer.style.animation='';
-        }
-        executionMarker.classList.add('byte-exec-progress-running');
-      },
-      finishExecutionProgress(){
-        if(!executionMarker) return;
-        executionMarker.classList.remove('byte-exec-progress-running');
-        executionMarker.classList.add('byte-exec-progress-done');
-      }
+      clearExecution(){cancelAnimationFrame(scrollAnimation);if(decorations.length) decorations=editor.deltaDecorations(decorations,[]);executionMarkerLine=-1;if(executionMarker){executionMarker.hidden=true;executionMarker.style.transition='none';}}
     };
     if(pendingExecutionLine>0){
       const line=pendingExecutionLine;
