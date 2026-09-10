@@ -35,7 +35,7 @@
 .room-sign{display:flex;align-items:center;justify-content:space-between;padding:0 11px}.room-sign i{font:700 7px "DM Mono",monospace;color:#66736a;letter-spacing:.12em;font-style:normal}
 .factory-scene{perspective:900px;isolation:isolate}
 .factory-world-decor{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-.factory-back-wall{position:absolute;inset:0 100px 42%;background:
+.factory-back-wall{position:absolute;left:100px;right:100px;top:0;bottom:42%;background:
   linear-gradient(90deg,#ffffff08 1px,transparent 1px),
   linear-gradient(#ffffff08 1px,transparent 1px),
   linear-gradient(180deg,#77715f,#8f856d);background-size:68px 68px,68px 68px,auto;border-bottom:4px solid #5e594b;box-shadow:inset 0 -18px 30px #0002}
@@ -133,6 +133,6 @@ body.target-select-line .factory-panel{filter:brightness(.42)}body.target-select
 /* paper-like UI movement without overanimating */
 .modal-card,.home-file-card,.map-directory-sheet{transform-origin:50% 10%}.modal.opened .modal-card{animation:sheetEnter .2s cubic-bezier(.2,.8,.2,1) both}@keyframes sheetEnter{from{opacity:0;transform:translateY(10px) rotate(.25deg) scale(.985)}to{opacity:1;transform:none}}
 
-@media(max-width:1250px){.program-run-hint{display:none}.factory-back-wall{inset-right:90px;inset-left:90px}.home-mini-conveyor{opacity:.7}}
+@media(max-width:1250px){.program-run-hint{display:none}.factory-back-wall{left:90px;right:90px}.home-mini-conveyor{opacity:.7}}
 @media(max-width:900px){.top-more-popover{position:fixed;right:10px;top:54px}.factory-world-decor{opacity:.75}.home-world{opacity:.55}.home-wall-panel{display:none}.machine-console:before{display:none}.editor-tools-popover{position:fixed;right:12px;top:120px}.program-run-hint{display:none}}
 @media(prefers-reduced-motion:reduce){.home-status-lamp i,.home-mini-conveyor b,.road-level.current .road-level-pin,.status-lamp span.working,.win-stamp,.big-stars{animation:none!important}}
