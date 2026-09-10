@@ -1,0 +1,14 @@
+/* Final motion/game-feel layer for the ByteOffice redesign. */
+.factory-scene{transition:filter .24s ease,transform .34s cubic-bezier(.2,.75,.2,1)}
+.factory-panel:has(.status-lamp span.working) .factory-scene{filter:saturate(1.04) brightness(1.02)}
+.factory-panel:has(.program-row.active) .factory-scene{transform:scale(1.003)}
+.factory-panel:has(.robot-wrap.level-success-celebration) .factory-scene{animation:factoryVictoryFocus 1.05s cubic-bezier(.2,.8,.2,1) both}
+.factory-panel:has(.robot-wrap.wrong-output-recoil) .factory-scene{animation:factoryErrorFocus .5s ease both}
+@keyframes factoryVictoryFocus{0%{transform:scale(1);filter:none}32%{transform:scale(1.018);filter:brightness(1.08) saturate(1.08)}70%{transform:scale(1.008);filter:brightness(1.04)}100%{transform:scale(1);filter:none}}
+@keyframes factoryErrorFocus{0%,100%{transform:translateX(0);filter:none}22%{transform:translateX(-2px);filter:saturate(1.15)}44%{transform:translateX(2px)}66%{transform:translateX(-1px)}}
+.program-row.active .instruction>b{animation:activeInstructionPulse .65s ease-in-out infinite alternate}@keyframes activeInstructionPulse{from{color:#403a2f;text-shadow:none}to{color:#8d3f31;text-shadow:0 0 8px #c9724d44}}
+.machine-btn.run:not(:disabled){position:relative;overflow:hidden}.machine-btn.run:not(:disabled):after{content:"";position:absolute;left:-45%;top:0;width:35%;height:100%;background:linear-gradient(90deg,transparent,#ffffff22,transparent);transform:skewX(-18deg);transition:left .32s}.machine-btn.run:not(:disabled):hover:after{left:115%}
+.home-screen:not(.is-hidden) .home-file-card{animation:homeTerminalArrive .38s cubic-bezier(.2,.8,.2,1) both}@keyframes homeTerminalArrive{from{opacity:0;transform:translateY(12px) scale(.99)}to{opacity:1;transform:none}}
+.map-screen:not(.is-hidden) .roadmap-shell{animation:mapPowerOn .28s ease both}@keyframes mapPowerOn{from{opacity:.4;filter:brightness(.7)}to{opacity:1;filter:none}}
+.command-card.newly-unlocked{animation:newModule .75s cubic-bezier(.2,.8,.2,1) both}@keyframes newModule{0%{transform:scale(.94);filter:brightness(1.4)}55%{transform:scale(1.025)}100%{transform:none;filter:none}}
+@media(prefers-reduced-motion:reduce){.factory-panel:has(.robot-wrap.level-success-celebration) .factory-scene,.factory-panel:has(.robot-wrap.wrong-output-recoil) .factory-scene,.program-row.active .instruction>b,.home-screen:not(.is-hidden) .home-file-card,.map-screen:not(.is-hidden) .roadmap-shell,.command-card.newly-unlocked{animation:none!important}}
