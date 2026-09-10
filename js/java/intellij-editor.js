@@ -101,7 +101,7 @@
 
   function chrome(){
     return `<div class="byte-ide">
-      <div class="byte-ide-titlebar"><div class="byte-ide-project"><span class="java-dot">J</span><b>ByteOffice</b><small>›</small><span>src</span><small>›</small><span>Program.java</span></div><div class="byte-ide-title-actions"><button class="byte-ide-iconbtn" id="ideFind" title="Find">⌕</button><button class="byte-ide-iconbtn" id="ideCommand" title="Command Palette">⌘</button></div></div>
+      <div class="byte-ide-titlebar"><div class="byte-ide-project"><span class="java-dot">J</span><b>ByteOffice</b><small>›</small><span>src</span><small>›</small><span>Program.java</span></div><div class="byte-ide-title-actions"><button class="byte-ide-iconbtn" id="ideFind" title="Find">⌕</button><button class="byte-ide-iconbtn" id="ideCommand" title="Command Palette">⌘</button><div class="java-action-menu-wrap"><button aria-expanded="false" aria-haspopup="menu" aria-label="Open Program actions" class="java-action-menu-button" id="javaActionMenuButton" title="Program actions" type="button"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h14"/></svg><span>Menu</span></button><div aria-label="Program actions" class="java-action-menu" hidden id="javaActionMenu" role="menu"><div class="java-action-menu-title">PROGRAM ACTIONS</div><div class="java-action-menu-grid"><button id="undoBtn" role="menuitem" title="Undo source edit" type="button">↶ Undo</button><button id="redoBtn" role="menuitem" title="Redo source edit" type="button">↷ Redo</button><button id="formatBtn" role="menuitem" title="Format Java indentation" type="button">Format</button><button id="testBtn" role="menuitem" title="Compile once and run against both examples" type="button">Test ×2</button><button id="shareBtn" role="menuitem" title="Import or export Program.java" type="button">Share</button></div></div></div></div></div>
       <div class="byte-ide-tabbar"><div class="byte-ide-tab active" id="ideFileTab"><span>Program.java</span><i class="dirty" aria-hidden="true"></i></div></div>
       <div class="byte-ide-breadcrumb"><span>ByteOffice</span><i>›</i><span>src</span><i>›</i><span>Program.java</span><i>›</i><b>program(ByteBot bot)</b></div>
       <div class="byte-monaco-wrap"><div id="byteMonaco" class="byte-monaco"></div><div id="byteIdeLoading" class="byte-ide-loading">Loading Java IDE…</div></div>
@@ -158,15 +158,8 @@
     textarea.tabIndex=-1;
     if(legacyShell) legacyShell.remove();
 
-    const actionMenu=document.querySelector('.java-action-menu-wrap');
-    // The action menu lives inside the IDE title bar after the first mount.
-    // Detach it before replacing Monaco's old title bar so tab switches do
-    // not delete the menu with the old IDE DOM.
-    if(actionMenu) actionMenu.remove();
     host.querySelector('.byte-ide')?.remove();
     host.insertAdjacentHTML('beforeend',chrome());
-    const titleActions=document.querySelector('.byte-ide-title-actions');
-    if(actionMenu&&titleActions) titleActions.appendChild(actionMenu);
 
     const monaco=await loadMonaco();
     defineTheme(monaco);registerCompletions(monaco);

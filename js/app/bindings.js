@@ -12,11 +12,17 @@ $("#runBtn").addEventListener("click",startRun);
 $("#stepBtn").addEventListener("click",async()=>{ await stepOnce(); });
 $("#pauseBtn").addEventListener("click",pause); $("#resetBtn").addEventListener("click",()=>{ if(!animating) resetMachine(); });
 $("#clearBtn").addEventListener("click",()=>{ if(animating) return; commitEdit(); stopRun(); program=[]; selectedRow=null; renderProgram(); resetMachine(); saveWorkspace(); });
-els.undo.addEventListener("click",undoEdit); els.redo.addEventListener("click",redoEdit);
-els.compact.addEventListener("click",()=>{ if(window.ByteOfficeJava?.format) window.ByteOfficeJava.format(); else renderProgram(); });
 $("#homeBtn").addEventListener("click",()=>goHome());
 $("#levelBtn").addEventListener("click",()=>openRoadmap('game')); $("#dashboardBtn").addEventListener("click",showDashboard); $("#achievementsBtn").addEventListener("click",showAchievements); $("#helpBtn").addEventListener("click",showHelp); $("#hintBtn").addEventListener("click",showHint);
-$("#testBtn").addEventListener("click",()=>{metaStore.usedTestLab=true;saveMeta();showTestLab();}); $("#shareBtn").addEventListener("click",showShare);
+document.addEventListener("click",e=>{
+  const action=e.target.closest("#undoBtn,#redoBtn,#formatBtn,#testBtn,#shareBtn");
+  if(!action||action.disabled) return;
+  if(action.id==="undoBtn") undoEdit();
+  else if(action.id==="redoBtn") redoEdit();
+  else if(action.id==="formatBtn") window.ByteOfficeJava?.format?.();
+  else if(action.id==="testBtn"){metaStore.usedTestLab=true;saveMeta();showTestLab();}
+  else if(action.id==="shareBtn") showShare();
+});
 $("#modalClose").addEventListener("click",()=>closeModal());
 els.modal.addEventListener("click",e=>{if(e.target===els.modal){ if(currentPage==='map'&&els.modal.classList.contains('roadmap-modal')) closeRoadmapRoute(); else closeModal(); }});
 $("#soundBtn").addEventListener("click",e=>{settings.sfx=!settings.sfx;saveSettings();e.currentTarget.textContent=settings.sfx?'🔊':'🔇';});
@@ -30,17 +36,19 @@ if(els.commandTrayToggle) els.commandTrayToggle.addEventListener("click",()=>{
   const next=!els.commandTray?.classList.contains("collapsed");
   setCommandTrayCollapsed(next,{remember:true});
 });
-const javaActionMenuButton=$("#javaActionMenuButton"),javaActionMenu=$("#javaActionMenu");
-if(javaActionMenuButton&&javaActionMenu){
-  const setJavaActionMenu=(open)=>{
-    javaActionMenu.hidden=!open;
-    javaActionMenuButton.setAttribute("aria-expanded",open?"true":"false");
-  };
-  javaActionMenuButton.addEventListener("click",e=>{e.stopPropagation();setJavaActionMenu(javaActionMenu.hidden);});
-  javaActionMenu.addEventListener("click",e=>{if(e.target.closest("button")) setJavaActionMenu(false);});
-  document.addEventListener("click",e=>{if(!e.target.closest(".java-action-menu-wrap")) setJavaActionMenu(false);});
-  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!javaActionMenu.hidden){setJavaActionMenu(false);javaActionMenuButton.focus();}});
-}
+const setJavaActionMenu=(open)=>{
+  const menu=$("#javaActionMenu"),button=$("#javaActionMenuButton");
+  if(!menu||!button) return;
+  menu.hidden=!open;
+  button.setAttribute("aria-expanded",open?"true":"false");
+};
+document.addEventListener("click",e=>{
+  const menuButton=e.target.closest("#javaActionMenuButton");
+  if(menuButton){e.stopPropagation();setJavaActionMenu($("#javaActionMenu")?.hidden);return;}
+  if(e.target.closest(".java-action-menu")){if(e.target.closest("button")) setJavaActionMenu(false);return;}
+  setJavaActionMenu(false);
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#javaActionMenu")?.hidden){setJavaActionMenu(false);$("#javaActionMenuButton")?.focus();}});
 setCommandTrayCollapsed(draftCommandTrayCollapsed,{remember:false});
 window.addEventListener("keydown",e=>{
   const typing=/INPUT|TEXTAREA/.test(document.activeElement.tagName);

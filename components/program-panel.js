@@ -22,20 +22,5 @@ window.ByteOfficeComponents.programPanel = String.raw`
 </div>
 <div class="command-palette java-api-palette" id="commandPalette"></div>
 </div>
-<div class="java-action-menu-wrap">
-<button aria-expanded="false" aria-haspopup="menu" aria-label="Open Program actions" class="java-action-menu-button" id="javaActionMenuButton" title="Program actions" type="button">
-<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h14"/></svg><span>Menu</span>
-</button>
-<div aria-label="Program actions" class="java-action-menu" hidden id="javaActionMenu" role="menu">
-<div class="java-action-menu-title">PROGRAM ACTIONS</div>
-<div class="java-action-menu-grid">
-<button id="undoBtn" role="menuitem" title="Undo source edit" type="button">↶ Undo</button>
-<button id="redoBtn" role="menuitem" title="Redo source edit" type="button">↷ Redo</button>
-<button id="formatBtn" role="menuitem" title="Format Java indentation" type="button">Format</button>
-<button id="testBtn" role="menuitem" title="Compile once and run against both examples" type="button">Test ×2</button>
-<button id="shareBtn" role="menuitem" title="Import or export Program.java" type="button">Share</button>
-</div>
-</div>
-</div>
 </aside>
 `;

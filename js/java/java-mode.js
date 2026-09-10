@@ -187,9 +187,12 @@ public final class GameRunner {
     assignSource(next); renderProgram(); resetMachine(false); updateEditorButtons();
   };
   window.updateEditorButtons=function(){
-    if(els.undo) els.undo.disabled=!javaUndo.length;
-    if(els.redo) els.redo.disabled=!javaRedo.length;
-    if(els.compact){ els.compact.disabled=false; els.compact.textContent='Format'; }
+    const undo=document.querySelector('#undoBtn')||els.undo;
+    const redo=document.querySelector('#redoBtn')||els.redo;
+    const format=document.querySelector('#formatBtn')||els.compact;
+    if(undo) undo.disabled=!javaUndo.length;
+    if(redo) redo.disabled=!javaRedo.length;
+    if(format){ format.disabled=false; format.textContent='Format'; }
   };
 
   function updateLineNumbers(){
