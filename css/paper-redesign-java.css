@@ -1,0 +1,32 @@
+/* Java editor integration for the paper redesign. */
+.java-program-panel{background:#d6c39a!important;border-color:#4d392c!important;box-shadow:0 6px 0 #14130f99!important}
+.java-program-panel .program-header{background:#f2e5c5!important;border-bottom:3px solid #a9916d!important;box-shadow:inset 0 -1px #fff4d8!important}
+.java-program-panel .program-header h2{color:#2d2923!important;font-size:19px!important}
+.java-program-panel .java-version-badge{background:#5d7558!important;color:#fff0d2!important;border-color:#344831!important;box-shadow:0 2px 0 #2a3828!important}
+.java-program-panel .clear-btn{background:#dfcba1!important;border-color:#977d58!important;color:#6d3328!important;box-shadow:2px 2px #a68d68!important}
+.java-program-panel .workspace-switcher{background:#ccb78d!important;border-bottom:2px solid #8f7656!important}
+.java-program-panel .workspace-tab{background:#d9c69c!important;color:#5c5141!important;border-color:#a58c67!important}
+.java-program-panel .workspace-tab.active{background:#f2e3bd!important;color:#2c2923!important;box-shadow:inset 0 -3px #aa513f!important}
+.java-editor-toolbar{background:#3d4038!important;border-bottom:3px solid #242720!important;box-shadow:inset 0 1px #68695e!important}
+.java-editor-toolbar button,.java-action-menu-button,.byte-ide-iconbtn{background:#5a5e52!important;color:#eee3c8!important;border-color:#282b25!important}
+.java-editor-toolbar button:hover,.java-action-menu-button:hover,.byte-ide-iconbtn:hover{background:#727767!important;color:#fff4d8!important}
+.java-program-list,.byte-monaco-wrap,.java-program-panel .monaco-editor,.java-program-panel .monaco-editor-background,.java-program-panel .monaco-editor .margin{background:#22241f!important}
+.byte-ide{background:#22241f!important}
+.byte-ide-titlebar{background:linear-gradient(#4b4f45,#393c35)!important;border-bottom-color:#23251f!important}
+.byte-ide-tabbar{background:#292c27!important;border-bottom-color:#171915!important}
+.byte-ide-tab{background:#ddcba3!important;border-color:#7e6c54!important;color:#352f27!important}
+.byte-ide-tab.active:after{background:#b9934e!important}
+.byte-ide-breadcrumb{background:#33362f!important;color:#958f7d!important}
+.byte-ide-status{background:#34372f!important;border-top-color:#23251f!important;color:#afa792!important}
+.java-api-tray{background:#ead9b5!important;border-top:4px solid #8e7454!important;box-shadow:inset 0 1px #fff1cf!important;padding:10px 12px!important}
+.java-api-tray .tray-title{color:#41392f!important;font-family:"Special Elite",serif!important;font-size:13px!important}
+.java-api-tray .tray-subtitle{color:#6e604d!important}
+.java-api-card{background:#f3e2bb!important;border-color:#967e5b!important;box-shadow:2px 2px #887053!important}
+.java-api-card:hover{background:#fff0c9!important}
+.java-api-card strong{color:#984737!important}
+
+/* Paper tabs and title strip read as part of the same desk, not an embedded foreign IDE. */
+.byte-ide-titlebar:before{content:"BYTE OFFICE";font:800 7px "DM Mono",monospace;letter-spacing:.12em;color:#a99f88;margin-right:3px}
+.java-program-panel .program-header:before{content:"";position:absolute;width:52px;height:12px;right:72px;top:-5px;background:#d3bd8b88;transform:rotate(2deg);pointer-events:none}
+
+@media(max-width:1200px){.java-api-palette{grid-template-columns:1fr!important}}
