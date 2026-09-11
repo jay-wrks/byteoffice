@@ -1,0 +1,26 @@
+/* Byte Office image-backed decorative layer. Flexible text/data stays HTML. */
+.home-backdrop-grid{background-image:url('../assets/ui/backgrounds/desk-grid-extracted.svg')!important;background-size:128px 128px!important;background-repeat:repeat!important;opacity:1!important}
+.bo-prop{position:absolute;pointer-events:none;user-select:none;z-index:1;filter:drop-shadow(0 5px 6px rgba(15,12,8,.32))}
+.home-workspace,.home-resume-copy,.topbar,.roadmap-head,.road-viewport,.factory-panel,.room-sign{position:relative}
+.home-workspace>.bo-prop{z-index:0}.home-terminal-wrap,.home-note,.home-doodle,.home-coffee,.home-pencil{position:relative;z-index:2}
+.home-coffee{position:absolute!important;right:-24px!important;top:94px!important;width:180px;height:160px;background:none!important;box-shadow:none!important;border:0!important}
+.home-coffee>span{display:none!important}.home-coffee img{width:100%;height:100%;object-fit:contain;display:block}
+.home-pencil{position:absolute!important;right:24px!important;bottom:20px!important;width:220px!important;height:95px!important;background:none!important;border:0!important;box-shadow:none!important;transform:rotate(-15deg)}
+.home-pencil img{width:100%;height:100%;object-fit:contain;display:block}
+.home-note{background:none!important;box-shadow:none!important;padding:22px 20px!important;isolation:isolate}
+.home-note>.note-paper-img,.home-mini-note>.note-paper-img{position:absolute;inset:-8px;z-index:-1;width:calc(100% + 16px);height:calc(100% + 16px);object-fit:fill;filter:drop-shadow(0 4px 5px rgba(10,8,5,.22));pointer-events:none}
+.home-mini-note{position:relative;isolation:isolate;background:none!important;box-shadow:none!important}
+.bo-home-compass{left:130px;bottom:34px;width:120px;transform:rotate(-8deg)}
+.bo-home-map{left:105px;top:92px;width:210px;opacity:.48;transform:rotate(-6deg)}
+.bo-home-loose-paper{right:0;bottom:0;width:230px;opacity:.6;transform:rotate(7deg)}
+.bo-home-pushpins{right:250px;top:42px;width:110px}
+
+.room-sign{color:#2f271d!important;background:none!important;overflow:visible!important;isolation:isolate}
+.room-sign>.wood-sign-img{position:absolute;z-index:-1;left:50%;top:50%;width:290px;height:84px;transform:translate(-50%,-50%);object-fit:fill;filter:drop-shadow(0 4px 3px rgba(0,0,0,.35))}
+.bo-game-coffee{right:355px;bottom:48px;width:120px;z-index:8}
+.bo-game-plant{left:250px;top:72px;width:135px;z-index:3}
+.bo-game-pencil{right:10px;bottom:12px;width:180px;transform:rotate(-7deg);z-index:4}
+
+.roadmap-head{overflow:visible!important}.bo-roadmap-compass{right:255px;top:12px;width:92px;opacity:.9}.bo-roadmap-pin{left:18px;top:7px;width:70px}.road-region-tag{background:none!important;isolation:isolate;overflow:visible!important}.road-region-tag>.wood-sign-img{position:absolute;z-index:-1;left:50%;top:50%;width:210px;height:74px;transform:translate(-50%,-50%);object-fit:fill;filter:drop-shadow(0 3px 3px rgba(0,0,0,.35))}
+
+@media(max-width:1100px){.bo-home-map,.bo-home-compass,.bo-home-loose-paper{opacity:.18}.bo-game-plant{display:none}.bo-game-coffee{right:330px;width:95px}}
