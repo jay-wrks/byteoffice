@@ -1,0 +1,874 @@
+{
+  "source": "assets/objects/pack2.png",
+  "method": "alpha",
+  "threshold": 16,
+  "min_area": 800,
+  "padding": 8,
+  "regions": [
+    {
+      "label": 1,
+      "area": 23843,
+      "bbox": [
+        15,
+        11,
+        185,
+        252
+      ],
+      "id": 1,
+      "filename": "robot-with-clipboard.png"
+    },
+    {
+      "label": 2,
+      "area": 21510,
+      "bbox": [
+        214,
+        11,
+        365,
+        253
+      ],
+      "id": 2,
+      "filename": "robot-front.png"
+    },
+    {
+      "label": 3,
+      "area": 20737,
+      "bbox": [
+        500,
+        11,
+        642,
+        253
+      ],
+      "id": 3,
+      "filename": "robot-back.png"
+    },
+    {
+      "label": 4,
+      "area": 20391,
+      "bbox": [
+        1047,
+        11,
+        1209,
+        179
+      ],
+      "id": 4,
+      "filename": "coffee-cup-robot-logo.png"
+    },
+    {
+      "label": 5,
+      "area": 18506,
+      "bbox": [
+        1221,
+        11,
+        1382,
+        165
+      ],
+      "id": 5,
+      "filename": "hanging-potted-plant.png"
+    },
+    {
+      "label": 6,
+      "area": 13367,
+      "bbox": [
+        386,
+        12,
+        470,
+        252
+      ],
+      "id": 6,
+      "filename": "robot-side.png"
+    },
+    {
+      "label": 7,
+      "area": 28469,
+      "bbox": [
+        885,
+        13,
+        1039,
+        404
+      ],
+      "id": 7,
+      "filename": "trailing-ivy-plant.png"
+    },
+    {
+      "label": 8,
+      "area": 36055,
+      "bbox": [
+        648,
+        15,
+        876,
+        253
+      ],
+      "id": 8,
+      "filename": "large-potted-plant.png"
+    },
+    {
+      "label": 9,
+      "area": 2949,
+      "bbox": [
+        1403,
+        19,
+        1521,
+        138
+      ],
+      "id": 9,
+      "filename": "coffee-stain-ring.png"
+    },
+    {
+      "label": 12,
+      "area": 4313,
+      "bbox": [
+        1379,
+        152,
+        1494,
+        227
+      ],
+      "id": 10,
+      "filename": "crumpled-paper.png"
+    },
+    {
+      "label": 14,
+      "area": 29809,
+      "bbox": [
+        1058,
+        183,
+        1290,
+        346
+      ],
+      "id": 11,
+      "filename": "stacked-books.png"
+    },
+    {
+      "label": 16,
+      "area": 6194,
+      "bbox": [
+        1313,
+        216,
+        1408,
+        312
+      ],
+      "id": 12,
+      "filename": "brown-gear.png"
+    },
+    {
+      "label": 18,
+      "area": 2565,
+      "bbox": [
+        1432,
+        240,
+        1517,
+        317
+      ],
+      "id": 13,
+      "filename": "gold-paperclip.png"
+    },
+    {
+      "label": 21,
+      "area": 22788,
+      "bbox": [
+        634,
+        266,
+        890,
+        396
+      ],
+      "id": 14,
+      "filename": "wooden-arrow-sign.png"
+    },
+    {
+      "label": 22,
+      "area": 30106,
+      "bbox": [
+        22,
+        269,
+        314,
+        402
+      ],
+      "id": 15,
+      "filename": "dark-wood-sign.png"
+    },
+    {
+      "label": 23,
+      "area": 25268,
+      "bbox": [
+        337,
+        270,
+        608,
+        395
+      ],
+      "id": 16,
+      "filename": "light-wood-sign.png"
+    },
+    {
+      "label": 24,
+      "area": 4658,
+      "bbox": [
+        1376,
+        329,
+        1469,
+        404
+      ],
+      "id": 17,
+      "filename": "crumpled-paper-small.png"
+    },
+    {
+      "label": 25,
+      "area": 3443,
+      "bbox": [
+        1057,
+        338,
+        1130,
+        423
+      ],
+      "id": 18,
+      "filename": "black-binder-clip.png"
+    },
+    {
+      "label": 26,
+      "area": 1078,
+      "bbox": [
+        1325,
+        351,
+        1355,
+        415
+      ],
+      "id": 19,
+      "filename": "yellow-pushpin.png"
+    },
+    {
+      "label": 27,
+      "area": 1263,
+      "bbox": [
+        1216,
+        352,
+        1251,
+        419
+      ],
+      "id": 20,
+      "filename": "green-pushpin.png"
+    },
+    {
+      "label": 28,
+      "area": 1256,
+      "bbox": [
+        1271,
+        352,
+        1305,
+        418
+      ],
+      "id": 21,
+      "filename": "blue-pushpin.png"
+    },
+    {
+      "label": 29,
+      "area": 1233,
+      "bbox": [
+        1159,
+        353,
+        1192,
+        420
+      ],
+      "id": 22,
+      "filename": "red-pushpin.png"
+    },
+    {
+      "label": 30,
+      "area": 4480,
+      "bbox": [
+        1464,
+        360,
+        1521,
+        444
+      ],
+      "id": 23,
+      "filename": "letter-b-tile.png"
+    },
+    {
+      "label": 31,
+      "area": 10874,
+      "bbox": [
+        939,
+        387,
+        1039,
+        524
+      ],
+      "id": 24,
+      "filename": "folder-paper.png"
+    },
+    {
+      "label": 32,
+      "area": 17073,
+      "bbox": [
+        453,
+        407,
+        584,
+        557
+      ],
+      "id": 25,
+      "filename": "yellow-sticky-note.png"
+    },
+    {
+      "label": 33,
+      "area": 17392,
+      "bbox": [
+        598,
+        414,
+        739,
+        561
+      ],
+      "id": 26,
+      "filename": "pinned-paper-note.png"
+    },
+    {
+      "label": 34,
+      "area": 16210,
+      "bbox": [
+        20,
+        418,
+        142,
+        555
+      ],
+      "id": 27,
+      "filename": "graph-paper-note.png"
+    },
+    {
+      "label": 35,
+      "area": 19638,
+      "bbox": [
+        762,
+        419,
+        928,
+        562
+      ],
+      "id": 28,
+      "filename": "lined-note-paper.png"
+    },
+    {
+      "label": 36,
+      "area": 15656,
+      "bbox": [
+        157,
+        420,
+        286,
+        560
+      ],
+      "id": 29,
+      "filename": "blank-paper-note.png"
+    },
+    {
+      "label": 37,
+      "area": 13486,
+      "bbox": [
+        1057,
+        423,
+        1433,
+        481
+      ],
+      "id": 30,
+      "filename": "black-office-pen.png"
+    },
+    {
+      "label": 38,
+      "area": 15463,
+      "bbox": [
+        303,
+        424,
+        429,
+        552
+      ],
+      "id": 31,
+      "filename": "plain-paper-sheet.png"
+    },
+    {
+      "label": 39,
+      "area": 15135,
+      "bbox": [
+        1106,
+        464,
+        1521,
+        537
+      ],
+      "id": 32,
+      "filename": "yellow-pencil.png"
+    },
+    {
+      "label": 40,
+      "area": 11065,
+      "bbox": [
+        942,
+        507,
+        1123,
+        684
+      ],
+      "id": 33,
+      "filename": "compass.png"
+    },
+    {
+      "label": 41,
+      "area": 1520,
+      "bbox": [
+        1428,
+        535,
+        1516,
+        623
+      ],
+      "id": 34,
+      "filename": "doodle-arrow.png"
+    },
+    {
+      "label": 43,
+      "area": 880,
+      "bbox": [
+        1445,
+        550,
+        1500,
+        601
+      ],
+      "id": 35,
+      "filename": "doodle-question.png"
+    },
+    {
+      "label": 45,
+      "area": 8915,
+      "bbox": [
+        232,
+        567,
+        414,
+        635
+      ],
+      "id": 36,
+      "filename": "beige-tape-wide.png"
+    },
+    {
+      "label": 46,
+      "area": 9814,
+      "bbox": [
+        1144,
+        568,
+        1264,
+        685
+      ],
+      "id": 37,
+      "filename": "leaf-branch.png"
+    },
+    {
+      "label": 47,
+      "area": 8517,
+      "bbox": [
+        37,
+        572,
+        195,
+        630
+      ],
+      "id": 38,
+      "filename": "beige-tape-short.png"
+    },
+    {
+      "label": 48,
+      "area": 4946,
+      "bbox": [
+        454,
+        572,
+        558,
+        635
+      ],
+      "id": 39,
+      "filename": "brown-tape-small.png"
+    },
+    {
+      "label": 49,
+      "area": 5765,
+      "bbox": [
+        809,
+        576,
+        943,
+        626
+      ],
+      "id": 40,
+      "filename": "white-tape-small.png"
+    },
+    {
+      "label": 51,
+      "area": 5470,
+      "bbox": [
+        583,
+        577,
+        696,
+        631
+      ],
+      "id": 41,
+      "filename": "beige-tape-medium.png"
+    },
+    {
+      "label": 54,
+      "area": 3477,
+      "bbox": [
+        717,
+        584,
+        794,
+        671
+      ],
+      "id": 42,
+      "filename": "translucent-tape.png"
+    },
+    {
+      "label": 61,
+      "area": 2914,
+      "bbox": [
+        896,
+        619,
+        988,
+        702
+      ],
+      "id": 43,
+      "filename": "beige-tape-long.png"
+    },
+    {
+      "label": 63,
+      "area": 12152,
+      "bbox": [
+        807,
+        636,
+        891,
+        848
+      ],
+      "id": 44,
+      "filename": "lantern.png"
+    },
+    {
+      "label": 65,
+      "area": 24242,
+      "bbox": [
+        430,
+        642,
+        641,
+        872
+      ],
+      "id": 45,
+      "filename": "wooden-signpost.png"
+    },
+    {
+      "label": 66,
+      "area": 70431,
+      "bbox": [
+        27,
+        646,
+        410,
+        836
+      ],
+      "id": 46,
+      "filename": "treasure-map.png"
+    },
+    {
+      "label": 68,
+      "area": 897,
+      "bbox": [
+        1270,
+        669,
+        1332,
+        729
+      ],
+      "id": 47,
+      "filename": "microchip.png"
+    },
+    {
+      "label": 69,
+      "area": 11681,
+      "bbox": [
+        902,
+        675,
+        1123,
+        785
+      ],
+      "id": 48,
+      "filename": "scroll-paper.png"
+    },
+    {
+      "label": 73,
+      "area": 17206,
+      "bbox": [
+        641,
+        691,
+        794,
+        824
+      ],
+      "id": 49,
+      "filename": "loose-leaf.png"
+    },
+    {
+      "label": 77,
+      "area": 17139,
+      "bbox": [
+        1119,
+        729,
+        1283,
+        866
+      ],
+      "id": 50,
+      "filename": "small-gear.png"
+    },
+    {
+      "label": 78,
+      "area": 8541,
+      "bbox": [
+        1426,
+        754,
+        1517,
+        851
+      ],
+      "id": 51,
+      "filename": "rolled-parchment.png"
+    },
+    {
+      "label": 79,
+      "area": 10635,
+      "bbox": [
+        1297,
+        755,
+        1405,
+        867
+      ],
+      "id": 52,
+      "filename": "confidential-folder.png"
+    },
+    {
+      "label": 82,
+      "area": 20482,
+      "bbox": [
+        927,
+        780,
+        1105,
+        917
+      ],
+      "id": 53,
+      "filename": "paper-envelope-with-clip.png"
+    },
+    {
+      "label": 83,
+      "area": 16323,
+      "bbox": [
+        367,
+        795,
+        510,
+        1008
+      ],
+      "id": 54,
+      "filename": "dark-metal-plate.png"
+    },
+    {
+      "label": 84,
+      "area": 5446,
+      "bbox": [
+        129,
+        841,
+        246,
+        915
+      ],
+      "id": 55,
+      "filename": "folder-stack.png"
+    },
+    {
+      "label": 85,
+      "area": 1271,
+      "bbox": [
+        683,
+        841,
+        742,
+        874
+      ],
+      "id": 56,
+      "filename": "mushroom-red.png"
+    },
+    {
+      "label": 86,
+      "area": 2197,
+      "bbox": [
+        851,
+        847,
+        916,
+        900
+      ],
+      "id": 57,
+      "filename": "mushroom-brown.png"
+    },
+    {
+      "label": 87,
+      "area": 3936,
+      "bbox": [
+        21,
+        855,
+        116,
+        932
+      ],
+      "id": 58,
+      "filename": "yellow-flower.png"
+    },
+    {
+      "label": 88,
+      "area": 2568,
+      "bbox": [
+        739,
+        855,
+        832,
+        901
+      ],
+      "id": 59,
+      "filename": "grass-tuft-small.png"
+    },
+    {
+      "label": 89,
+      "area": 5465,
+      "bbox": [
+        256,
+        861,
+        368,
+        929
+      ],
+      "id": 60,
+      "filename": "mossy-rock-small.png"
+    },
+    {
+      "label": 90,
+      "area": 5795,
+      "bbox": [
+        1343,
+        873,
+        1516,
+        996
+      ],
+      "id": 61,
+      "filename": "grass-tuft-rock.png"
+    },
+    {
+      "label": 91,
+      "area": 5804,
+      "bbox": [
+        1133,
+        875,
+        1213,
+        958
+      ],
+      "id": 62,
+      "filename": "evergreen-tree.png"
+    },
+    {
+      "label": 92,
+      "area": 15113,
+      "bbox": [
+        520,
+        882,
+        697,
+        998
+      ],
+      "id": 63,
+      "filename": "mossy-rock-large.png"
+    },
+    {
+      "label": 93,
+      "area": 1067,
+      "bbox": [
+        1251,
+        882,
+        1288,
+        921
+      ],
+      "id": 64,
+      "filename": "tree-stump.png"
+    },
+    {
+      "label": 94,
+      "area": 4160,
+      "bbox": [
+        1205,
+        886,
+        1394,
+        988
+      ],
+      "id": 65,
+      "filename": "small-rock.png"
+    },
+    {
+      "label": 95,
+      "area": 13957,
+      "bbox": [
+        707,
+        903,
+        891,
+        1009
+      ],
+      "id": 66,
+      "filename": "wooden-fence.png"
+    },
+    {
+      "label": 96,
+      "area": 3062,
+      "bbox": [
+        117,
+        929,
+        182,
+        1003
+      ],
+      "id": 67,
+      "filename": "screwdriver.png"
+    },
+    {
+      "label": 97,
+      "area": 2296,
+      "bbox": [
+        197,
+        932,
+        256,
+        1001
+      ],
+      "id": 68,
+      "filename": "wooden-handle.png"
+    },
+    {
+      "label": 98,
+      "area": 6366,
+      "bbox": [
+        967,
+        935,
+        1131,
+        1004
+      ],
+      "id": 69,
+      "filename": "open-ended-wrench.png"
+    },
+    {
+      "label": 99,
+      "area": 2801,
+      "bbox": [
+        21,
+        941,
+        102,
+        1001
+      ],
+      "id": 70,
+      "filename": "grass-tuft-wide.png"
+    },
+    {
+      "label": 100,
+      "area": 3537,
+      "bbox": [
+        269,
+        944,
+        353,
+        1006
+      ],
+      "id": 71,
+      "filename": "mossy-rock-with-grass.png"
+    },
+    {
+      "label": 101,
+      "area": 2336,
+      "bbox": [
+        898,
+        946,
+        953,
+        1006
+      ],
+      "id": 72,
+      "filename": "grass-clump.png"
+    }
+  ],
+  "naming": "descriptive names assigned by visual asset type"
+}

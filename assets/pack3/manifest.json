@@ -1,0 +1,514 @@
+{
+  "source": "assets/objects/pack3.png",
+  "method": "alpha",
+  "threshold": 16,
+  "min_area": 800,
+  "padding": 8,
+  "regions": [
+    {
+      "label": 1,
+      "area": 35098,
+      "bbox": [
+        842,
+        13,
+        1087,
+        243
+      ],
+      "id": 1,
+      "filename": "large-potted-plant.png"
+    },
+    {
+      "label": 2,
+      "area": 61505,
+      "bbox": [
+        546,
+        24,
+        835,
+        423
+      ],
+      "id": 2,
+      "filename": "pinned-lined-note.png"
+    },
+    {
+      "label": 3,
+      "area": 34970,
+      "bbox": [
+        1105,
+        25,
+        1332,
+        240
+      ],
+      "id": 3,
+      "filename": "coffee-cup-robot-logo.png"
+    },
+    {
+      "label": 4,
+      "area": 29579,
+      "bbox": [
+        27,
+        32,
+        235,
+        192
+      ],
+      "id": 4,
+      "filename": "letter-b-wooden-tile.png"
+    },
+    {
+      "label": 5,
+      "area": 48606,
+      "bbox": [
+        246,
+        47,
+        641,
+        175
+      ],
+      "id": 5,
+      "filename": "plain-wooden-sign.png"
+    },
+    {
+      "label": 6,
+      "area": 16595,
+      "bbox": [
+        1360,
+        65,
+        1516,
+        233
+      ],
+      "id": 6,
+      "filename": "brown-gear.png"
+    },
+    {
+      "label": 7,
+      "area": 56045,
+      "bbox": [
+        30,
+        205,
+        323,
+        403
+      ],
+      "id": 7,
+      "filename": "torn-paper-card.png"
+    },
+    {
+      "label": 8,
+      "area": 31738,
+      "bbox": [
+        338,
+        210,
+        526,
+        405
+      ],
+      "id": 8,
+      "filename": "yellow-sticky-note.png"
+    },
+    {
+      "label": 9,
+      "area": 6436,
+      "bbox": [
+        1252,
+        251,
+        1342,
+        365
+      ],
+      "id": 9,
+      "filename": "black-binder-clip.png"
+    },
+    {
+      "label": 10,
+      "area": 4193,
+      "bbox": [
+        1359,
+        255,
+        1423,
+        366
+      ],
+      "id": 10,
+      "filename": "silver-paperclip.png"
+    },
+    {
+      "label": 11,
+      "area": 2928,
+      "bbox": [
+        1052,
+        264,
+        1105,
+        359
+      ],
+      "id": 11,
+      "filename": "red-pushpin.png"
+    },
+    {
+      "label": 12,
+      "area": 2991,
+      "bbox": [
+        1119,
+        264,
+        1174,
+        360
+      ],
+      "id": 12,
+      "filename": "green-pushpin.png"
+    },
+    {
+      "label": 13,
+      "area": 3124,
+      "bbox": [
+        1190,
+        265,
+        1246,
+        361
+      ],
+      "id": 13,
+      "filename": "yellow-pushpin.png"
+    },
+    {
+      "label": 14,
+      "area": 6077,
+      "bbox": [
+        927,
+        266,
+        1033,
+        383
+      ],
+      "id": 14,
+      "filename": "beige-tape-strip.png"
+    },
+    {
+      "label": 15,
+      "area": 9449,
+      "bbox": [
+        773,
+        269,
+        910,
+        357
+      ],
+      "id": 15,
+      "filename": "translucent-tape-strip.png"
+    },
+    {
+      "label": 16,
+      "area": 5328,
+      "bbox": [
+        1425,
+        272,
+        1505,
+        380
+      ],
+      "id": 16,
+      "filename": "blue-binder-clip.png"
+    },
+    {
+      "label": 17,
+      "area": 20491,
+      "bbox": [
+        1296,
+        387,
+        1512,
+        547
+      ],
+      "id": 17,
+      "filename": "mossy-rock-with-leaves.png"
+    },
+    {
+      "label": 18,
+      "area": 6153,
+      "bbox": [
+        1210,
+        389,
+        1282,
+        522
+      ],
+      "id": 18,
+      "filename": "loose-green-leaf.png"
+    },
+    {
+      "label": 19,
+      "area": 3052,
+      "bbox": [
+        1113,
+        393,
+        1165,
+        484
+      ],
+      "id": 19,
+      "filename": "loose-green-leaf-small.png"
+    },
+    {
+      "label": 20,
+      "area": 82228,
+      "bbox": [
+        870,
+        416,
+        1256,
+        834
+      ],
+      "id": 20,
+      "filename": "robot-with-clipboard.png"
+    },
+    {
+      "label": 21,
+      "area": 109913,
+      "bbox": [
+        26,
+        421,
+        581,
+        766
+      ],
+      "id": 21,
+      "filename": "treasure-map.png"
+    },
+    {
+      "label": 22,
+      "area": 33686,
+      "bbox": [
+        25,
+        435,
+        209,
+        636
+      ],
+      "id": 22,
+      "filename": "compass.png"
+    },
+    {
+      "label": 23,
+      "area": 31687,
+      "bbox": [
+        605,
+        441,
+        862,
+        654
+      ],
+      "id": 23,
+      "filename": "wooden-arrow-sign.png"
+    },
+    {
+      "label": 24,
+      "area": 42210,
+      "bbox": [
+        1284,
+        551,
+        1515,
+        766
+      ],
+      "id": 24,
+      "filename": "shipping-crate.png"
+    },
+    {
+      "label": 25,
+      "area": 8026,
+      "bbox": [
+        873,
+        667,
+        1009,
+        751
+      ],
+      "id": 25,
+      "filename": "beige-tape-medium.png"
+    },
+    {
+      "label": 26,
+      "area": 2397,
+      "bbox": [
+        649,
+        682,
+        702,
+        738
+      ],
+      "id": 26,
+      "filename": "brown-button.png"
+    },
+    {
+      "label": 27,
+      "area": 2446,
+      "bbox": [
+        783,
+        682,
+        838,
+        740
+      ],
+      "id": 27,
+      "filename": "silver-button.png"
+    },
+    {
+      "label": 28,
+      "area": 2351,
+      "bbox": [
+        712,
+        683,
+        766,
+        738
+      ],
+      "id": 28,
+      "filename": "dark-button.png"
+    },
+    {
+      "label": 29,
+      "area": 9718,
+      "bbox": [
+        468,
+        686,
+        626,
+        753
+      ],
+      "id": 29,
+      "filename": "torn-paper-strip.png"
+    },
+    {
+      "label": 30,
+      "area": 35338,
+      "bbox": [
+        18,
+        761,
+        233,
+        1001
+      ],
+      "id": 30,
+      "filename": "variegated-leaf-plant.png"
+    },
+    {
+      "label": 31,
+      "area": 27865,
+      "bbox": [
+        1288,
+        761,
+        1502,
+        996
+      ],
+      "id": 31,
+      "filename": "wooden-signpost.png"
+    },
+    {
+      "label": 32,
+      "area": 21385,
+      "bbox": [
+        226,
+        767,
+        361,
+        999
+      ],
+      "id": 32,
+      "filename": "folded-brown-paper.png"
+    },
+    {
+      "label": 33,
+      "area": 4401,
+      "bbox": [
+        406,
+        778,
+        518,
+        901
+      ],
+      "id": 33,
+      "filename": "coffee-stain-ring.png"
+    },
+    {
+      "label": 34,
+      "area": 19463,
+      "bbox": [
+        565,
+        786,
+        1011,
+        833
+      ],
+      "id": 34,
+      "filename": "yellow-pencil.png"
+    },
+    {
+      "label": 35,
+      "area": 1801,
+      "bbox": [
+        516,
+        800,
+        563,
+        883
+      ],
+      "id": 35,
+      "filename": "coffee-stain-drops.png"
+    },
+    {
+      "label": 41,
+      "area": 8586,
+      "bbox": [
+        816,
+        877,
+        948,
+        975
+      ],
+      "id": 36,
+      "filename": "grass-tuft.png"
+    },
+    {
+      "label": 42,
+      "area": 4225,
+      "bbox": [
+        1172,
+        877,
+        1264,
+        984
+      ],
+      "id": 37,
+      "filename": "mossy-rock-with-grass.png"
+    },
+    {
+      "label": 43,
+      "area": 17671,
+      "bbox": [
+        943,
+        879,
+        1156,
+        993
+      ],
+      "id": 38,
+      "filename": "grass-and-rock-clump.png"
+    },
+    {
+      "label": 45,
+      "area": 6857,
+      "bbox": [
+        338,
+        913,
+        421,
+        999
+      ],
+      "id": 39,
+      "filename": "book-icon-tile.png"
+    },
+    {
+      "label": 46,
+      "area": 6943,
+      "bbox": [
+        430,
+        913,
+        514,
+        999
+      ],
+      "id": 40,
+      "filename": "bar-chart-icon-tile.png"
+    },
+    {
+      "label": 47,
+      "area": 13944,
+      "bbox": [
+        522,
+        913,
+        691,
+        999
+      ],
+      "id": 41,
+      "filename": "shield-and-settings-icon-tiles.png"
+    },
+    {
+      "label": 48,
+      "area": 6988,
+      "bbox": [
+        697,
+        913,
+        781,
+        999
+      ],
+      "id": 42,
+      "filename": "user-icon-tile.png"
+    }
+  ],
+  "naming": "descriptive names assigned by visual asset type"
+}

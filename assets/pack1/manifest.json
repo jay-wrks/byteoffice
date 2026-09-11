@@ -1,0 +1,514 @@
+{
+  "source": "assets/objects/pack1.png",
+  "method": "alpha",
+  "threshold": 16,
+  "min_area": 800,
+  "padding": 8,
+  "regions": [
+    {
+      "label": 1,
+      "area": 31647,
+      "bbox": [
+        41,
+        12,
+        224,
+        300
+      ],
+      "id": 1,
+      "filename": "robot-with-clipboard.png"
+    },
+    {
+      "label": 2,
+      "area": 38692,
+      "bbox": [
+        440,
+        18,
+        704,
+        288
+      ],
+      "id": 2,
+      "filename": "potted-office-plant.png"
+    },
+    {
+      "label": 3,
+      "area": 13237,
+      "bbox": [
+        713,
+        68,
+        839,
+        233
+      ],
+      "id": 3,
+      "filename": "loose-leaves.png"
+    },
+    {
+      "label": 4,
+      "area": 13530,
+      "bbox": [
+        994,
+        79,
+        1184,
+        241
+      ],
+      "id": 4,
+      "filename": "black-binder-clip.png"
+    },
+    {
+      "label": 5,
+      "area": 3635,
+      "bbox": [
+        862,
+        88,
+        932,
+        216
+      ],
+      "id": 5,
+      "filename": "silver-paperclip-small.png"
+    },
+    {
+      "label": 6,
+      "area": 20670,
+      "bbox": [
+        277,
+        92,
+        463,
+        251
+      ],
+      "id": 6,
+      "filename": "coffee-cup-robot-logo.png"
+    },
+    {
+      "label": 7,
+      "area": 12896,
+      "bbox": [
+        1378,
+        107,
+        1519,
+        252
+      ],
+      "id": 7,
+      "filename": "brown-gear.png"
+    },
+    {
+      "label": 8,
+      "area": 8743,
+      "bbox": [
+        1210,
+        117,
+        1355,
+        245
+      ],
+      "id": 8,
+      "filename": "colored-pushpins.png"
+    },
+    {
+      "label": 9,
+      "area": 3569,
+      "bbox": [
+        907,
+        124,
+        976,
+        246
+      ],
+      "id": 9,
+      "filename": "silver-paperclip-large.png"
+    },
+    {
+      "label": 54,
+      "area": 22916,
+      "bbox": [
+        663,
+        289,
+        816,
+        450
+      ],
+      "id": 10,
+      "filename": "lined-note-paper.png"
+    },
+    {
+      "label": 55,
+      "area": 18579,
+      "bbox": [
+        485,
+        303,
+        626,
+        445
+      ],
+      "id": 11,
+      "filename": "yellow-sticky-note.png"
+    },
+    {
+      "label": 56,
+      "area": 11289,
+      "bbox": [
+        256,
+        306,
+        461,
+        450
+      ],
+      "id": 12,
+      "filename": "wooden-ruler.png"
+    },
+    {
+      "label": 60,
+      "area": 9863,
+      "bbox": [
+        1191,
+        328,
+        1338,
+        435
+      ],
+      "id": 13,
+      "filename": "beige-tape-strip.png"
+    },
+    {
+      "label": 61,
+      "area": 9611,
+      "bbox": [
+        855,
+        329,
+        976,
+        437
+      ],
+      "id": 14,
+      "filename": "crumpled-paper.png"
+    },
+    {
+      "label": 62,
+      "area": 10929,
+      "bbox": [
+        1008,
+        335,
+        1173,
+        434
+      ],
+      "id": 15,
+      "filename": "white-tape-strip.png"
+    },
+    {
+      "label": 63,
+      "area": 10654,
+      "bbox": [
+        1363,
+        335,
+        1519,
+        433
+      ],
+      "id": 16,
+      "filename": "brown-tape-strip.png"
+    },
+    {
+      "label": 64,
+      "area": 8191,
+      "bbox": [
+        17,
+        346,
+        268,
+        437
+      ],
+      "id": 17,
+      "filename": "yellow-pencil.png"
+    },
+    {
+      "label": 98,
+      "area": 23314,
+      "bbox": [
+        1062,
+        477,
+        1211,
+        648
+      ],
+      "id": 18,
+      "filename": "paper-stack.png"
+    },
+    {
+      "label": 99,
+      "area": 29422,
+      "bbox": [
+        25,
+        479,
+        290,
+        639
+      ],
+      "id": 19,
+      "filename": "dark-wood-sign.png"
+    },
+    {
+      "label": 100,
+      "area": 23690,
+      "bbox": [
+        738,
+        482,
+        877,
+        657
+      ],
+      "id": 20,
+      "filename": "plain-paper-card.png"
+    },
+    {
+      "label": 101,
+      "area": 24705,
+      "bbox": [
+        887,
+        483,
+        1054,
+        647
+      ],
+      "id": 21,
+      "filename": "pinned-paper-card.png"
+    },
+    {
+      "label": 102,
+      "area": 17906,
+      "bbox": [
+        1400,
+        487,
+        1518,
+        642
+      ],
+      "id": 22,
+      "filename": "notebook-edge.png"
+    },
+    {
+      "label": 103,
+      "area": 27128,
+      "bbox": [
+        515,
+        491,
+        722,
+        642
+      ],
+      "id": 23,
+      "filename": "dark-wood-sign-wide.png"
+    },
+    {
+      "label": 104,
+      "area": 24146,
+      "bbox": [
+        304,
+        495,
+        506,
+        642
+      ],
+      "id": 24,
+      "filename": "light-wood-sign.png"
+    },
+    {
+      "label": 105,
+      "area": 20638,
+      "bbox": [
+        1225,
+        502,
+        1391,
+        638
+      ],
+      "id": 25,
+      "filename": "folder-paper.png"
+    },
+    {
+      "label": 158,
+      "area": 8924,
+      "bbox": [
+        1411,
+        675,
+        1499,
+        834
+      ],
+      "id": 26,
+      "filename": "hanging-tag.png"
+    },
+    {
+      "label": 159,
+      "area": 13418,
+      "bbox": [
+        42,
+        678,
+        190,
+        846
+      ],
+      "id": 27,
+      "filename": "compass.png"
+    },
+    {
+      "label": 160,
+      "area": 21090,
+      "bbox": [
+        1235,
+        685,
+        1390,
+        833
+      ],
+      "id": 28,
+      "filename": "cardboard-square.png"
+    },
+    {
+      "label": 161,
+      "area": 15934,
+      "bbox": [
+        1067,
+        695,
+        1219,
+        828
+      ],
+      "id": 29,
+      "filename": "scrap-note.png"
+    },
+    {
+      "label": 162,
+      "area": 36005,
+      "bbox": [
+        577,
+        704,
+        897,
+        830
+      ],
+      "id": 30,
+      "filename": "parchment-strip.png"
+    },
+    {
+      "label": 163,
+      "area": 9791,
+      "bbox": [
+        938,
+        705,
+        1046,
+        827
+      ],
+      "id": 31,
+      "filename": "folded-paper-corner.png"
+    },
+    {
+      "label": 164,
+      "area": 22659,
+      "bbox": [
+        215,
+        713,
+        436,
+        820
+      ],
+      "id": 32,
+      "filename": "map-doodle.png"
+    },
+    {
+      "label": 209,
+      "area": 8300,
+      "bbox": [
+        50,
+        870,
+        179,
+        980
+      ],
+      "id": 33,
+      "filename": "leaf-corner.png"
+    },
+    {
+      "label": 211,
+      "area": 3302,
+      "bbox": [
+        701,
+        873,
+        812,
+        981
+      ],
+      "id": 34,
+      "filename": "coffee-stain-ring.png"
+    },
+    {
+      "label": 213,
+      "area": 5923,
+      "bbox": [
+        531,
+        879,
+        639,
+        967
+      ],
+      "id": 35,
+      "filename": "metal-screw.png"
+    },
+    {
+      "label": 214,
+      "area": 2071,
+      "bbox": [
+        879,
+        879,
+        950,
+        982
+      ],
+      "id": 36,
+      "filename": "metal-nut.png"
+    },
+    {
+      "label": 215,
+      "area": 1709,
+      "bbox": [
+        1261,
+        884,
+        1343,
+        976
+      ],
+      "id": 37,
+      "filename": "doodle-arrow.png"
+    },
+    {
+      "label": 216,
+      "area": 1384,
+      "bbox": [
+        1149,
+        886,
+        1235,
+        971
+      ],
+      "id": 38,
+      "filename": "doodle-smile.png"
+    },
+    {
+      "label": 217,
+      "area": 1068,
+      "bbox": [
+        1384,
+        894,
+        1488,
+        976
+      ],
+      "id": 39,
+      "filename": "doodle-star.png"
+    },
+    {
+      "label": 218,
+      "area": 1845,
+      "bbox": [
+        1009,
+        896,
+        1093,
+        980
+      ],
+      "id": 40,
+      "filename": "doodle-crown.png"
+    },
+    {
+      "label": 219,
+      "area": 3573,
+      "bbox": [
+        380,
+        897,
+        447,
+        963
+      ],
+      "id": 41,
+      "filename": "doodle-lightbulb.png"
+    },
+    {
+      "label": 220,
+      "area": 2886,
+      "bbox": [
+        241,
+        898,
+        314,
+        957
+      ],
+      "id": 42,
+      "filename": "dotted-curved-arrow.png"
+    }
+  ],
+  "naming": "descriptive names assigned by visual asset type"
+}
