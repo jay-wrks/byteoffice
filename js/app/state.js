@@ -14,7 +14,15 @@ let currentPage = "home";
 let roadmapOrigin = "home";
 let transitionBusy = false;
 let musicRig = null;
-let completed = JSON.parse(localStorage.getItem("byteOfficeCompletedV17") || "[]");
+function loadCompleted(){
+  try{
+    const parsed=JSON.parse(localStorage.getItem("byteOfficeCompletedV17") || "[]");
+    if(!Array.isArray(parsed)) return [];
+    const knownIds=new Set(levels.map(level=>level.id));
+    return [...new Set(parsed)].filter(id=>Number.isInteger(id)&&knownIds.has(id));
+  }catch(_){ return []; }
+}
+let completed = loadCompleted();
 let visualState = null;
 let selectedRow = null;
 let compactProgram = false;
