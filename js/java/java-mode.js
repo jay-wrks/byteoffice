@@ -88,6 +88,7 @@ public final class GameRunner {
   let javaRuntimePromise=null;
   let compiledSource=null;
   let execution=null;
+  let testRunning=false;
   let headless=false;
   let activeJavaLine=-1;
   let runtimeMessage='Java JVM not loaded';
@@ -360,6 +361,18 @@ public final class GameRunner {
   function machineSnapshot(extra={}){
     const m=javaMachine||{input:[],output:[],memory:[],held:null,steps:0};
     return {input:[...m.input],output:[...m.output],memory:[...m.memory],held:m.held,steps:m.steps,pc:m.lastLine||-1,halted:!!m.halted,error:m.error||null,...extra};
+  }
+
+  function setTestRunning(active){
+    testRunning=!!active;
+    ['runBtn','stepBtn','testBtn'].forEach(id=>{
+      const button=document.getElementById(id);
+      if(!button) return;
+      button.disabled=testRunning;
+      button.setAttribute('aria-busy',testRunning?'true':'false');
+    });
+    const testButton=document.getElementById('testBtn');
+    if(testButton) testButton.textContent=testRunning?'Testing…':'Test ×2';
   }
 
   function resetJavaState(input=level().input){
@@ -665,6 +678,7 @@ public final class GameRunner {
   }
 
   async function launchJava(mode='run'){
+    if(testRunning) return null;
     if(execution?.task){
       execution.mode=mode;
       running=mode==='run';
@@ -737,7 +751,12 @@ public final class GameRunner {
   }
 
   window.showTestLab=async function(){
+    if(testRunning) return;
+    setTestRunning(true);
     try{
+      // A headless test shares the Java session state with the visible runner.
+      // Always finish/cancel the visible session before replacing that state.
+      await window.stopRun?.();
       if(!(await compileCurrentSource())) return;
       const examples=level().examples||[{input:level().input,output:level().output}];
       const results=[];
@@ -749,6 +768,7 @@ public final class GameRunner {
       showModal(`<div class="modal-heading"><span>JAVA QA LAB</span><h2>Compiled Test Suite</h2><p>Your Program.java was compiled once and executed by the browser JVM against the level examples.</p></div><div class="test-grid">${rows}</div>`);
       resetMachine(false);
     }catch(err){ setStatus('JAVA ERROR','error'); els.footer.textContent=err.message; }
+    finally{ setTestRunning(false); }
   };
 
   window.analyzeProgram=async function(){
