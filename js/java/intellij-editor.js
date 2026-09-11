@@ -205,7 +205,7 @@
       window.stopRun?.();
       window.ByteOfficeExecutionHighlight?.clear?.();
       window.highlightLine?.(-1);
-      const value=model.getValue();syncToLegacy(value);monaco.editor.setModelMarkers(model,'byteoffice-live',[]);window.ByteOfficeIDE?.clearExecution?.();
+      const value=model.getValue();syncToLegacy(value);monaco.editor.setModelMarkers(model,'byteoffice-live',[]);monaco.editor.setModelMarkers(model,'byteoffice-compiler',[]);window.ByteOfficeIDE?.clearExecution?.();
       window.ByteOfficeJava?.scheduleCompile?.();
     });
     editor.onDidChangeCursorPosition(e=>{const el=document.querySelector('#ideCursor');if(el)el.textContent=`Ln ${e.position.lineNumber}, Col ${e.position.column}`;});
@@ -222,6 +222,7 @@
       focus(){editor.focus();},
       getValue(){return model.getValue();},
       setValue(v){if(model.getValue()!==v)model.setValue(v);},
+      setCompilerMarkers(markers){monaco.editor.setModelMarkers(model,'byteoffice-compiler',markers||[]);},
       revealLine(line){editor.revealLineInCenterIfOutsideViewport(line);},
       highlightLine(line){
         const n=Number(line), count=model?.getLineCount?.()||0;

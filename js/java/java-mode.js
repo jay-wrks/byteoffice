@@ -524,6 +524,25 @@ public final class GameRunner {
     return /(?:Program\.java|error:|warning:|expected|found|illegal|cannot find symbol|\^\s*$)/im.test(text);
   }
 
+  function compilerMarkers(source,diagnostics){
+    const lines=String(source).split(/\r?\n/);
+    return String(diagnostics||'').split(/\r?\n/).flatMap(line=>{
+      const match=line.match(/(?:^|[\\/])Program\.java:(\d+)(?::(\d+))?:\s*(error|warning):\s*(.*)$/i);
+      if(!match) return [];
+      const lineNumber=Math.max(1,Number(match[1]));
+      const sourceLine=lines[lineNumber-1]||'';
+      const column=Math.max(1,Number(match[2]||1));
+      return [{
+        severity:match[3].toLowerCase()==='warning' ? 4 : 8,
+        message:match[4]||'Java compiler diagnostic.',
+        startLineNumber:lineNumber,
+        startColumn:column,
+        endLineNumber:lineNumber,
+        endColumn:Math.min(sourceLine.length+1,column+1)
+      }];
+    });
+  }
+
   async function runJavaCompiler(){
     const original={log:console.log,warn:console.warn,error:console.error};
     const diagnostics=[];
@@ -553,6 +572,7 @@ public final class GameRunner {
   function finishCompileFailure(startedAt,diagnostics,quiet=false){
     lastCompileMs=performance.now()-startedAt;
     lastCompileDiagnostics=String(diagnostics||'').trim()||'The Java compiler rejected Program.java. Check the source and try again.';
+    window.ByteOfficeIDE?.setCompilerMarkers?.(compilerMarkers(sourceFromProgram(),lastCompileDiagnostics));
     updateTimingStatus();
     compiledSource=null;
     if(quiet){
@@ -579,6 +599,7 @@ public final class GameRunner {
       if(result.exit!==0) return finishCompileFailure(startedAt,result.diagnostics,quiet);
       lastCompileMs=performance.now()-startedAt;
       lastCompileDiagnostics='';
+      window.ByteOfficeIDE?.setCompilerMarkers?.([]);
       updateTimingStatus();
       if(sourceFromProgram()===source) compiledSource=source;
       setStatus('READY','ready');
