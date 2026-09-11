@@ -2,20 +2,30 @@ window.ByteOfficeComponents = window.ByteOfficeComponents || {};
 window.ByteOfficeComponents.home = String.raw`
 <section aria-label="Byte Office main menu" class="home-screen" id="homeScreen">
 <div aria-hidden="true" class="home-backdrop-grid"></div>
+<div aria-hidden="true" class="home-prop-layer">
+  <img class="home-prop prop-pencil" src="assets/pack3/yellow-pencil.png" alt="" />
+  <img class="home-prop prop-paperclip" src="assets/pack3/silver-paperclip.png" alt="" />
+  <img class="home-prop prop-plant" src="assets/pack3/variegated-leaf-plant.png" alt="" />
+  <img class="home-prop prop-gear" src="assets/pack3/brown-gear.png" alt="" />
+  <img class="home-prop prop-coffee-stain" src="assets/pack3/coffee-stain-ring.png" alt="" />
+</div>
 <a class="home-sign" href="#home" aria-label="Byte Office home"><img src="assets/pack1/dark-wood-sign-wide.png" alt="" /><span>BYTE OFFICE<small>Department of Tiny Programs</small></span></a>
 <img class="home-corner-paper corner-top-left" src="assets/home_page_corner_papers_and_bg/03_top_left_paper.png" alt="" />
+<img class="home-corner-paper corner-top-right" src="assets/home_page_corner_papers_and_bg/02_top_right_paper.png" alt="" />
 <img class="home-corner-paper corner-bottom-left" src="assets/home_page_corner_papers_and_bg/04_bottom_left_paper.png" alt="" />
 <img class="home-corner-paper corner-bottom-right" src="assets/home_page_corner_papers_and_bg/05_bottom_right_paper.png" alt="" />
 <div class="home-scene-object home-coffee"><img src="assets/pack1/coffee-cup-robot-logo.png" alt="" /></div>
 <div class="home-desk">
 <div class="home-brand-row">
-<div class="home-brand-mark">B</div>
+<div class="home-brand-mark"><img src="assets/pack3/letter-b-wooden-tile.png" alt="B" /></div>
 <div><span class="home-kicker">DEPARTMENT OF TINY PROGRAMS</span><h1>BYTE OFFICE</h1><p>Clock in. Build the instructions. Make the machine work.</p></div>
 </div>
 <div class="home-file-card">
 <img class="home-board-art" src="assets/home_page_corner_papers_and_bg/wooden_board.png" alt="" aria-hidden="true" />
-<img class="home-card-pin pin-one" src="assets/pack1/colored-pushpins.png" alt="" />
-<img class="home-card-pin pin-two" src="assets/pack1/colored-pushpins.png" alt="" />
+<img class="home-card-pin pin-one" src="assets/pack2/red-pushpin.png" alt="" />
+<img class="home-card-pin pin-two" src="assets/pack2/blue-pushpin.png" alt="" />
+<img class="home-card-clip" src="assets/pack3/black-binder-clip.png" alt="" aria-hidden="true" />
+<img class="home-card-tape" src="assets/pack3/beige-tape-strip.png" alt="" aria-hidden="true" />
 <div class="home-file-tab">EMPLOYEE TERMINAL</div>
 <div class="home-resume-copy">
 <span id="homeProgressLabel">CURRENT ASSIGNMENT</span>
@@ -23,6 +33,7 @@ window.ByteOfficeComponents.home = String.raw`
 <p id="homeLevelSummary">Your saved worktrees and progress are ready.</p>
 <div class="home-robot"><img src="assets/pack1/robot-with-clipboard.png" alt="ByteBot holding a clipboard" /></div>
 <div class="home-sticky"><img src="assets/home_page_corner_papers_and_bg/sticky_note.png" alt="Good programs build brighter futures" /></div>
+<img class="home-doodle-arrow" src="assets/pack1/doodle-arrow.png" alt="" aria-hidden="true" />
 </div>
 <div class="home-actions">
 <button class="home-primary" id="homeResumeBtn"><span>▶</span><b>Resume work</b><small>Continue your saved assignment</small><i>→</i></button>
