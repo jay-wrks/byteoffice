@@ -30,6 +30,18 @@ $("#homeResumeBtn").addEventListener("click",()=>enterGame(clamp(parseInt(worksp
 $("#homeMapBtn").addEventListener("click",()=>openRoadmap('home'));
 $("#homeSettingsBtn").addEventListener("click",()=>{const p=$("#homeSettingsPanel"); if(p._hideTimer) clearTimeout(p._hideTimer); p.hidden=false; p.classList.remove('closing'); requestAnimationFrame(()=>requestAnimationFrame(()=>p.classList.add('open'))); syncSettingsUI(); sfx('ui');});
 $("#homeSettingsClose").addEventListener("click",()=>{const p=$("#homeSettingsPanel"); p.classList.remove('open'); p.classList.add('closing'); sfx('ui'); p._hideTimer=setTimeout(()=>{p.hidden=true;p.classList.remove('closing');},240);});
+document.addEventListener("click",e=>{
+  const item=e.target.closest("[data-home-action]");
+  if(!item) return;
+  e.preventDefault();
+  const action=item.dataset.homeAction;
+  if(action==='home') goHome(false);
+  else if(action==='levels') openRoadmap('home');
+  else if(action==='dashboard') showDashboard();
+  else if(action==='badges') showAchievements();
+  else if(action==='help') showHelp();
+  else if(action==='settings') $("#homeSettingsBtn")?.click();
+});
 [['musicToggle','music'],['sfxToggle','sfx'],['transitionToggle','transitions'],['motionToggle','reducedMotion'],['tipsToggle','editorTips'],['unlockLevelsToggle','unlockAllLevels'],['answersToggle','showAnswers']].forEach(([id,key])=>$("#"+id).addEventListener('change',e=>{settings[key]=e.target.checked;saveSettings(); if(key==='unlockAllLevels'&&currentPage==='map') showRoadmap();}));
 els.workspaceTabs.forEach(tab=>tab.addEventListener("click",()=>switchWorkspace(tab.dataset.workspace)));
 if(els.commandTrayToggle) els.commandTrayToggle.addEventListener("click",()=>{

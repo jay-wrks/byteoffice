@@ -2,22 +2,32 @@ window.ByteOfficeComponents = window.ByteOfficeComponents || {};
 window.ByteOfficeComponents.home = String.raw`
 <section aria-label="Byte Office main menu" class="home-screen" id="homeScreen">
 <div aria-hidden="true" class="home-backdrop-grid"></div>
+<a class="home-sign" href="#home" aria-label="Byte Office home"><img src="assets/pack1/dark-wood-sign-wide.png" alt="" /><span>BYTE OFFICE<small>Department of Tiny Programs</small></span></a>
+<img class="home-corner-paper corner-top-left" src="assets/home_page_corner_papers_and_bg/03_top_left_paper.png" alt="" />
+<img class="home-corner-paper corner-bottom-left" src="assets/home_page_corner_papers_and_bg/04_bottom_left_paper.png" alt="" />
+<img class="home-corner-paper corner-bottom-right" src="assets/home_page_corner_papers_and_bg/05_bottom_right_paper.png" alt="" />
+<div class="home-scene-object home-coffee"><img src="assets/pack1/coffee-cup-robot-logo.png" alt="" /></div>
 <div class="home-desk">
 <div class="home-brand-row">
 <div class="home-brand-mark">B</div>
 <div><span class="home-kicker">DEPARTMENT OF TINY PROGRAMS</span><h1>BYTE OFFICE</h1><p>Clock in. Build the instructions. Make the machine work.</p></div>
 </div>
 <div class="home-file-card">
+<img class="home-board-art" src="assets/home_page_corner_papers_and_bg/wooden_board.png" alt="" aria-hidden="true" />
+<img class="home-card-pin pin-one" src="assets/pack1/colored-pushpins.png" alt="" />
+<img class="home-card-pin pin-two" src="assets/pack1/colored-pushpins.png" alt="" />
 <div class="home-file-tab">EMPLOYEE TERMINAL</div>
 <div class="home-resume-copy">
 <span id="homeProgressLabel">CURRENT ASSIGNMENT</span>
 <h2 id="homeLevelTitle">Level 01 · Mail Room</h2>
 <p id="homeLevelSummary">Your saved worktrees and progress are ready.</p>
+<div class="home-robot"><img src="assets/pack1/robot-with-clipboard.png" alt="ByteBot holding a clipboard" /></div>
+<div class="home-sticky"><img src="assets/home_page_corner_papers_and_bg/sticky_note.png" alt="Good programs build brighter futures" /></div>
 </div>
 <div class="home-actions">
-<button class="home-primary" id="homeResumeBtn"><span>▶</span><b>Resume work</b><small>Continue your saved assignment</small></button>
-<button class="home-action" id="homeMapBtn"><span>⌘</span><b>View map</b><small>Browse the assignment roadmap</small></button>
-<button class="home-action" id="homeSettingsBtn"><span>⚙</span><b>Settings</b><small>Audio, motion and interface</small></button>
+<button class="home-primary" id="homeResumeBtn"><span>▶</span><b>Resume work</b><small>Continue your saved assignment</small><i>→</i></button>
+<button class="home-action" id="homeMapBtn"><span>⌘</span><b>View map</b><small>Browse all levels and track progress</small><i>→</i></button>
+<button class="home-action" id="homeSettingsBtn"><span>⚙</span><b>Settings</b><small>Audio, controls and interface</small><i>→</i></button>
 </div>
 <div class="home-settings" hidden="" id="homeSettingsPanel">
 <div class="home-settings-head"><div><span>TERMINAL PREFERENCES</span><b>Settings</b></div><button aria-label="Close settings" id="homeSettingsClose">×</button></div>
