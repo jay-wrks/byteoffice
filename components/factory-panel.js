@@ -1,14 +1,8 @@
 window.ByteOfficeComponents = window.ByteOfficeComponents || {};
 window.ByteOfficeComponents.factoryPanel = String.raw`
 <section class="factory-panel">
-<div class="room-sign"><span>PROCESSING FLOOR</span></div>
+<div class="room-sign">PROCESSING FLOOR</div>
 <div class="factory-scene" id="scene">
-<div aria-hidden="true" class="factory-props">
-  <img class="factory-prop prop-wrench" src="assets/pack2/open-ended-wrench.png" alt="" />
-  <img class="factory-prop prop-screwdriver" src="assets/pack2/screwdriver.png" alt="" />
-  <img class="factory-prop prop-chip" src="assets/pack2/microchip.png" alt="" />
-  <img class="factory-prop prop-gear-small" src="assets/pack2/small-gear.png" alt="" />
-</div>
 <div class="conveyor inbox-zone">
 <div class="zone-label">INBOX</div>
 <div class="boxes" id="inbox"></div>
