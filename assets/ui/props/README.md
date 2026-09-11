@@ -1,0 +1,1 @@
+Byte Office fixed decorative UI props. These assets are intentionally image-only decorations; all flexible text, controls, level data and responsive UI remain HTML/CSS.
