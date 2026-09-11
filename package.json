@@ -1,0 +1,7 @@
+{
+  "name": "byte-office",
+  "private": true,
+  "scripts": {
+    "test": "node --test"
+  }
+}
