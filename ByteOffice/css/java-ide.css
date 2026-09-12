@@ -110,3 +110,13 @@
 .java-api-tray:not(.collapsed) .command-palette{display:grid!important}
 .java-api-tray .command-tray-toggle{width:26px!important;height:24px!important}
 .java-program-panel .monaco-editor .view-lines{font-size:13px!important}
+
+/* Let touch devices perform a native vertical pan inside Program.java. */
+@media (pointer:coarse){
+  .java-program-panel .byte-monaco,
+  .java-program-panel .monaco-editor,
+  .java-program-panel .monaco-editor .overflow-guard,
+  .java-program-panel .monaco-editor .monaco-scrollable-element{
+    touch-action:pan-y!important;
+  }
+}

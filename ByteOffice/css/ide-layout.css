@@ -91,3 +91,77 @@
   .game-layout.ide-maximized>.factory-panel{visibility:hidden!important;height:0!important;min-height:0!important;overflow:hidden!important}
   .game-layout.ide-maximized>.java-program-panel{min-height:calc(100vh - 240px)}
 }
+
+/* Mobile coding flow: put Program.java before the physical floor and give it
+   a real height so the percentage-sized IDE has a visible editing surface. */
+@media (max-width:760px){
+  html,
+  body{
+    height:auto!important;
+    min-height:100%;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch;
+  }
+  body .app-shell{
+    display:block!important;
+    height:auto!important;
+    min-height:100dvh!important;
+    overflow:visible!important;
+  }
+  body .game-layout{
+    display:flex!important;
+    height:auto!important;
+    min-height:0!important;
+    overflow:visible!important;
+  }
+  .game-layout>.mission-panel{
+    height:auto!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+  .game-layout>.mission-panel{order:1}
+  .game-layout>.java-program-panel{
+    order:2;
+    flex:0 0 auto;
+    width:100%;
+    height:min(720px,calc(100dvh - 120px));
+    min-height:480px!important;
+  }
+  .game-layout>.factory-panel{order:3}
+  .game-layout>.factory-panel .memory-grid{
+    width:100%;
+    max-width:100%;
+    max-height:min(42vh,300px);
+    overflow-y:auto;
+    overflow-x:hidden;
+    align-content:flex-start;
+    padding:4px 6px 8px;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+  }
+}
+
+/* Completion sheets can be taller than a phone viewport. Let the modal own
+   its vertical scroll and stack the actions so both buttons stay tappable. */
+@media (max-width:760px){
+  .modal.star-reveal-modal{
+    display:block!important;
+    overflow-y:auto!important;
+    padding:16px 12px!important;
+  }
+  .modal.star-reveal-modal .modal-card{
+    width:100%!important;
+    max-height:none!important;
+    overflow:visible!important;
+    margin:0 auto!important;
+  }
+  .modal.star-reveal-modal .win-actions{
+    flex-direction:column;
+    gap:10px;
+  }
+  .modal.star-reveal-modal .win-actions button{
+    width:100%;
+    min-height:44px;
+  }
+}

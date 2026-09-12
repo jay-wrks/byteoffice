@@ -17,13 +17,28 @@ function syncSettingsUI(){
   pairs.forEach(([id,key])=>{ const el=$("#"+id); if(el) el.checked=!!settings[key]; });
 }
 
+let developerSettingsRevealed=false;
+let developerSettingsConsoleRevealed=false;
+function setDeveloperSettingsVisibility(visible){
+  developerSettingsRevealed=!!visible;
+  document.querySelectorAll('[data-developer-setting]').forEach(el=>{ el.hidden=!developerSettingsRevealed; });
+}
+
 // Advanced settings stay out of the regular UI unless deliberately revealed
-// from DevTools for testing or development.
+// from DevTools for testing or development. Mobile exposes them by default.
 window.showDeveloperSettings=function(){
-  document.querySelectorAll('[data-developer-setting]').forEach(el=>{ el.hidden=false; });
+  developerSettingsConsoleRevealed=true;
+  setDeveloperSettingsVisibility(true);
   syncSettingsUI();
   return 'Developer settings are now visible for this session.';
 };
+
+function syncDeveloperSettingsForViewport(){
+  const mobile=window.matchMedia('(max-width:760px)').matches;
+  setDeveloperSettingsVisibility(mobile||developerSettingsConsoleRevealed);
+}
+syncDeveloperSettingsForViewport();
+window.addEventListener('resize',syncDeveloperSettingsForViewport,{passive:true});
 function resetProgress(){
   if(!window.confirm('Reset all completed levels, stars, best scores and campaign history? Saved drafts will remain.')) return;
   completed=[];
