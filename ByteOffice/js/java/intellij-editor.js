@@ -190,6 +190,33 @@
     editor.onDidScrollChange(()=>positionExecutionMarker(executionMarkerLine,false));
     editor.onDidLayoutChange(()=>positionExecutionMarker(executionMarkerLine,false));
 
+    // Monaco's scrollbars are custom-rendered, so mobile browsers do not
+    // always turn a finger drag into editor scrolling. Bridge vertical touch
+    // movement directly to Monaco while preserving taps for cursor placement.
+    let touchScrollY=null;
+    let touchScrolling=false;
+    mount.addEventListener('touchstart',e=>{
+      if(e.touches.length!==1) return;
+      touchScrollY=e.touches[0].clientY;
+      touchScrolling=false;
+    },{passive:true,capture:true});
+    mount.addEventListener('touchmove',e=>{
+      if(e.touches.length!==1||touchScrollY===null) return;
+      const y=e.touches[0].clientY;
+      const delta=touchScrollY-y;
+      if(!touchScrolling && Math.abs(delta)<4) return;
+      touchScrolling=true;
+      const maxScroll=Math.max(0,editor.getScrollHeight()-editor.getLayoutInfo().height);
+      if(maxScroll>0){
+        editor.setScrollTop(Math.max(0,Math.min(maxScroll,editor.getScrollTop()+delta)));
+        e.preventDefault();
+      }
+      touchScrollY=y;
+    },{passive:false,capture:true});
+    const clearTouchScroll=()=>{touchScrollY=null;touchScrolling=false;};
+    mount.addEventListener('touchend',clearTouchScroll,{passive:true,capture:true});
+    mount.addEventListener('touchcancel',clearTouchScroll,{passive:true,capture:true});
+
     // Keep the primary run shortcut inside Monaco so Ctrl+Enter is consumed
     // by the editor instead of inserting a newline or being handled twice by
     // the page-level keyboard shortcuts.
