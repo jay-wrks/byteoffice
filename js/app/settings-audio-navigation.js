@@ -16,6 +16,14 @@ function syncSettingsUI(){
   const pairs=[['musicToggle','music'],['sfxToggle','sfx'],['transitionToggle','transitions'],['motionToggle','reducedMotion'],['tipsToggle','editorTips'],['unlockLevelsToggle','unlockAllLevels'],['answersToggle','showAnswers']];
   pairs.forEach(([id,key])=>{ const el=$("#"+id); if(el) el.checked=!!settings[key]; });
 }
+
+// Advanced settings stay out of the regular UI unless deliberately revealed
+// from DevTools for testing or development.
+window.showDeveloperSettings=function(){
+  document.querySelectorAll('[data-developer-setting]').forEach(el=>{ el.hidden=false; });
+  syncSettingsUI();
+  return 'Developer settings are now visible for this session.';
+};
 function resetProgress(){
   if(!window.confirm('Reset all completed levels, stars, best scores and campaign history? Saved drafts will remain.')) return;
   completed=[];
