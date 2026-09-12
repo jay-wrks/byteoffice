@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Deploy ByteOffice as the /ByteOffice/ Firebase Hosting app.
+# Deploy the current ByteOffice directory as the Firebase Hosting root.
 SOURCE_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 FIREBASE_DIR="/home/jay/works/JayDsaGames"
-TARGET_DIR="$FIREBASE_DIR/public/ByteOffice"
+TARGET_DIR="$FIREBASE_DIR/public"
 
-if [[ "$SOURCE_DIR" == "$TARGET_DIR" || "$TARGET_DIR" != "$FIREBASE_DIR/public/ByteOffice" ]]; then
+if [[ "$SOURCE_DIR" == "$TARGET_DIR" || "$TARGET_DIR" != "$FIREBASE_DIR/public" ]]; then
   echo "Refusing unsafe source/target paths." >&2
   exit 1
 fi
@@ -21,7 +21,7 @@ if [[ ! -f "$FIREBASE_DIR/firebase.json" || ! -f "$FIREBASE_DIR/.firebaserc" ]];
   exit 1
 fi
 
-echo "Replacing $TARGET_DIR"
+echo "Replacing Firebase public root: $TARGET_DIR"
 rm -rf -- "$TARGET_DIR"
 mkdir -p -- "$TARGET_DIR"
 cp -a -- "$SOURCE_DIR"/. "$TARGET_DIR"/
@@ -35,4 +35,4 @@ echo "Deploying Firebase Hosting project"
   firebase deploy --only hosting
 )
 
-echo "Deployment complete: https://jay-dsa-games.web.app/ByteOffice/"
+echo "Deployment complete: https://jay-dsa-games.web.app/"
