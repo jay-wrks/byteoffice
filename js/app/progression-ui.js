@@ -52,15 +52,48 @@ function showRoadmap(){
     [7.5,48.8],[18.5,46.4],[31.0,48.6],[43.5,52.0],
     [55.5,54.3],[67.5,50.9],[80.5,51.8],[93.0,54.5]
   ];
+  const roadRegions=[
+    'Pine Intake','Wreckage Pass','Stoneworks Trail','Crater District',
+    'Old Machine Range','Algorithm Avenue','Search Valley','Sorting Station',
+    'Optimization Frontier'
+  ];
+  let revealedTile=1;
+  if(settings.unlockAllLevels){
+    revealedTile=tileCount-1;
+  }else{
+    // The first two regions are the starting map. Every later region is
+    // revealed only after 75% of the immediately previous region is cleared.
+    // With eight assignments per tile, this means six completed levels.
+    for(let tile=2;tile<tileCount;tile++){
+      const previousRegion=levels.filter((_,index)=>Math.floor(index/8)===tile-1);
+      const previousIds=new Set(previousRegion.map(level=>level.id));
+      const cleared=completed.filter(id=>previousIds.has(id)).length;
+      if(cleared<Math.ceil(previousRegion.length*.75)) break;
+      revealedTile=tile;
+    }
+  }
+  const nextRegionTile=revealedTile<tileCount-1?revealedTile+1:-1;
+  const nextRegionLevels=nextRegionTile>1
+    ? levels.filter((_,index)=>Math.floor(index/8)===nextRegionTile-1)
+    : [];
+  const nextRegionIds=new Set(nextRegionLevels.map(level=>level.id));
+  const nextRegionCleared=completed.filter(id=>nextRegionIds.has(id)).length;
+  const nextRegionRequired=Math.ceil(nextRegionLevels.length*.75);
+  const nextRegionPct=nextRegionRequired?Math.min(100,Math.round(nextRegionCleared/nextRegionRequired*100)):100;
   const nodes=levels.map((l,i)=>{
-    const tile=Math.floor(i/8), point=roadPoints[i%8], done=completed.includes(l.id), unlocked=settings.unlockAllLevels||done||i<=nextIndex;
+    const tile=Math.floor(i/8), point=roadPoints[i%8], regionVisible=tile<=revealedTile, done=completed.includes(l.id), unlocked=regionVisible&&(settings.unlockAllLevels||done||i<=nextIndex);
     const m=levelMeta(l.id), starCount=(m.sizeStar?1:0)+(m.stepStar?1:0), favorite=fav.has(l.id), current=i===nextIndex&&!done;
-    const state=done?'done':current?'current':unlocked?'open':'locked';
+    const state=regionVisible?(done?'done':current?'current':unlocked?'open':'locked'):'hidden-region';
     const medal=done?(starCount===2?'★★':starCount===1?'★':'✓'):(current?'GO':'');
     const roadLeft=tile*1075+(point[0]/100)*1075;
-    return `<button class="road-level ${state} ${favorite?'favorite':''}" data-level="${i}" data-tile="${tile}" style="--road-left:${roadLeft}px;--ry:${point[1]}%" ${unlocked?'':'disabled'} aria-label="Level ${l.id}: ${l.title}${unlocked?'':' locked'}"><span class="road-level-pin"><i>${String(l.id).padStart(2,'0')}</i><em>${medal}</em></span><span class="road-level-label"><b>${l.title}</b><small>${done?'Completed':current?'Next assignment':(settings.unlockAllLevels?'Unlocked in Settings':'Locked — finish the previous level')}</small></span></button>`;
+    return `<button class="road-level ${state} ${favorite?'favorite':''}" data-level="${i}" data-tile="${tile}" style="--road-left:${roadLeft}px;--ry:${point[1]}%" ${unlocked?'':'disabled'} aria-label="Level ${l.id}: ${l.title}${unlocked?'':' locked'}"><span class="road-level-pin"><i>${String(l.id).padStart(2,'0')}</i><em>${medal}</em></span><span class="road-level-label"><b>${l.title}</b><small>${done?'Completed':current?'Next assignment':(settings.unlockAllLevels?'Unlocked in Settings':'Locked — finish the previous assignment')}</small></span></button>`;
   }).join('');
-  const tiles=Array.from({length:tileCount},(_,i)=>`<div class="road-tile road-tile-${i%2?'b':'a'}" data-road-tile="${i}"><div class="road-region-tag">${i===0?'Pine Intake':i===1?'Wreckage Pass':i===2?'Stoneworks Trail':i===3?'Crater District':i===4?'Old Machine Range':'Final Frontier'}</div></div>`).join('');
+  const cloudMarkup=(i)=>{
+    if(i<=revealedTile) return '';
+    if(i===nextRegionTile) return `<div class="road-cloud-cover" aria-label="Undiscovered region"><span>UNDISCOVERED</span><div class="region-unlock-progress"><i style="width:${nextRegionPct}%"></i></div><small>${Math.max(0,nextRegionRequired-nextRegionCleared)} more to reveal ${roadRegions[i]||`Sector ${i+1}`}</small></div>`;
+    return '<div class="road-cloud-cover" aria-label="Undiscovered region"><span>UNDISCOVERED</span><b>Advance through the previous regions</b></div>';
+  };
+  const tiles=Array.from({length:tileCount},(_,i)=>`<div class="road-tile road-tile-${i%2?'b':'a'}" data-road-tile="${i}"><div class="road-region-tag">${roadRegions[i]||`Sector ${i+1}`}</div>${cloudMarkup(i)}</div>`).join('');
   const pct=Math.round(completed.length/levels.length*100);
   els.mapContent.innerHTML=`<div class="roadmap-shell">
     <div class="roadmap-head">
@@ -69,7 +102,7 @@ function showRoadmap(){
     </div>
     <div class="roadmap-toolbar"><button id="roadBackBtn" title="Scroll left">←</button><button id="roadCurrentBtn">◎ Current checkpoint</button><button id="roadForwardBtn" title="Scroll right">→</button><span>Drag / wheel / Shift+wheel to travel • ★ optimized • 🔒 locked</span><button id="roadListBtn" class="road-list-btn">List view</button></div>
     <div id="roadViewport" class="road-viewport"><div id="roadCanvas" class="road-canvas">${tiles}<div class="road-node-layer">${nodes}</div></div></div>
-    <div class="roadmap-foot"><div><b>Route rule</b><span>${settings.unlockAllLevels?'All assignments are temporarily unlocked in Settings. Completion progress is unchanged.':'Only the next unfinished assignment unlocks. Finished checkpoints stay replayable.'}</span></div><button id="roadContinueBtn" class="modal-primary">Continue to Level ${levels[nextIndex].id} →</button></div>
+    <div class="roadmap-foot"><div><b>Route rule</b><span>${settings.unlockAllLevels?'All assignments are temporarily unlocked in Settings. Completion progress is unchanged.':'Clear 75% of a region to reveal the next one. Only the next unfinished assignment unlocks. Finished checkpoints stay replayable.'}</span></div><button id="roadContinueBtn" class="modal-primary">Continue to Level ${levels[nextIndex].id} →</button></div>
   </div>`;
   closeMapOverlay(true);
   const viewport=$('#roadViewport'), canvas=$('#roadCanvas');

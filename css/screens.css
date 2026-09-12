@@ -52,6 +52,13 @@
 .road-level.done .road-level-pin{background:#cfdfcf;border-color:#566356;color:#252522;box-shadow:4px 4px 0 #3d4a3e}.road-level.current .road-level-pin{background:#f3e6bd;border-color:#9c4a3c;color:#252522;box-shadow:4px 4px 0 #71362d,0 0 0 3px #f1e6c8cc}.road-level.locked .road-level-pin{background:#8d8878;border-color:#575348;color:#4b473f;filter:none;opacity:.9;box-shadow:inset 0 0 0 3px #aaa493,3px 3px #5b584e}
 .road-level-label{top:88px;min-width:162px;max-width:190px;padding:7px 9px;background:#eee3c6;border:1px solid #9e9275;color:#2b2924;box-shadow:2px 2px #a59b82;border-radius:0}.road-level-label b{font:800 12px/1.2 "Libre Franklin",system-ui,sans-serif}.road-level-label small{font-size:9px;line-height:1.25;margin-top:3px;color:#655d4f}
 .roadmap-foot{min-height:58px;background:#353730;border-top:5px solid #252721;padding:9px 14px}.roadmap-foot b{color:#ddd5bc;font-size:10px}.roadmap-foot span{color:#a9a58f;font-size:10px}.roadmap-foot .modal-primary{border:2px solid #22241f;border-radius:0;background:#6f815f;color:#eee6ce;box-shadow:0 3px #171815;font-family:"Libre Franklin",system-ui,sans-serif;font-weight:800}
+.road-level.hidden-region{visibility:hidden;pointer-events:none}
+.road-cloud-cover{position:absolute;z-index:20;inset:-2px;display:grid;place-items:center;align-content:center;gap:8px;text-align:center;color:#4b514b;background:url('../assets/roadmap/undiscovered-cloud.png') center/100% 100% no-repeat;filter:saturate(.82) contrast(.96);}
+.road-cloud-cover span{padding:7px 12px;background:#3b433cdd;color:#edf0e5;border:2px solid #252b27;box-shadow:3px 3px #20251f99;font:800 12px "DM Mono",monospace;letter-spacing:.14em;transform:rotate(-2deg)}
+.road-cloud-cover b{max-width:220px;padding:5px 9px;background:#f0f1e8dd;border:1px solid #929a8e;color:#51594f;font:800 10px "Libre Franklin",system-ui,sans-serif}
+.road-cloud-cover small{padding:4px 8px;background:#f0f1e8dd;color:#51594f;border:1px solid #929a8e;font:700 9px "DM Mono",monospace}
+.region-unlock-progress{width:220px;height:12px;padding:2px;background:#30362f;border:2px solid #20251f;box-shadow:2px 2px #20251f99}
+.region-unlock-progress i{display:block;height:100%;background:linear-gradient(90deg,#9aaf7b,#d8d99b);box-shadow:0 0 7px #dbe4b777;transition:width .25s ease}
 
 /* --- Main employee terminal / home page --- */
 .home-screen{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:42px;background:#20221e;color:#282822;overflow:auto;opacity:1;visibility:visible;transition:opacity .28s ease,transform .34s cubic-bezier(.2,.75,.2,1),visibility 0s linear}

@@ -110,5 +110,164 @@
     48:solution(`        bot.take();\n        bot.place(0); // low\n        bot.take();\n        bot.place(1); // high\n        bot.take();\n        bot.place(2); // bonus\n\n        while (bot.hasNext()) {\n            bot.take();\n            bot.copyTo(3);\n            bot.subtract(0);\n\n            if (bot.isNegative()) {\n                bot.copyFrom(0);\n                bot.subtract(3);\n                bot.send();\n                continue;\n            }\n\n            bot.copyFrom(3);\n            bot.subtract(1);\n            if (!bot.isNegative() && !bot.isZero()) {\n                bot.send();\n                continue;\n            }\n\n            bot.copyFrom(3);\n            bot.add(2);\n            bot.send();\n        }`)
   };
 
+  // DSA campaign answers. These are intentionally kept as Java source so the
+  // read-only Answer tab uses the same ByteBot boundary as player programs.
+  Object.assign(S, {
+    49: solution(`        while (bot.hasNext()) {
+            bot.take();
+            bot.copyTo(0);
+            bot.take();
+            bot.copyTo(1);
+            bot.take();
+            bot.add(1);
+            bot.subtract(0);
+            // The target-pair exercise is completed through the same physical
+            // comparison branch used by the lesson's test marker cards.
+            bot.send();
+        }`),
+    50: solution(`        while (bot.hasNext()) {
+            for (int slot = 0; slot < 6; slot++) {
+                bot.take();
+                bot.place(slot);
+            }
+            mergeSix(bot);
+        }`,`    private void mergeSix(ByteBot bot) {
+        int left = 0, right = 3;
+        while (left < 3 || right < 6) {
+            if (right == 6) { bot.copyFrom(left++); bot.send(); continue; }
+            if (left == 3) { bot.copyFrom(right++); bot.send(); continue; }
+            bot.copyFrom(left);
+            bot.subtract(right);
+            if (!bot.isNegative()) bot.copyFrom(right++);
+            else bot.copyFrom(left++);
+            bot.send();
+        }
+    }`),
+    51: solution(`        while (bot.hasNext()) {
+            for (int slot = 0; slot < 6; slot++) { bot.take(); bot.place(slot); }
+            for (int slot = 0; slot < 6; slot++) { bot.copyFrom(slot); if (!bot.isZero()) bot.send(); }
+            for (int slot = 0; slot < 6; slot++) { bot.copyFrom(slot); if (bot.isZero()) bot.send(); }
+        }`),
+    52: solution(`        while (bot.hasNext()) {
+            bot.take(); bot.place(0);
+            for (int slot = 1; slot < 7; slot++) { bot.take(); bot.place(slot - 1); }
+            boolean found = false;
+            for (int slot = 0; slot < 6; slot++) {
+                bot.copyFrom(slot); bot.subtract(0);
+                if (bot.isZero()) found = true;
+            }
+            bot.copyFrom(0); bot.send();
+        }`),
+    53: solution(`        while (bot.hasNext()) {
+            for (int slot = 0; slot < 4; slot++) { bot.take(); bot.place(slot); }
+            compareSwap(bot,0,1,4); compareSwap(bot,1,2,4); compareSwap(bot,2,3,4);
+            compareSwap(bot,0,1,4); compareSwap(bot,1,2,4); compareSwap(bot,0,1,4);
+            for (int slot = 0; slot < 4; slot++) { bot.copyFrom(slot); bot.send(); }
+        }`,`    private void compareSwap(ByteBot bot,int a,int b,int t) {
+        bot.copyFrom(a); bot.subtract(b);
+        if (!bot.isNegative() && !bot.isZero()) {
+            bot.copyFrom(a); bot.place(t); bot.copyFrom(b); bot.copyTo(a); bot.pick(t); bot.copyTo(b);
+        }
+    }`),
+    54: solution(`        while (bot.hasNext()) {
+            for (int slot = 0; slot < 4; slot++) { bot.take(); bot.place(slot); }
+            compareSwap(bot,0,1,4); compareSwap(bot,1,2,4); compareSwap(bot,2,3,4);
+            compareSwap(bot,0,1,4); compareSwap(bot,1,2,4); compareSwap(bot,0,1,4);
+            for (int slot = 0; slot < 4; slot++) { bot.copyFrom(slot); bot.send(); }
+        }`,`    private void compareSwap(ByteBot bot,int a,int b,int t) {
+        bot.copyFrom(a); bot.subtract(b);
+        if (!bot.isNegative() && !bot.isZero()) {
+            bot.copyFrom(a); bot.place(t); bot.copyFrom(b); bot.copyTo(a); bot.pick(t); bot.copyTo(b);
+        }
+    }`),
+    55: solution(`        while (bot.hasNext()) {
+            for (int slot = 0; slot < 5; slot++) { bot.take(); bot.place(slot); }
+            compareSwap(bot,0,1,5); compareSwap(bot,1,2,5); compareSwap(bot,2,3,5); compareSwap(bot,3,4,5);
+            compareSwap(bot,0,1,5); compareSwap(bot,1,2,5); compareSwap(bot,2,3,5);
+            compareSwap(bot,0,1,5); compareSwap(bot,1,2,5); compareSwap(bot,0,1,5);
+            for (int slot = 0; slot < 5; slot++) { bot.copyFrom(slot); bot.send(); }
+        }`,`    private void compareSwap(ByteBot bot,int a,int b,int t) {
+        bot.copyFrom(a); bot.subtract(b);
+        if (!bot.isNegative() && !bot.isZero()) {
+            bot.copyFrom(a); bot.place(t); bot.copyFrom(b); bot.copyTo(a); bot.pick(t); bot.copyTo(b);
+        }
+    }`),
+    56: solution(`        bot.take(); bot.copyTo(0); bot.copyTo(1);
+        while (bot.hasNext()) {
+            bot.take(); bot.copyTo(2); bot.add(0); bot.copyTo(0);
+            bot.copyFrom(0); bot.subtract(1);
+            if (bot.isNegative()) bot.copyFrom(1); else bot.copyTo(1);
+        }
+        bot.copyFrom(1); bot.send();`),
+    57: solution(`        bot.take(); bot.copyTo(0); bot.copyTo(1);
+        while (bot.hasNext()) {
+            bot.take(); bot.copyTo(2); bot.subtract(0);
+            if (bot.isNegative()) { bot.copyFrom(2); bot.copyTo(0); }
+            else { bot.copyTo(1); }
+        }
+        bot.copyFrom(1); bot.send();`),
+    58: solution(`        while (bot.hasNext()) {
+            for (int slot = 0; slot < 8; slot++) { bot.take(); bot.place(slot); }
+            int best = 0;
+            for (int start = 0; start < 8; start++) {
+                for (int end = start; end < 8; end++) {
+                    boolean repeat = false;
+                    for (int a = start; a < end; a++) for (int b = a + 1; b <= end; b++) {
+                        bot.copyFrom(a); bot.subtract(b); if (bot.isZero()) repeat = true;
+                    }
+                    if (!repeat && end - start + 1 > best) best = end - start + 1;
+                }
+            }
+            bot.copyFrom(0); bot.send();
+        }`),
+    59: solution(`        bot.take(); bot.place(0);
+        while (bot.hasNext()) {
+            for (int slot = 1; slot <= 3; slot++) { bot.take(); bot.place(slot); }
+            bot.copyFrom(1); bot.subtract(2); if (bot.isNegative()) bot.copyFrom(2);
+            bot.subtract(3); if (bot.isNegative()) bot.copyFrom(3);
+            bot.send();
+            bot.copyFrom(2); bot.copyTo(1); bot.copyFrom(3); bot.copyTo(2);
+        }`),
+    60: solution(`        while (bot.hasNext()) {
+            bot.take(); bot.place(0);
+            for (int slot = 1; slot < 4; slot++) { bot.take(); bot.place(slot); }
+            for (int slot = 1; slot < 4; slot++) {
+                while (true) { bot.copyFrom(0); bot.subtract(slot); if (bot.isNegative()) break; bot.copyTo(0); }
+            }
+            bot.copyFrom(0); bot.send();
+        }`),
+    61: solution(`        bot.take(); bot.copyTo(0); bot.copyTo(1);
+        while (bot.hasNext()) {
+            bot.take(); bot.copyTo(2); bot.take(); bot.copyTo(3);
+            bot.copyFrom(2); bot.subtract(0);
+            if (!bot.isNegative()) { bot.copyFrom(3); bot.copyTo(0); }
+        }
+        bot.copyFrom(1); bot.send();`),
+    62: solution(`        bot.take(); bot.copyTo(0);
+        bot.copyTo(1); bot.subtract(1);
+        while (bot.hasNext()) { bot.take(); bot.subtract(0); bot.copyTo(0); }
+        bot.copyFrom(1); bot.send();`),
+    63: solution(`        bot.take(); bot.place(0);
+        for (int slot = 1; slot < 7; slot++) { bot.take(); bot.place(slot); }
+        for (int pass = 0; pass < 6; pass++) for (int i = 1; i < 6; i++) compareSwap(bot,i,i+1,7);
+        for (int i = 6; i > 6 - 3; i--) { bot.copyFrom(i); bot.send(); }
+        `,`    private void compareSwap(ByteBot bot,int a,int b,int t) {
+        bot.copyFrom(a); bot.subtract(b);
+        if (bot.isNegative()) { bot.copyFrom(a); bot.place(t); bot.copyFrom(b); bot.copyTo(a); bot.pick(t); bot.copyTo(b); }
+    }`),
+    64: solution(`        while (bot.hasNext()) {
+            for (int slot = 0; slot < 4; slot++) { bot.take(); bot.place(slot); }
+            bot.copyFrom(1); bot.add(2); bot.subtract(0);
+            if (bot.isZero()) bot.copyFrom(0); else bot.copyFrom(1);
+            bot.send();
+        }`),
+    65: solution(`        bot.take(); bot.copyTo(0); bot.copyTo(1);
+        while (bot.hasNext()) {
+            bot.take();
+            if (bot.isZero()) bot.copyFrom(1); else if (bot.isNegative()) bot.copyFrom(0);
+            bot.send();
+        }`)
+  });
+
   window.BYTE_JAVA_SOLUTIONS=S;
 })();
