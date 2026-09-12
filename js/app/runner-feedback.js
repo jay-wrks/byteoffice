@@ -191,9 +191,8 @@ function recordClear(){
   const m=levelMeta(); m.clears=(m.clears||0)+1;
   m.bestSize=m.bestSize===null?program.length:Math.min(m.bestSize,program.length);
   m.bestSteps=m.bestSteps===null?engine.steps:Math.min(m.bestSteps,engine.steps);
-  if(program.length<=level().sizeGoal) m.sizeStar=true;
-  if(engine.steps<=level().stepGoal) m.stepStar=true;
-  if(m.sizeStar && m.stepStar) m.dualStars=true;
+  m.sizeStar=program.length<=level().sizeGoal;
+  m.stepStar=engine.steps<=level().stepGoal;
+  m.dualStars=m.sizeStar && m.stepStar;
   metaStore.totalClears=(metaStore.totalClears||0)+1; saveMeta();
 }
-

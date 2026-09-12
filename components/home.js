@@ -28,6 +28,7 @@ window.ByteOfficeComponents.home = String.raw`
 <label class="setting-row"><span><b>Editor tips</b><small>Show shortcut hints above instructions</small></span><input id="tipsToggle" type="checkbox"/><i></i></label>
 <label class="setting-row"><span><b>Unlock all levels</b><small>Open every roadmap assignment without changing completion progress</small></span><input id="unlockLevelsToggle" type="checkbox"/><i></i></label>
 <label class="setting-row"><span><b>Show answers</b><small>Show the exact read-only command solution beside your two drafts</small></span><input id="answersToggle" type="checkbox"/><i></i></label>
+<div class="settings-danger-zone"><div><b>Reset progress</b><small>Clear completed levels, stars, best scores and campaign history. Saved drafts stay saved.</small></div><button id="resetProgressBtn" type="button">Reset</button></div>
 </div>
 <div class="home-meta"><span id="homeCompletion">0 / 50 assignments cleared</span><span>Autosave enabled</span></div>
 </div>

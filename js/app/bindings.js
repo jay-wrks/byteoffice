@@ -31,6 +31,7 @@ $("#homeMapBtn").addEventListener("click",()=>openRoadmap('home'));
 $("#homeSettingsBtn").addEventListener("click",()=>{const p=$("#homeSettingsPanel"); if(p._hideTimer) clearTimeout(p._hideTimer); p.hidden=false; p.classList.remove('closing'); requestAnimationFrame(()=>requestAnimationFrame(()=>p.classList.add('open'))); syncSettingsUI(); sfx('ui');});
 $("#homeSettingsClose").addEventListener("click",()=>{const p=$("#homeSettingsPanel"); p.classList.remove('open'); p.classList.add('closing'); sfx('ui'); p._hideTimer=setTimeout(()=>{p.hidden=true;p.classList.remove('closing');},240);});
 [['musicToggle','music'],['sfxToggle','sfx'],['transitionToggle','transitions'],['motionToggle','reducedMotion'],['tipsToggle','editorTips'],['unlockLevelsToggle','unlockAllLevels'],['answersToggle','showAnswers']].forEach(([id,key])=>$("#"+id).addEventListener('change',e=>{settings[key]=e.target.checked;saveSettings(); if(key==='unlockAllLevels'&&currentPage==='map') showRoadmap();}));
+$("#resetProgressBtn").addEventListener("click",resetProgress);
 els.workspaceTabs.forEach(tab=>tab.addEventListener("click",()=>switchWorkspace(tab.dataset.workspace)));
 if(els.commandTrayToggle) els.commandTrayToggle.addEventListener("click",()=>{
   const next=!els.commandTray?.classList.contains("collapsed");

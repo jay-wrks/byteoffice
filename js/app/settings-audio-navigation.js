@@ -16,6 +16,15 @@ function syncSettingsUI(){
   const pairs=[['musicToggle','music'],['sfxToggle','sfx'],['transitionToggle','transitions'],['motionToggle','reducedMotion'],['tipsToggle','editorTips'],['unlockLevelsToggle','unlockAllLevels'],['answersToggle','showAnswers']];
   pairs.forEach(([id,key])=>{ const el=$("#"+id); if(el) el.checked=!!settings[key]; });
 }
+function resetProgress(){
+  if(!window.confirm('Reset all completed levels, stars, best scores and campaign history? Saved drafts will remain.')) return;
+  completed=[];
+  localStorage.setItem('byteOfficeCompletedV17','[]');
+  metaStore={}; saveMeta();
+  refreshHome();
+  if(currentPage==='map') showRoadmap();
+  sfx('target');
+}
 function audioContext(){
   if(!window.AudioContext) return null;
   const ctx=audioContext.ctx||(audioContext.ctx=new AudioContext());
@@ -163,4 +172,3 @@ function showAchievements(){
   const a=achievementData(), unlocked=a.filter(x=>x[2]).length;
   showModal(`<div class="modal-heading"><span>COMPANY BADGES</span><h2>Achievements ${unlocked}/${a.length}</h2></div><div class="achievement-grid">${a.map(([n,d,u])=>`<div class="achievement ${u?'unlocked':''}"><span>${u?'★':'☆'}</span><div><b>${n}</b><small>${d}</small></div></div>`).join('')}</div>`);
 }
-

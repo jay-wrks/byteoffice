@@ -6,6 +6,26 @@
   grid-template-columns:18px 32px minmax(0,1fr) 92px var(--jump-gutter)!important;
   min-height:43px;height:auto;background:transparent!important;border:0!important;box-shadow:none!important;outline:0!important;overflow:visible;isolation:isolate;
 }
+
+/* Keep the three-star score prominent in both the completion sheet and map pins. */
+.big-stars{font-size:38px;line-height:1;letter-spacing:6px;margin:8px 0 12px}
+.big-stars span{display:inline-block;min-width:.8em}.big-stars .earned-star{opacity:0;transform:translateY(10px) scale(.45);animation:earnedStarArrival .5s cubic-bezier(.2,.85,.25,1.35) var(--star-delay,0ms) forwards}.big-stars .empty-star{opacity:.45}
+.road-level-pin em{right:-18px;top:-13px;min-width:40px;padding:5px 6px;font-size:11px}
+.road-level.completed-arrival .road-level-pin em .map-earned-star{display:inline-block;opacity:0;transform:translateY(5px) scale(.35);animation:mapStarPop .48s cubic-bezier(.2,.85,.25,1.25) var(--map-star-delay,0ms) forwards}
+.road-level.completed-arrival .road-level-pin em .map-empty-star{opacity:.45}
+@keyframes mapStarPop{0%{opacity:0;transform:translateY(5px) scale(.35) rotate(-18deg);filter:drop-shadow(0 0 0 transparent)}65%{opacity:1;transform:translateY(-2px) scale(1.22) rotate(8deg);filter:drop-shadow(0 0 6px #f5d77c)}100%{opacity:1;transform:none;filter:drop-shadow(0 0 1px #f5d77c)}}
+@keyframes earnedStarArrival{0%{opacity:0;transform:translateY(10px) scale(.45) rotate(-12deg)}65%{opacity:1;transform:translateY(-3px) scale(1.16) rotate(4deg)}100%{opacity:1;transform:translateY(0) scale(1) rotate(0)}}
+@media(prefers-reduced-motion:reduce){.big-stars .earned-star{animation:none;opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.road-level.completed-arrival .road-level-pin em .map-earned-star{animation:none;opacity:1;transform:none;filter:none}}
+
+/* Star reveal: each earned badge lands with its own impact and sparkle. */
+.big-stars{position:relative;display:flex;justify-content:center;gap:.12em;perspective:520px}
+.big-stars .earned-star{position:relative;filter:drop-shadow(0 0 0 transparent);text-shadow:0 2px 0 #765b21;animation:starBadgeLand .82s cubic-bezier(.18,.9,.24,1.28) var(--star-delay,0ms) both}
+.big-stars .earned-star::after{content:"✦";position:absolute;left:50%;top:50%;font-size:.34em;color:#fff4bc;opacity:0;pointer-events:none;transform:translate(-50%,-50%) scale(.2);animation:starImpactSpark .42s ease-out calc(var(--star-delay,0ms) + 360ms) both}
+.big-stars .earned-star:nth-child(2),.big-stars .earned-star:nth-child(3){color:#83703a}
+@keyframes starBadgeLand{0%{opacity:0;transform:translate3d(-18px,-30px,80px) rotateY(-70deg) rotateZ(-24deg) scale(.25);filter:drop-shadow(0 0 0 transparent)}48%{opacity:1;transform:translate3d(6px,5px,0) rotateY(18deg) rotateZ(9deg) scale(1.22);filter:drop-shadow(0 0 14px #f5d77c)}68%{transform:translate3d(-2px,-2px,0) rotateZ(-4deg) scale(.92)}84%{transform:translate3d(1px,0,0) rotateZ(2deg) scale(1.06);filter:drop-shadow(0 0 7px #f5d77c)}100%{opacity:1;transform:none;filter:drop-shadow(0 0 2px #f5d77c)}}
+@keyframes starImpactSpark{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}35%{opacity:1;transform:translate(-50%,-50%) scale(1.8)}100%{opacity:0;transform:translate(-50%,-50%) scale(3.1)}}
+@media(prefers-reduced-motion:reduce){.big-stars .earned-star{animation:none;opacity:1;transform:none;filter:none}.big-stars .earned-star::after{animation:none;display:none}}
 .program-list.compact .program-row{grid-template-columns:16px 28px minmax(0,1fr) 84px var(--jump-gutter)!important}
 .program-row::before{
   content:"";position:absolute;left:0;right:var(--jump-gutter);top:0;bottom:0;z-index:0;pointer-events:none;box-sizing:border-box;
@@ -47,7 +67,7 @@
 .roadmap-progress b{color:#eee3ca}.roadmap-progress span,.roadmap-progress small{color:#9d9b8e}.roadmap-progress-track{height:8px;background:#292b26;border:1px solid #55584e;box-shadow:inset 0 1px 2px #0008}.roadmap-progress-track i{background:#6f815f}
 .roadmap-toolbar{min-height:48px;padding:8px 12px;background:#353730;border-bottom:5px solid #252721}.roadmap-toolbar button{min-height:30px;border:2px solid #22241f;border-radius:0;background:#5c5f55;color:#eee6ce;box-shadow:0 3px #171815;font-size:10px}.roadmap-toolbar button:hover{background:#6b6f63}.roadmap-toolbar button:active{transform:translateY(2px);box-shadow:0 1px #171815}.roadmap-toolbar>span{color:#b9b5a3;font-size:10px}
 .road-viewport{background:#8a897c;border:0;box-shadow:inset 0 0 0 2px #b8b5a3;scrollbar-color:#5c5f55 #252721}.road-tile{filter:saturate(.68) contrast(.92) brightness(.92)}.road-tile:after{background:linear-gradient(#20231f20,#0000 12%,#0000 88%,#20231f35)!important;box-shadow:none!important}
-.road-region-tag{left:24px;top:20px;z-index:7;padding:9px 13px;background:#31322e;border:2px solid #1b1c1a;color:#e4dec4;box-shadow:0 3px 0 #111;border-radius:0;transform:none;font:800 13px/1.15 "Libre Franklin",system-ui,sans-serif;letter-spacing:.12em}
+.road-region-tag{left:24px;top:20px;z-index:21;padding:9px 13px;background:#31322e;border:2px solid #1b1c1a;color:#e4dec4;box-shadow:0 3px 0 #111;border-radius:0;transform:none;font:800 13px/1.15 "Libre Franklin",system-ui,sans-serif;letter-spacing:.12em}
 .road-level{width:154px;height:122px;z-index:6}.road-level-pin{width:66px;height:54px;border-radius:0;background:#e8d8af;border:2px solid #5c5546;color:#252522;box-shadow:4px 4px 0 #3d3a32;transform:translate(-50%,-50%) rotate(-1deg)}.road-level-pin:after{display:none}.road-level-pin i{font:700 19px "DM Mono"}.road-level-pin em{right:-14px;top:-11px;min-width:32px;padding:4px 5px;border-radius:0;background:#31322e;border:2px solid #1b1c1a;color:#e4dec4;box-shadow:2px 2px 0 #1118;font-size:9px}.road-level:hover .road-level-pin{transform:translate(-50%,-55%) rotate(0) scale(1.05)}
 .road-level.done .road-level-pin{background:#cfdfcf;border-color:#566356;color:#252522;box-shadow:4px 4px 0 #3d4a3e}.road-level.current .road-level-pin{background:#f3e6bd;border-color:#9c4a3c;color:#252522;box-shadow:4px 4px 0 #71362d,0 0 0 3px #f1e6c8cc}.road-level.locked .road-level-pin{background:#8d8878;border-color:#575348;color:#4b473f;filter:none;opacity:.9;box-shadow:inset 0 0 0 3px #aaa493,3px 3px #5b584e}
 .road-level-label{top:88px;min-width:162px;max-width:190px;padding:7px 9px;background:#eee3c6;border:1px solid #9e9275;color:#2b2924;box-shadow:2px 2px #a59b82;border-radius:0}.road-level-label b{font:800 12px/1.2 "Libre Franklin",system-ui,sans-serif}.road-level-label small{font-size:9px;line-height:1.25;margin-top:3px;color:#655d4f}
@@ -434,3 +454,10 @@ body.reduced-motion .map-overlay,body.reduced-motion .map-directory-sheet,body.r
   .map-directory-sheet .level-list-scroll{padding:10px}
   .map-level-grid{grid-template-columns:1fr;gap:8px}
 }
+
+.settings-danger-zone{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:12px;padding:11px 4px 2px;border-top:2px solid #b59d79}.settings-danger-zone b{display:block;font-size:11px;color:#713c32}.settings-danger-zone small{display:block;margin-top:3px;color:#776d5c;font-size:8px;line-height:1.35}.settings-danger-zone button{flex:0 0 auto;min-width:68px;padding:8px 10px;border:2px solid #713c32;background:#9b4b3e;color:#fff0d3;box-shadow:2px 2px #613127;font:800 9px "DM Mono",monospace;cursor:pointer}.settings-danger-zone button:hover{background:#ad5a4b}.settings-danger-zone button:active{transform:translate(2px,2px);box-shadow:none}
+.big-stars{font-size:64px;letter-spacing:10px;margin:12px 0 18px}
+.road-level-pin em{right:-21px;top:-31px;min-width:48px;padding:4px 7px;line-height:1;white-space:nowrap;font-size:14px}
+.modal.star-reveal-modal .modal-card{background:transparent;border-color:transparent;box-shadow:none;animation:starFrameIn .42s ease 1.25s both}
+@keyframes starFrameIn{0%{background:transparent;border-color:transparent;box-shadow:none}100%{background:#efe3c4;border-color:#3f3d35;box-shadow:10px 12px #0008}}
+@media(prefers-reduced-motion:reduce){.modal.star-reveal-modal .modal-card{animation:none;background:#efe3c4;border-color:#3f3d35;box-shadow:10px 12px #0008}}

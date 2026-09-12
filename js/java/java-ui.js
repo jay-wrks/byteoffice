@@ -11,10 +11,13 @@
     const next=levelIndex<levels.length-1;
     const calls=javaBotCalls();
     const steps=(typeof javaMachine!=='undefined'&&javaMachine?.steps)||Number(els.steps?.textContent)||0;
+    const runStars=window.byteOfficeLastRunStars;
+    const sizeStar=runStars?runStars.sizeStar:calls<=level().sizeGoal, stepStar=runStars?runStars.stepStar:steps<=level().stepGoal, stars=1+(sizeStar?1:0)+(stepStar?1:0);
+    const starMarkup=Array.from({length:3},(_,i)=>`<span class="${i<stars?'earned-star':'empty-star'}" style="--star-delay:${i*180}ms">${i<stars?'★':'☆'}</span>`).join('');
     showModal(`<div class="win-sheet java-win-sheet">
       <div class="win-stamp">JAVA PASSED</div>
       <h2>Program.java completed the assignment</h2>
-      <div class="big-stars">★★</div>
+      <div class="big-stars">${starMarkup}</div>
       <p>Your compiled Java program produced exactly the requested OUTPUT while controlling Byte through the restricted ByteBot API.</p>
       <div class="score-cards">
         <div><span>Source</span><b>${calls} ByteBot calls</b><em>Real Java 8</em><small>main() supplied by ByteOffice</small></div>

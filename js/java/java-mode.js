@@ -645,14 +645,20 @@ public final class GameRunner {
     }
     if(!javaMachine) return;
     if(sameArray(javaMachine.output,expectedOutput)){
+      const calls=botCallCount();
+      const sizeStar=calls<=level().sizeGoal;
+      const stepStar=javaMachine.steps<=level().stepGoal;
+      window.byteOfficeLastRunStars={sizeStar,stepStar};
       await successFeedback();
       if(!completed.includes(level().id)) completed.push(level().id);
       localStorage.setItem('byteOfficeCompletedV17',JSON.stringify(completed));
       const m=levelMeta();
       m.clears=(m.clears||0)+1;
-      const calls=botCallCount();
       m.bestSize=m.bestSize===null?calls:Math.min(m.bestSize,calls);
       m.bestSteps=m.bestSteps===null?javaMachine.steps:Math.min(m.bestSteps,javaMachine.steps);
+      m.sizeStar=sizeStar;
+      m.stepStar=stepStar;
+      m.dualStars=m.sizeStar && m.stepStar;
       metaStore.totalClears=(metaStore.totalClears||0)+1; saveMeta();
       refreshHome?.();
       els.footer.textContent=`Passed with real Java · ${javaMachine.steps} ByteBot actions.`;
