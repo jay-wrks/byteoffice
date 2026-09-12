@@ -66,9 +66,11 @@
 .road-level.region-arrival.region-levels-visible{visibility:visible}
 .road-level.region-arrival.region-levels-visible .road-level-pin{animation:regionPinArrival .7s cubic-bezier(.18,.86,.22,1.18) both}
 .road-level.newly-unlocked:not(.region-arrival) .road-level-pin{animation:newLevelArrival .7s cubic-bezier(.18,.86,.22,1.18) .12s both}
+.road-level.completed-arrival .road-level-pin{animation:levelCompletionUnlock 1.05s cubic-bezier(.18,.86,.22,1.18) var(--completion-delay,0ms) both}
 @keyframes regionCloudReveal{0%{opacity:1;transform:scale(1) translateY(0) rotate(0);filter:saturate(.82) contrast(.96)}55%{opacity:.94;transform:scale(1.04) translateY(-8px) rotate(-1deg);filter:saturate(.9) contrast(1)}100%{opacity:0;transform:scale(1.2) translateY(-46px) rotate(3deg);filter:saturate(1.1) contrast(1.05);visibility:hidden}}
 @keyframes regionPinArrival{0%{opacity:0;transform:translate(-50%,24px) rotate(-8deg) scale(.55)}70%{opacity:1;transform:translate(-50%,-56%) rotate(2deg) scale(1.08)}100%{opacity:1;transform:translate(-50%,-50%) rotate(-1deg) scale(1)}}
 @keyframes newLevelArrival{0%{opacity:0;transform:translate(-50%,-20%) rotate(-8deg) scale(.62)}70%{opacity:1;transform:translate(-50%,-57%) rotate(2deg) scale(1.1)}100%{opacity:1;transform:translate(-50%,-50%) rotate(-1deg) scale(1)}}
+@keyframes levelCompletionUnlock{0%{filter:grayscale(1) brightness(.76);transform:translate(-50%,-50%) rotate(-2deg) scale(.86);background:#8d8878;border-color:#575348;box-shadow:inset 0 0 0 3px #aaa493,3px 3px #5b584e}62%{filter:grayscale(.25) brightness(1.03);transform:translate(-50%,-56%) rotate(2deg) scale(1.12);box-shadow:4px 4px 0 #3d4a3e,0 0 0 8px #cfe0cf88}100%{filter:none;transform:translate(-50%,-50%) rotate(-1deg) scale(1);background:#cfdfcf;border-color:#566356;box-shadow:4px 4px 0 #3d4a3e}}
 
 /* --- Main employee terminal / home page --- */
 .home-screen{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:42px;background:#20221e;color:#282822;overflow:auto;opacity:1;visibility:visible;transition:opacity .28s ease,transform .34s cubic-bezier(.2,.75,.2,1),visibility 0s linear}

@@ -48,7 +48,6 @@ function showRoadmap(){
   const nextIndex=firstTodoIndex<0?levels.length-1:firstTodoIndex;
   const fav=favoriteSet();
   const tileCount=Math.ceil(levels.length/8);
-  const mapRevealDemo=new URLSearchParams(window.location.search).get('map-demo')==='3';
   const hadMapSnapshot=Array.isArray(metaStore.roadmapSeenCompleted);
   const previousCompleted=new Set(hadMapSnapshot?metaStore.roadmapSeenCompleted:[]);
   const roadPoints=[
@@ -60,14 +59,14 @@ function showRoadmap(){
     'Old Machine Range','Algorithm Avenue','Search Valley','Sorting Station',
     'Optimization Frontier'
   ];
-  let revealedTile=1;
+  let revealedTile=0;
   if(settings.unlockAllLevels){
     revealedTile=tileCount-1;
   }else{
-    // The first two regions are the starting map. Every later region is
-    // revealed only after 75% of the immediately previous region is cleared.
+    // Region 1 is the starting map. Every later region is revealed only after
+    // 75% of the immediately previous region is cleared.
     // With eight assignments per tile, this means six completed levels.
-    for(let tile=2;tile<tileCount;tile++){
+    for(let tile=1;tile<tileCount;tile++){
       const previousRegion=levels.filter((_,index)=>Math.floor(index/8)===tile-1);
       const previousIds=new Set(previousRegion.map(level=>level.id));
       const cleared=completed.filter(id=>previousIds.has(id)).length;
@@ -75,9 +74,8 @@ function showRoadmap(){
       revealedTile=tile;
     }
   }
-  if(mapRevealDemo) revealedTile=Math.min(tileCount-1,4);
   const nextRegionTile=revealedTile<tileCount-1?revealedTile+1:-1;
-  const nextRegionLevels=nextRegionTile>1
+  const nextRegionLevels=nextRegionTile>=1
     ? levels.filter((_,index)=>Math.floor(index/8)===nextRegionTile-1)
     : [];
   const nextRegionIds=new Set(nextRegionLevels.map(level=>level.id));
@@ -86,7 +84,7 @@ function showRoadmap(){
   const nextRegionPct=nextRegionRequired?Math.min(100,Math.round(nextRegionCleared/nextRegionRequired*100)):100;
   const revealFor=(doneSet)=>{
     let tile=1;
-    for(let n=2;n<tileCount;n++){
+    for(let n=1;n<tileCount;n++){
       const previous=levels.filter((_,index)=>Math.floor(index/8)===n-1);
       const cleared=previous.filter(level=>doneSet.has(level.id)).length;
       if(cleared<Math.ceil(previous.length*.75)) break;
@@ -94,24 +92,26 @@ function showRoadmap(){
     }
     return tile;
   };
-  const previousRevealedTile=mapRevealDemo?1:hadMapSnapshot
+  const previousRevealedTile=hadMapSnapshot
     ? Number.isInteger(metaStore.roadmapSeenRegion)?metaStore.roadmapSeenRegion:revealFor(previousCompleted)
     : revealFor(previousCompleted);
   const regionRevealTiles=[];
-  if(mapRevealDemo||hadMapSnapshot&&!settings.unlockAllLevels){
+  if(hadMapSnapshot&&!settings.unlockAllLevels){
     for(let tile=previousRevealedTile+1;tile<=revealedTile;tile++) regionRevealTiles.push(tile);
   }
   const previousNextIndex=levels.findIndex(l=>!previousCompleted.has(l.id));
-  const animateNextLevel=mapRevealDemo||(hadMapSnapshot&&previousNextIndex!==nextIndex&&nextIndex>=0);
+  const animateNextLevel=hadMapSnapshot&&previousNextIndex!==nextIndex&&nextIndex>=0;
   const nodes=levels.map((l,i)=>{
     const tile=Math.floor(i/8), point=roadPoints[i%8], regionVisible=tile<=revealedTile, done=completed.includes(l.id), unlocked=regionVisible&&(settings.unlockAllLevels||done||i<=nextIndex);
     const m=levelMeta(l.id), starCount=(m.sizeStar?1:0)+(m.stepStar?1:0), favorite=fav.has(l.id), current=i===nextIndex&&!done;
     const regionArrival=regionRevealTiles.includes(tile);
     const levelArrival=animateNextLevel&&i===nextIndex;
+    const completedArrival=hadMapSnapshot&&done&&!previousCompleted.has(l.id)&&!regionArrival;
     const state=regionVisible?(done?'done':current?'current':unlocked?'open':'locked'):'hidden-region';
     const medal=done?(starCount===2?'★★':starCount===1?'★':'✓'):(current?'GO':'');
     const roadLeft=tile*1075+(point[0]/100)*1075;
-    return `<button class="road-level ${state} ${favorite?'favorite':''} ${regionArrival?'region-arrival':''} ${levelArrival?'newly-unlocked':''}" data-level="${i}" data-tile="${tile}" style="--road-left:${roadLeft}px;--ry:${point[1]}%" ${unlocked?'':'disabled'} aria-label="Level ${l.id}: ${l.title}${unlocked?'':' locked'}"><span class="road-level-pin"><i>${String(l.id).padStart(2,'0')}</i><em>${medal}</em></span><span class="road-level-label"><b>${l.title}</b><small>${done?'Completed':current?'Next assignment':(settings.unlockAllLevels?'Unlocked in Settings':'Locked — finish the previous assignment')}</small></span></button>`;
+    const completionDelay=completedArrival?Math.max(0,i-previousNextIndex)*190:0;
+    return `<button class="road-level ${state} ${favorite?'favorite':''} ${regionArrival?'region-arrival':''} ${levelArrival?'newly-unlocked':''} ${completedArrival?'completed-arrival':''}" data-level="${i}" data-tile="${tile}" style="--road-left:${roadLeft}px;--ry:${point[1]}%;--completion-delay:${completionDelay}ms" ${unlocked?'':'disabled'} aria-label="Level ${l.id}: ${l.title}${unlocked?'':' locked'}"><span class="road-level-pin"><i>${String(l.id).padStart(2,'0')}</i><em>${medal}</em></span><span class="road-level-label"><b>${l.title}</b><small>${done?'Completed':current?'Next assignment':(settings.unlockAllLevels?'Unlocked in Settings':'Locked — finish the previous assignment')}</small></span></button>`;
   }).join('');
   const cloudMarkup=(i)=>{
     if(regionRevealTiles.includes(i)) return `<div class="road-cloud-cover region-reveal-cover region-reveal-queued" data-reveal-tile="${i}" aria-label="Region revealed"><span>REGION REVEALED</span></div>`;
@@ -120,11 +120,9 @@ function showRoadmap(){
     return '<div class="road-cloud-cover" aria-label="Undiscovered region"><span>UNDISCOVERED</span><b>Advance through the previous regions</b></div>';
   };
   const tiles=Array.from({length:tileCount},(_,i)=>`<div class="road-tile road-tile-${i%2?'b':'a'}" data-road-tile="${i}"><div class="road-region-tag">${roadRegions[i]||`Sector ${i+1}`}</div>${cloudMarkup(i)}</div>`).join('');
-  if(!mapRevealDemo){
-    metaStore.roadmapSeenCompleted=[...completed];
-    metaStore.roadmapSeenRegion=revealedTile;
-    saveMeta();
-  }
+  metaStore.roadmapSeenCompleted=[...completed];
+  metaStore.roadmapSeenRegion=revealedTile;
+  saveMeta();
   const pct=Math.round(completed.length/levels.length*100);
   els.mapContent.innerHTML=`<div class="roadmap-shell">
     <div class="roadmap-head">
