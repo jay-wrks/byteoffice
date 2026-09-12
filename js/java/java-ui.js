@@ -23,7 +23,7 @@
       <div class="win-actions"><button id="replayLevelBtn" class="paper-button">Run Again</button>${next?'<button id="nextLevelBtn" class="modal-primary">Next Assignment →</button>':'<button id="nextLevelBtn" class="modal-primary">View Levels</button>'}</div>
     </div>`);
     document.querySelector('#replayLevelBtn')?.addEventListener('click',()=>{closeModal();resetMachine();});
-    document.querySelector('#nextLevelBtn')?.addEventListener('click',()=>{if(next)enterGame(levelIndex+1);else openRoadmap('game');});
+    document.querySelector('#nextLevelBtn')?.addEventListener('click',()=>{if(next)startNextAssignmentFlow(levelIndex+1);else openRoadmap('game');});
   }
 
   const physicalSuccess=window.successFeedback;

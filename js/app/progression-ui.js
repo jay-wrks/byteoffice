@@ -40,10 +40,21 @@ function showWin(){
   const stars=(sizeStar?1:0)+(stepStar?1:0);
   showModal(`<div class="win-sheet"><div class="win-stamp">APPROVED</div><h2>Level Complete!</h2><div class="big-stars">${stars===2?'★★':stars===1?'★☆':'☆☆'}</div><p>You produced exactly the requested OUTBOX.</p><div class="score-cards"><div><span>Program</span><b>${program.length} lines</b><em>${sizeStar?'★ Efficiency goal met':'☆ Goal: '+level().sizeGoal}</em><small>Best: ${m.bestSize??program.length}</small></div><div><span>Runtime</span><b>${engine.steps} steps</b><em>${stepStar?'★ Speed goal met':'☆ Goal: '+level().stepGoal}</em><small>Best: ${m.bestSteps??engine.steps}</small></div></div><div class="win-actions"><button id="replayLevelBtn" class="paper-button">Optimize Again</button>${next?'<button id="nextLevelBtn" class="modal-primary">Next Assignment →</button>':'<button id="nextLevelBtn" class="modal-primary">View Levels</button>'}</div></div>`);
   $("#replayLevelBtn").addEventListener("click",()=>{closeModal();resetMachine();});
-  $("#nextLevelBtn").addEventListener("click",()=>{ if(next) enterGame(levelIndex+1); else openRoadmap('game'); });
+  $("#nextLevelBtn").addEventListener("click",()=>{ if(next) startNextAssignmentFlow(levelIndex+1); else openRoadmap('game'); });
 }
 
-function showRoadmap(){
+function startNextAssignmentFlow(nextIndex){
+  if(transitionBusy) return;
+  document.body.classList.add('roadmap-flow-locked');
+  roadmapOrigin='game';
+  closeModal();
+  pageTransition('Updating assignment map…',()=>{
+    showRoadmap({autoEnterIndex:nextIndex});
+    setBasePage('map');
+  });
+}
+
+function showRoadmap({autoEnterIndex=null}={}){
   const firstTodoIndex=levels.findIndex(l=>!completed.includes(l.id));
   const nextIndex=firstTodoIndex<0?levels.length-1:firstTodoIndex;
   const fav=favoriteSet();
@@ -101,6 +112,8 @@ function showRoadmap(){
   }
   const previousNextIndex=levels.findIndex(l=>!previousCompleted.has(l.id));
   const animateNextLevel=hadMapSnapshot&&previousNextIndex!==nextIndex&&nextIndex>=0;
+  const newCompletionCount=hadMapSnapshot?completed.filter(id=>!previousCompleted.has(id)).length:0;
+  const completionAnimationWait=Math.max(1500,1500+Math.max(0,newCompletionCount-1)*190);
   const nodes=levels.map((l,i)=>{
     const tile=Math.floor(i/8), point=roadPoints[i%8], regionVisible=tile<=revealedTile, done=completed.includes(l.id), unlocked=regionVisible&&(settings.unlockAllLevels||done||i<=nextIndex);
     const m=levelMeta(l.id), starCount=(m.sizeStar?1:0)+(m.stepStar?1:0), favorite=fav.has(l.id), current=i===nextIndex&&!done;
@@ -141,6 +154,19 @@ function showRoadmap(){
     const target=tile*tileWidth+point*tileWidth-viewport.clientWidth*.46;
     viewport.scrollTo({left:Math.max(0,target),behavior});
   };
+  const finishAutoEnter=()=>{
+    if(autoEnterIndex===null) return;
+    const focusPoint=roadPoints[autoEnterIndex%8];
+    const focusTile=Math.floor(autoEnterIndex/8);
+    canvas.style.setProperty('--focus-x',`${focusTile*tileWidth+(focusPoint[0]/100)*tileWidth}px`);
+    canvas.style.setProperty('--focus-y',`${focusPoint[1]}%`);
+    scrollToLevel(autoEnterIndex,'smooth');
+    setTimeout(()=>canvas.classList.add('next-level-zoom'),280);
+    setTimeout(()=>{
+      document.body.classList.remove('roadmap-flow-locked');
+      enterGame(autoEnterIndex);
+    },Math.max(1800,completionAnimationWait+300));
+  };
   document.querySelectorAll('.road-level:not(:disabled)').forEach(b=>b.addEventListener('click',()=>enterGame(+b.dataset.level)));
   $('#roadContinueBtn').addEventListener('click',()=>enterGame(nextIndex));
   $('#roadCurrentBtn').addEventListener('click',()=>scrollToLevel(nextIndex));
@@ -155,7 +181,7 @@ function showRoadmap(){
   viewport.addEventListener('pointerup',()=>{down=false;viewport.classList.remove('dragging');});
   viewport.addEventListener('pointercancel',()=>{down=false;viewport.classList.remove('dragging');});
   const playRegionReveal=(sequenceIndex=0)=>{
-    if(sequenceIndex>=regionRevealTiles.length) return;
+    if(sequenceIndex>=regionRevealTiles.length){finishAutoEnter();return;}
     const tile=regionRevealTiles[sequenceIndex];
     const cloud=document.querySelector(`.region-reveal-cover[data-reveal-tile="${tile}"]`);
     if(!cloud){playRegionReveal(sequenceIndex+1);return;}
@@ -176,7 +202,10 @@ function showRoadmap(){
     if(regionRevealTiles.length){
       scrollToLevel(Math.min(levels.length-1,regionRevealTiles[0]*8),'auto');
       setTimeout(()=>playRegionReveal(),280);
-    }else scrollToLevel(nextIndex,'auto');
+    }else{
+      scrollToLevel(nextIndex,'auto');
+      finishAutoEnter();
+    }
   });
 }
 
