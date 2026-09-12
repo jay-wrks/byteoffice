@@ -48,6 +48,9 @@ function showRoadmap(){
   const nextIndex=firstTodoIndex<0?levels.length-1:firstTodoIndex;
   const fav=favoriteSet();
   const tileCount=Math.ceil(levels.length/8);
+  const mapRevealDemo=new URLSearchParams(window.location.search).get('map-demo')==='3';
+  const hadMapSnapshot=Array.isArray(metaStore.roadmapSeenCompleted);
+  const previousCompleted=new Set(hadMapSnapshot?metaStore.roadmapSeenCompleted:[]);
   const roadPoints=[
     [7.5,48.8],[18.5,46.4],[31.0,48.6],[43.5,52.0],
     [55.5,54.3],[67.5,50.9],[80.5,51.8],[93.0,54.5]
@@ -72,6 +75,7 @@ function showRoadmap(){
       revealedTile=tile;
     }
   }
+  if(mapRevealDemo) revealedTile=Math.min(tileCount-1,4);
   const nextRegionTile=revealedTile<tileCount-1?revealedTile+1:-1;
   const nextRegionLevels=nextRegionTile>1
     ? levels.filter((_,index)=>Math.floor(index/8)===nextRegionTile-1)
@@ -80,20 +84,47 @@ function showRoadmap(){
   const nextRegionCleared=completed.filter(id=>nextRegionIds.has(id)).length;
   const nextRegionRequired=Math.ceil(nextRegionLevels.length*.75);
   const nextRegionPct=nextRegionRequired?Math.min(100,Math.round(nextRegionCleared/nextRegionRequired*100)):100;
+  const revealFor=(doneSet)=>{
+    let tile=1;
+    for(let n=2;n<tileCount;n++){
+      const previous=levels.filter((_,index)=>Math.floor(index/8)===n-1);
+      const cleared=previous.filter(level=>doneSet.has(level.id)).length;
+      if(cleared<Math.ceil(previous.length*.75)) break;
+      tile=n;
+    }
+    return tile;
+  };
+  const previousRevealedTile=mapRevealDemo?1:hadMapSnapshot
+    ? Number.isInteger(metaStore.roadmapSeenRegion)?metaStore.roadmapSeenRegion:revealFor(previousCompleted)
+    : revealFor(previousCompleted);
+  const regionRevealTiles=[];
+  if(mapRevealDemo||hadMapSnapshot&&!settings.unlockAllLevels){
+    for(let tile=previousRevealedTile+1;tile<=revealedTile;tile++) regionRevealTiles.push(tile);
+  }
+  const previousNextIndex=levels.findIndex(l=>!previousCompleted.has(l.id));
+  const animateNextLevel=mapRevealDemo||(hadMapSnapshot&&previousNextIndex!==nextIndex&&nextIndex>=0);
   const nodes=levels.map((l,i)=>{
     const tile=Math.floor(i/8), point=roadPoints[i%8], regionVisible=tile<=revealedTile, done=completed.includes(l.id), unlocked=regionVisible&&(settings.unlockAllLevels||done||i<=nextIndex);
     const m=levelMeta(l.id), starCount=(m.sizeStar?1:0)+(m.stepStar?1:0), favorite=fav.has(l.id), current=i===nextIndex&&!done;
+    const regionArrival=regionRevealTiles.includes(tile);
+    const levelArrival=animateNextLevel&&i===nextIndex;
     const state=regionVisible?(done?'done':current?'current':unlocked?'open':'locked'):'hidden-region';
     const medal=done?(starCount===2?'★★':starCount===1?'★':'✓'):(current?'GO':'');
     const roadLeft=tile*1075+(point[0]/100)*1075;
-    return `<button class="road-level ${state} ${favorite?'favorite':''}" data-level="${i}" data-tile="${tile}" style="--road-left:${roadLeft}px;--ry:${point[1]}%" ${unlocked?'':'disabled'} aria-label="Level ${l.id}: ${l.title}${unlocked?'':' locked'}"><span class="road-level-pin"><i>${String(l.id).padStart(2,'0')}</i><em>${medal}</em></span><span class="road-level-label"><b>${l.title}</b><small>${done?'Completed':current?'Next assignment':(settings.unlockAllLevels?'Unlocked in Settings':'Locked — finish the previous assignment')}</small></span></button>`;
+    return `<button class="road-level ${state} ${favorite?'favorite':''} ${regionArrival?'region-arrival':''} ${levelArrival?'newly-unlocked':''}" data-level="${i}" data-tile="${tile}" style="--road-left:${roadLeft}px;--ry:${point[1]}%" ${unlocked?'':'disabled'} aria-label="Level ${l.id}: ${l.title}${unlocked?'':' locked'}"><span class="road-level-pin"><i>${String(l.id).padStart(2,'0')}</i><em>${medal}</em></span><span class="road-level-label"><b>${l.title}</b><small>${done?'Completed':current?'Next assignment':(settings.unlockAllLevels?'Unlocked in Settings':'Locked — finish the previous assignment')}</small></span></button>`;
   }).join('');
   const cloudMarkup=(i)=>{
+    if(regionRevealTiles.includes(i)) return `<div class="road-cloud-cover region-reveal-cover region-reveal-queued" data-reveal-tile="${i}" aria-label="Region revealed"><span>REGION REVEALED</span></div>`;
     if(i<=revealedTile) return '';
     if(i===nextRegionTile) return `<div class="road-cloud-cover" aria-label="Undiscovered region"><span>UNDISCOVERED</span><div class="region-unlock-progress"><i style="width:${nextRegionPct}%"></i></div><small>${Math.max(0,nextRegionRequired-nextRegionCleared)} more to reveal ${roadRegions[i]||`Sector ${i+1}`}</small></div>`;
     return '<div class="road-cloud-cover" aria-label="Undiscovered region"><span>UNDISCOVERED</span><b>Advance through the previous regions</b></div>';
   };
   const tiles=Array.from({length:tileCount},(_,i)=>`<div class="road-tile road-tile-${i%2?'b':'a'}" data-road-tile="${i}"><div class="road-region-tag">${roadRegions[i]||`Sector ${i+1}`}</div>${cloudMarkup(i)}</div>`).join('');
+  if(!mapRevealDemo){
+    metaStore.roadmapSeenCompleted=[...completed];
+    metaStore.roadmapSeenRegion=revealedTile;
+    saveMeta();
+  }
   const pct=Math.round(completed.length/levels.length*100);
   els.mapContent.innerHTML=`<div class="roadmap-shell">
     <div class="roadmap-head">
@@ -125,7 +156,30 @@ function showRoadmap(){
   viewport.addEventListener('pointermove',e=>{if(down)viewport.scrollLeft=startScroll-(e.clientX-startX);});
   viewport.addEventListener('pointerup',()=>{down=false;viewport.classList.remove('dragging');});
   viewport.addEventListener('pointercancel',()=>{down=false;viewport.classList.remove('dragging');});
-  requestAnimationFrame(()=>scrollToLevel(nextIndex,'auto'));
+  const playRegionReveal=(sequenceIndex=0)=>{
+    if(sequenceIndex>=regionRevealTiles.length) return;
+    const tile=regionRevealTiles[sequenceIndex];
+    const cloud=document.querySelector(`.region-reveal-cover[data-reveal-tile="${tile}"]`);
+    if(!cloud){playRegionReveal(sequenceIndex+1);return;}
+    scrollToLevel(Math.min(levels.length-1,tile*8),'smooth');
+    setTimeout(()=>{
+      cloud.classList.remove('region-reveal-queued');
+      cloud.classList.add('region-reveal-active');
+      cloud.addEventListener('animationend',()=>{
+        const arrivals=[...document.querySelectorAll(`.road-level.region-arrival[data-tile="${tile}"]`)];
+        cloud.remove();
+        arrivals.forEach((node,index)=>setTimeout(()=>node.classList.add('region-levels-visible'),index*180));
+        const finalPinDelay=arrivals.length?((arrivals.length-1)*180+720):0;
+        setTimeout(()=>playRegionReveal(sequenceIndex+1),Math.max(260,finalPinDelay));
+      },{once:true});
+    },420);
+  };
+  requestAnimationFrame(()=>{
+    if(regionRevealTiles.length){
+      scrollToLevel(Math.min(levels.length-1,regionRevealTiles[0]*8),'auto');
+      setTimeout(()=>playRegionReveal(),280);
+    }else scrollToLevel(nextIndex,'auto');
+  });
 }
 
 function closeMapOverlay(immediate=false){

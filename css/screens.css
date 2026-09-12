@@ -59,6 +59,16 @@
 .road-cloud-cover small{padding:4px 8px;background:#f0f1e8dd;color:#51594f;border:1px solid #929a8e;font:700 9px "DM Mono",monospace}
 .region-unlock-progress{width:220px;height:12px;padding:2px;background:#30362f;border:2px solid #20251f;box-shadow:2px 2px #20251f99}
 .region-unlock-progress i{display:block;height:100%;background:linear-gradient(90deg,#9aaf7b,#d8d99b);box-shadow:0 0 7px #dbe4b777;transition:width .25s ease}
+.road-cloud-cover.region-reveal-cover{animation:regionCloudReveal 1.55s cubic-bezier(.2,.72,.18,1) .08s forwards}
+.road-cloud-cover.region-reveal-cover.region-reveal-queued{animation:none}
+.road-cloud-cover.region-reveal-cover.region-reveal-active{animation:regionCloudReveal 1.55s cubic-bezier(.2,.72,.18,1) forwards}
+.road-level.region-arrival{visibility:hidden}
+.road-level.region-arrival.region-levels-visible{visibility:visible}
+.road-level.region-arrival.region-levels-visible .road-level-pin{animation:regionPinArrival .7s cubic-bezier(.18,.86,.22,1.18) both}
+.road-level.newly-unlocked:not(.region-arrival) .road-level-pin{animation:newLevelArrival .7s cubic-bezier(.18,.86,.22,1.18) .12s both}
+@keyframes regionCloudReveal{0%{opacity:1;transform:scale(1) translateY(0) rotate(0);filter:saturate(.82) contrast(.96)}55%{opacity:.94;transform:scale(1.04) translateY(-8px) rotate(-1deg);filter:saturate(.9) contrast(1)}100%{opacity:0;transform:scale(1.2) translateY(-46px) rotate(3deg);filter:saturate(1.1) contrast(1.05);visibility:hidden}}
+@keyframes regionPinArrival{0%{opacity:0;transform:translate(-50%,24px) rotate(-8deg) scale(.55)}70%{opacity:1;transform:translate(-50%,-56%) rotate(2deg) scale(1.08)}100%{opacity:1;transform:translate(-50%,-50%) rotate(-1deg) scale(1)}}
+@keyframes newLevelArrival{0%{opacity:0;transform:translate(-50%,-20%) rotate(-8deg) scale(.62)}70%{opacity:1;transform:translate(-50%,-57%) rotate(2deg) scale(1.1)}100%{opacity:1;transform:translate(-50%,-50%) rotate(-1deg) scale(1)}}
 
 /* --- Main employee terminal / home page --- */
 .home-screen{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:42px;background:#20221e;color:#282822;overflow:auto;opacity:1;visibility:visible;transition:opacity .28s ease,transform .34s cubic-bezier(.2,.75,.2,1),visibility 0s linear}
