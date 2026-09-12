@@ -2,7 +2,8 @@
   'use strict';
 
   // Monaco is vendored into the repository so the IDE does not depend on a CDN.
-  const MONACO='libs/monaco/vs';
+  const APP_BASE=window.__BYTE_OFFICE_ASSET_BASE__||new URL('./',document.baseURI||window.location.href).href;
+  const MONACO=new URL('libs/monaco/vs/',APP_BASE).href.replace(/\/$/,'');
   let editor=null, model=null, textarea=null, decorations=[], loading=null, pendingExecutionLine=-1, scrollAnimation=0, executionMarker=null, executionMarkerLine=-1;
 
   function positionExecutionMarker(line, animate){

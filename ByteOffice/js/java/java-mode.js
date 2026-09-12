@@ -485,7 +485,7 @@ public final class GameRunner {
       // Byte Office may be hosted below a path such as /ByteOffice/.
       // Resolve CheerpJ's /app/ filesystem from this app directory so local
       // assets such as java/tools.jar are found on Firebase Hosting.
-      const appBase=new URL('./',document.baseURI||window.location.href).href;
+      const appBase=window.__BYTE_OFFICE_ASSET_BASE__||new URL('./',document.baseURI||window.location.href).href;
       await cheerpjInit({version:8,status:'none',natives,overrideDocumentBase:appBase});
       updateJavaStatus('Java compiler ready','ready');
       return true;
@@ -516,7 +516,8 @@ public final class GameRunner {
   }
 
   async function runJavaCompiler(){
-    const compilerAsset='java/tools.jar';
+    const appBase=window.__BYTE_OFFICE_ASSET_BASE__||new URL('./',document.baseURI||window.location.href).href;
+    const compilerAsset=new URL('java/tools.jar',appBase).href;
     const assetCheck=await fetch(compilerAsset,{method:'HEAD',cache:'no-store'}).catch(()=>null);
     if(!assetCheck?.ok){
       throw new Error(`Java compiler asset is unavailable (${compilerAsset}). Deploy the complete project root, including java/tools.jar.`);
@@ -534,7 +535,7 @@ public final class GameRunner {
     try{
       const exit=await cheerpjRunMain(
         'com.sun.tools.javac.Main',
-        '/app/java/tools.jar:/files/',
+        '/app/ByteOffice/java/tools.jar:/files/',
         '-g:lines,source','-d','/files',
         '/str/byteoffice/ByteBot.java','/str/byteoffice/GameRunner.java','/str/Program.java'
       );

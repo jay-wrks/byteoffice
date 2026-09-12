@@ -4,7 +4,10 @@
   const ASSET_VERSION='20260911-0110';
 
   function versioned(src){
-    return src + (src.includes('?')?'&':'?') + 'v=' + encodeURIComponent(ASSET_VERSION);
+    const base=window.__BYTE_OFFICE_ASSET_BASE__||document.baseURI||window.location.href;
+    const url=new URL(src,base);
+    url.searchParams.set('v',ASSET_VERSION);
+    return url.href;
   }
 
   async function loadClassicScript(src){
@@ -20,6 +23,10 @@
 
   async function boot(){
     try{
+      // Keep CheerpJ's /app/ filesystem anchored to this deployed app
+      // directory, rather than trusting the page's <base> element. This is
+      // important when the entry page is hosted one directory above it.
+      window.__BYTE_OFFICE_ASSET_BASE__=new URL('../..',document.currentScript?.src||window.location.href).href;
       const response=await fetch(versioned('js/java/java-mode.js'),{cache:'no-store'});
       if(!response.ok) throw new Error(`Could not load Java mode (${response.status})`);
       let source=await response.text();
