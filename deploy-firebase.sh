@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Deploy the nested ByteOffice app directory at the Firebase Hosting root.
+# Deploy ByteOffice with a root entry point and a tracked asset directory.
 SOURCE_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 FIREBASE_DIR="/home/jay/works/JayDsaGames"
 TARGET_DIR="$FIREBASE_DIR/public"
@@ -30,12 +30,11 @@ fi
 echo "Replacing Firebase public root: $TARGET_DIR"
 rm -rf -- "$TARGET_DIR"
 mkdir -p -- "$TARGET_DIR"
-cp -a -- "$APP_DIR"/. "$TARGET_DIR"/
-rm -f -- "$TARGET_DIR/index.html"
-sed 's#<base href="ByteOffice/" />#<base href="./" />#' \
-  "$SOURCE_DIR/ByteOffice.html" > "$TARGET_DIR/index.html"
+cp -a -- "$APP_DIR" "$TARGET_DIR/ByteOffice"
+cp -- "$SOURCE_DIR/ByteOffice.html" "$TARGET_DIR/ByteOffice.html"
+cp -- "$SOURCE_DIR/ByteOffice.html" "$TARGET_DIR/index.html"
 
-test -f "$TARGET_DIR/java/tools.jar"
+test -f "$TARGET_DIR/ByteOffice/java/tools.jar"
 
 echo "Deploying Firebase Hosting project"
 (
