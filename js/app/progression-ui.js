@@ -56,12 +56,13 @@ function startNextAssignmentFlow(nextIndex){
 }
 
 function showRoadmap({autoEnterIndex=null}={}){
+  const autoFlow=autoEnterIndex!==null;
   const firstTodoIndex=levels.findIndex(l=>!completed.includes(l.id));
   const nextIndex=firstTodoIndex<0?levels.length-1:firstTodoIndex;
   const fav=favoriteSet();
   const tileCount=Math.ceil(levels.length/8);
   const hadMapSnapshot=Array.isArray(metaStore.roadmapSeenCompleted);
-  const previousCompleted=new Set(hadMapSnapshot?metaStore.roadmapSeenCompleted:[]);
+  const previousCompleted=new Set(hadMapSnapshot?metaStore.roadmapSeenCompleted:autoFlow?completed.filter(id=>id!==levels[Math.max(0,autoEnterIndex-1)]?.id):[]);
   const roadPoints=[
     [7.5,48.8],[18.5,46.4],[31.0,48.6],[43.5,52.0],
     [55.5,54.3],[67.5,50.9],[80.5,51.8],[93.0,54.5]
@@ -108,19 +109,19 @@ function showRoadmap({autoEnterIndex=null}={}){
     ? Number.isInteger(metaStore.roadmapSeenRegion)?metaStore.roadmapSeenRegion:revealFor(previousCompleted)
     : revealFor(previousCompleted);
   const regionRevealTiles=[];
-  if(hadMapSnapshot&&!settings.unlockAllLevels){
+  if((hadMapSnapshot||autoFlow)&&!settings.unlockAllLevels){
     for(let tile=previousRevealedTile+1;tile<=revealedTile;tile++) regionRevealTiles.push(tile);
   }
   const previousNextIndex=levels.findIndex(l=>!previousCompleted.has(l.id));
-  const animateNextLevel=hadMapSnapshot&&previousNextIndex!==nextIndex&&nextIndex>=0;
-  const newCompletionCount=hadMapSnapshot?completed.filter(id=>!previousCompleted.has(id)).length:0;
+  const animateNextLevel=(autoFlow||hadMapSnapshot&&previousNextIndex!==nextIndex)&&nextIndex>=0;
+  const newCompletionCount=hadMapSnapshot?completed.filter(id=>!previousCompleted.has(id)).length:autoFlow?1:0;
   const completionAnimationWait=Math.max(1500,1500+Math.max(0,newCompletionCount-1)*190);
   const nodes=levels.map((l,i)=>{
     const tile=Math.floor(i/8), point=roadPoints[i%8], regionVisible=tile<=revealedTile, done=completed.includes(l.id), unlocked=regionVisible&&(settings.unlockAllLevels||done||i<=nextIndex);
     const m=levelMeta(l.id), starCount=(m.sizeStar?1:0)+(m.stepStar?1:0), favorite=fav.has(l.id), current=i===nextIndex&&!done;
     const regionArrival=regionRevealTiles.includes(tile);
     const levelArrival=animateNextLevel&&i===nextIndex;
-    const completedArrival=hadMapSnapshot&&done&&!previousCompleted.has(l.id)&&!regionArrival;
+    const completedArrival=(hadMapSnapshot||autoFlow)&&done&&!previousCompleted.has(l.id)&&!regionArrival;
     const state=regionVisible?(done?'done':current?'current':unlocked?'open':'locked'):'hidden-region';
     const medal=done?Array.from({length:3},(_,starIndex)=>`<span class="${starIndex<1+starCount?'map-earned-star':'map-empty-star'}" style="--map-star-delay:${starIndex*120}ms">${starIndex<1+starCount?'★':'☆'}</span>`).join(''):(current?'GO':'');
     const roadLeft=tile*1075+(point[0]/100)*1075;

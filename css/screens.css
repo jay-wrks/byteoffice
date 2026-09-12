@@ -20,9 +20,9 @@
 
 /* Star reveal: each earned badge lands with its own impact and sparkle. */
 .big-stars{position:relative;display:flex;justify-content:center;gap:.12em;perspective:520px}
-.big-stars .earned-star{position:relative;filter:drop-shadow(0 0 0 transparent);text-shadow:0 2px 0 #765b21;animation:starBadgeLand .82s cubic-bezier(.18,.9,.24,1.28) var(--star-delay,0ms) both}
+.big-stars .earned-star{position:relative;color:#ffd866;filter:drop-shadow(0 0 0 transparent);text-shadow:1px 0 0 #6f4614,-1px 0 0 #6f4614,0 1px 0 #6f4614,0 -1px 0 #6f4614,2px 3px 0 #734912,0 0 9px #ffd866,0 0 22px #f4bd4eaa;animation:starBadgeLand .82s cubic-bezier(.18,.9,.24,1.28) var(--star-delay,0ms) both}
 .big-stars .earned-star::after{content:"✦";position:absolute;left:50%;top:50%;font-size:.34em;color:#fff4bc;opacity:0;pointer-events:none;transform:translate(-50%,-50%) scale(.2);animation:starImpactSpark .42s ease-out calc(var(--star-delay,0ms) + 360ms) both}
-.big-stars .earned-star:nth-child(2),.big-stars .earned-star:nth-child(3){color:#83703a}
+.big-stars .earned-star:nth-child(2),.big-stars .earned-star:nth-child(3){color:#ffd866}
 @keyframes starBadgeLand{0%{opacity:0;transform:translate3d(-18px,-30px,80px) rotateY(-70deg) rotateZ(-24deg) scale(.25);filter:drop-shadow(0 0 0 transparent)}48%{opacity:1;transform:translate3d(6px,5px,0) rotateY(18deg) rotateZ(9deg) scale(1.22);filter:drop-shadow(0 0 14px #f5d77c)}68%{transform:translate3d(-2px,-2px,0) rotateZ(-4deg) scale(.92)}84%{transform:translate3d(1px,0,0) rotateZ(2deg) scale(1.06);filter:drop-shadow(0 0 7px #f5d77c)}100%{opacity:1;transform:none;filter:drop-shadow(0 0 2px #f5d77c)}}
 @keyframes starImpactSpark{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}35%{opacity:1;transform:translate(-50%,-50%) scale(1.8)}100%{opacity:0;transform:translate(-50%,-50%) scale(3.1)}}
 @media(prefers-reduced-motion:reduce){.big-stars .earned-star{animation:none;opacity:1;transform:none;filter:none}.big-stars .earned-star::after{animation:none;display:none}}
@@ -458,6 +458,7 @@ body.reduced-motion .map-overlay,body.reduced-motion .map-directory-sheet,body.r
 .settings-danger-zone{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:12px;padding:11px 4px 2px;border-top:2px solid #b59d79}.settings-danger-zone b{display:block;font-size:11px;color:#713c32}.settings-danger-zone small{display:block;margin-top:3px;color:#776d5c;font-size:8px;line-height:1.35}.settings-danger-zone button{flex:0 0 auto;min-width:68px;padding:8px 10px;border:2px solid #713c32;background:#9b4b3e;color:#fff0d3;box-shadow:2px 2px #613127;font:800 9px "DM Mono",monospace;cursor:pointer}.settings-danger-zone button:hover{background:#ad5a4b}.settings-danger-zone button:active{transform:translate(2px,2px);box-shadow:none}
 .big-stars{font-size:64px;letter-spacing:10px;margin:12px 0 18px}
 .road-level-pin em{right:-21px;top:-31px;min-width:48px;padding:4px 7px;line-height:1;white-space:nowrap;font-size:14px}
+.road-level-pin em .map-earned-star{color:#ffd866;text-shadow:1px 0 0 #5e4218,-1px 0 0 #5e4218,0 1px 0 #5e4218,0 -1px 0 #5e4218,0 0 5px #ffd866,0 1px 0 #765018}
 .modal.star-reveal-modal .modal-card{background:transparent;border-color:transparent;box-shadow:none;animation:starFrameIn .42s ease 1.25s both}
 @keyframes starFrameIn{0%{background:transparent;border-color:transparent;box-shadow:none}100%{background:#efe3c4;border-color:#3f3d35;box-shadow:10px 12px #0008}}
 @media(prefers-reduced-motion:reduce){.modal.star-reveal-modal .modal-card{animation:none;background:#efe3c4;border-color:#3f3d35;box-shadow:10px 12px #0008}}
