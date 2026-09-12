@@ -1,18 +1,24 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Deploy the current ByteOffice directory as the Firebase Hosting root.
+# Deploy the nested ByteOffice app directory at the Firebase Hosting root.
 SOURCE_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 FIREBASE_DIR="/home/jay/works/JayDsaGames"
 TARGET_DIR="$FIREBASE_DIR/public"
+APP_DIR="$SOURCE_DIR/ByteOffice"
 
-if [[ "$SOURCE_DIR" == "$TARGET_DIR" || "$TARGET_DIR" != "$FIREBASE_DIR/public" ]]; then
+if [[ "$APP_DIR" == "$TARGET_DIR" || "$TARGET_DIR" != "$FIREBASE_DIR/public" ]]; then
   echo "Refusing unsafe source/target paths." >&2
   exit 1
 fi
 
-if [[ ! -f "$SOURCE_DIR/java/tools.jar" ]]; then
-  echo "Missing compiler asset: $SOURCE_DIR/java/tools.jar" >&2
+if [[ ! -f "$APP_DIR/java/tools.jar" ]]; then
+  echo "Missing compiler asset: $APP_DIR/java/tools.jar" >&2
+  exit 1
+fi
+
+if [[ ! -f "$SOURCE_DIR/ByteOffice.html" ]]; then
+  echo "Missing entry template: $SOURCE_DIR/ByteOffice.html" >&2
   exit 1
 fi
 
@@ -24,8 +30,10 @@ fi
 echo "Replacing Firebase public root: $TARGET_DIR"
 rm -rf -- "$TARGET_DIR"
 mkdir -p -- "$TARGET_DIR"
-cp -a -- "$SOURCE_DIR"/. "$TARGET_DIR"/
-rm -rf -- "$TARGET_DIR/.git"
+cp -a -- "$APP_DIR"/. "$TARGET_DIR"/
+rm -f -- "$TARGET_DIR/index.html"
+sed 's#<base href="ByteOffice/" />#<base href="./" />#' \
+  "$SOURCE_DIR/ByteOffice.html" > "$TARGET_DIR/index.html"
 
 test -f "$TARGET_DIR/java/tools.jar"
 
