@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- All application assets live in the ByteOffice subfolder. -->
   <base href="/ByteOffice/" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; connect-src 'self'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; frame-src 'self'; font-src 'self' data:; img-src 'self' data: blob:; object-src 'none'; base-uri 'self'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.gstatic.com https://apis.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://apis.google.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; frame-src 'self' https://*.firebaseapp.com https://accounts.google.com https://apis.google.com; font-src 'self' data:; img-src 'self' data: blob: https:; object-src 'none'; base-uri 'self'" />
   <title>Byte Office — Learn Java by Running the Machine</title>
   <link rel="stylesheet" href="libs/fonts/fonts.css?v=20260911-0110" />
   <link rel="stylesheet" href="css/core.css?v=20260911-0110" />
@@ -29,6 +29,10 @@
   <link rel="stylesheet" href="css/ide-layout.css?v=20260912-1138" />
   <!-- Local CheerpJ runtime bundle. -->
   <script src="libs/cheerpj/4.3/loader.js"></script>
+  <!-- Firebase Auth + Firestore. Config values are public; rules protect the data. -->
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <div id="byteOfficeRoot"></div>
@@ -53,6 +57,7 @@
   <script src="js/app/runner-feedback.js"></script>
   <script src="js/app/settings-audio-navigation.js"></script>
   <script src="js/app/progression-ui.js"></script>
+  <script defer src="js/app/firebase.js"></script>
 
   <script src="js/java/java-mode-bootstrap.js?v=20260913-1015"></script>
 </body>

@@ -195,4 +195,5 @@ function recordClear(){
   m.stepStar=engine.steps<=level().stepGoal;
   m.dualStars=m.sizeStar && m.stepStar;
   metaStore.totalClears=(metaStore.totalClears||0)+1; saveMeta();
+  window.byteOfficeCloud?.syncCloudProgress?.().catch?.(()=>{});
 }

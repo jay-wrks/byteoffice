@@ -122,6 +122,13 @@ function stopMusic(){
 }
 function refreshHome(){
   const remembered=clamp(parseInt(workspaceStore.lastLevel||0,10),0,levels.length-1), l=levels[remembered];
+  const hasStarted=Object.prototype.hasOwnProperty.call(workspaceStore,'lastLevel')||completed.length>0;
+  const resumeButton=$('#homeResumeBtn');
+  if(resumeButton){
+    const label=resumeButton.querySelector('b'), hint=resumeButton.querySelector('small');
+    if(label) label.textContent=hasStarted?'Resume work':'Start assignment';
+    if(hint && !window.byteOfficeCloud?.currentUser) hint.textContent=hasStarted?'Sign in with Google to continue':'Sign in with Google to begin';
+  }
   if(els.homeLevelTitle) els.homeLevelTitle.textContent=`Level ${String(l.id).padStart(2,'0')} · ${l.title}`;
   if(els.homeLevelSummary){ const bucket=workspaceBucket(l.id), count=(bucket.slots||[]).reduce((n,x)=>n+(x&&x.length?1:0),0); els.homeLevelSummary.textContent=count?`${count} saved worktree${count===1?'':'s'} ready. Continue exactly where you stopped.`:'No instructions saved yet. Start this assignment when you are ready.'; }
   if(els.homeCompletion) els.homeCompletion.textContent=`${completed.length} / ${levels.length} assignments cleared`;
@@ -157,6 +164,7 @@ function goHome(withTransition=true){
   withTransition?pageTransition('Returning to employee terminal…',act):act();
 }
 function enterGame(index=levelIndex){
+  if(window.byteOfficeRequireAuth && !window.byteOfficeRequireAuth()) return;
   pageTransition('Opening assignment file…',()=>{
     // The roadmap directory is a real interactive overlay. Remove it before
     // exposing the processing floor or its pointer-capturing layer can remain

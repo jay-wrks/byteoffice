@@ -21,9 +21,16 @@ cp -f /home/jay/works/ByteOffice/index.html /home/jay/works/JayDsaGames/public/i
 echo "└─ ✅ index.html copied"
 echo ""
 
+echo "┌─ 🔐 Copying Firestore rules"
+cp -f /home/jay/works/ByteOffice/firestore.rules /home/jay/works/JayDsaGames/firestore.rules
+cp -f /home/jay/works/ByteOffice/firestore.indexes.json /home/jay/works/JayDsaGames/firestore.indexes.json
+cp -f /home/jay/works/ByteOffice/firebase.json /home/jay/works/JayDsaGames/firebase.json
+echo "└─ ✅ Firestore rules copied"
+echo ""
+
 echo "┌─ ☁️  Deploying Firebase Hosting"
 cd /home/jay/works/JayDsaGames
-firebase deploy --only hosting
+firebase deploy --only hosting,firestore
 echo "└─ ✅ Firebase deployment finished"
 echo ""
 

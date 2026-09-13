@@ -706,6 +706,7 @@ public final class GameRunner {
       m.stepStar=stepStar;
       m.dualStars=m.sizeStar && m.stepStar;
       metaStore.totalClears=(metaStore.totalClears||0)+1; saveMeta();
+      window.byteOfficeCloud?.syncCloudProgress?.().catch?.(()=>{});
       refreshHome?.();
       els.footer.textContent=`Passed with real Java · ${javaMachine.steps} ByteBot actions.`;
       updateJavaStatus('Level passed','success');

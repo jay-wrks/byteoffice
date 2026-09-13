@@ -1,0 +1,13 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "leaderboard",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "completedLevels", "order": "DESCENDING"},
+        {"fieldPath": "totalSteps", "order": "ASCENDING"}
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
