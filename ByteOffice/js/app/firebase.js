@@ -75,11 +75,12 @@
     if(!currentUser) return;
     const stats=cloudStats();
     await Promise.all([
-      db.collection('usersInfo').doc(currentUser.uid).set({completed,meta:{levels:metaStore.levels||{}}},{merge:true}),
-      db.collection('leaderboard').doc(currentUser.uid).set({
+      db.collection('userInfo').doc(currentUser.uid).set({
         uid:currentUser.uid,
         displayName:currentUser.displayName||'Anonymous operator',
         photoURL:currentUser.photoURL||'',
+        completed,
+        meta:{levels:metaStore.levels||{}},
         ...stats
       },{merge:true})
     ]);
@@ -140,7 +141,7 @@
 
   async function renderLeaderboardPreview(){
     try{
-      const snap=await db.collection('leaderboard').orderBy('completedLevels','desc').orderBy('totalSteps','asc').limit(15).get();
+      const snap=await db.collection('userInfo').orderBy('completedLevels','desc').orderBy('totalSteps','asc').limit(15).get();
       const rows=snap.docs.map(doc=>doc.data());
       if(!rows.length){ leaderboardList.innerHTML='<p class="home-leaderboard-loading">No operators have posted a score yet.</p>'; return; }
       leaderboardList.innerHTML=rows.map((row,i)=>`<div class="home-leaderboard-row"><b>${String(i+1).padStart(2,'0')}</b>${avatarMarkup(row.displayName,row.photoURL,'leaderboard-avatar')}<span title="${escapeHtml(row.displayName||'Anonymous operator')}">${escapeHtml(row.displayName||'Anonymous operator')}</span><strong>${row.completedLevels||0}</strong><small>${row.totalSteps||0}</small></div>`).join('');
@@ -153,7 +154,7 @@
     setAuthUi(user);
     if(!user) return;
     try{
-      const snap=await db.collection('usersInfo').doc(user.uid).get();
+      const snap=await db.collection('userInfo').doc(user.uid).get();
       mergeCloudProgress(snap.exists?snap.data():null);
       await syncCloudProgress();
     }catch(err){ status.textContent='Signed in · cloud sync unavailable'; console.warn('Byte Office cloud sync failed',err); }

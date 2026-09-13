@@ -5,11 +5,7 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    match /usersInfo/{uid} {
-      allow read, write: if signedIn() && request.auth.uid == uid;
-    }
-
-    match /leaderboard/{uid} {
+    match /userInfo/{uid} {
       allow read: if true;
       allow create, update: if signedIn()
         && request.auth.uid == uid
