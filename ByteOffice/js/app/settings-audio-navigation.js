@@ -25,7 +25,7 @@ function setDeveloperSettingsVisibility(visible){
 }
 
 // Advanced settings stay out of the regular UI unless deliberately revealed
-// from DevTools for testing or development. Mobile exposes them by default.
+// from DevTools for testing or development, regardless of viewport size.
 window.showDeveloperSettings=function(){
   developerSettingsConsoleRevealed=true;
   setDeveloperSettingsVisibility(true);
@@ -34,8 +34,7 @@ window.showDeveloperSettings=function(){
 };
 
 function syncDeveloperSettingsForViewport(){
-  const mobile=window.matchMedia('(max-width:760px)').matches;
-  setDeveloperSettingsVisibility(mobile||developerSettingsConsoleRevealed);
+  setDeveloperSettingsVisibility(developerSettingsConsoleRevealed);
 }
 syncDeveloperSettingsForViewport();
 window.addEventListener('resize',syncDeveloperSettingsForViewport,{passive:true});
