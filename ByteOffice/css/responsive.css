@@ -1,0 +1,49 @@
+/* Viewport-aware game layout. Keep the three work areas usable at 100% zoom
+   on laptops with different resolutions and OS display scales. */
+.game-layout{
+  grid-template-columns:minmax(210px,18vw) minmax(0,1fr) minmax(280px,22vw);
+  gap:clamp(8px,1vw,14px);
+  padding:clamp(8px,1.2vw,16px);
+  min-height:max(560px,calc(100dvh - 136px));
+}
+
+.factory-scene{min-height:min(520px,max(420px,calc(100dvh - 310px)))}
+
+@media(max-width:1280px){
+  .game-layout{grid-template-columns:minmax(200px,24vw) minmax(0,1fr)}
+  .program-panel{grid-column:1/-1;min-height:520px}
+  .command-palette{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+@media(max-width:760px){
+  .game-layout{display:flex;flex-direction:column;padding:8px;min-height:0}
+  .factory-scene{min-height:clamp(400px,55dvh,480px)}
+  .program-panel{min-height:600px}
+}
+
+@media(max-width:760px){
+  .home-screen{place-items:start center;padding:18px 12px calc(24px + env(safe-area-inset-bottom));}
+  .home-desk{width:100%;margin:0 auto;}
+  .home-brand-row{align-items:flex-start;gap:12px;}
+  .home-brand-mark{flex:0 0 48px;width:48px;height:48px;font-size:24px;}
+  .home-brand-row h1{font-size:clamp(22px,7vw,27px);line-height:1.05;}
+  .home-brand-row p{font-size:10px;line-height:1.35;}
+  .home-file-card{padding:28px 16px 16px;}
+  .home-resume-copy h2{font-size:clamp(22px,6vw,27px);line-height:1.1;}
+  .home-resume-copy p{font-size:12px;line-height:1.45;}
+  .home-actions{gap:10px;margin-top:16px;}
+  .home-actions button{min-height:76px;padding:12px;}
+  .home-cloud-card{align-items:stretch;flex-direction:column;gap:12px;}
+  .home-cloud-identity{width:100%;}
+  .home-account-actions{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}
+  .home-account-actions button{min-height:44px;width:100%;padding:0 8px;}
+  .home-meta{flex-wrap:wrap;line-height:1.5;}
+}
+
+@media(max-width:420px){
+  .home-screen{padding-left:8px;padding-right:8px;}
+  .home-file-card{padding-left:12px;padding-right:12px;}
+  .home-actions button{grid-template-columns:34px minmax(0,1fr);column-gap:8px;}
+  .home-actions button>span{width:32px;height:32px;}
+  .home-account-actions{grid-template-columns:1fr;}
+}

@@ -17,6 +17,37 @@
     .soon-card{min-height:280px;border:1px dashed #686e5f;display:flex;flex-direction:column;justify-content:center;padding:28px;color:#c0c3b3;background:#20251f}.soon-icon{width:48px;height:48px;border:1px solid #7f876f;display:grid;place-items:center;color:var(--gold);font:24px Mono;margin-bottom:20px}.soon-card h3{font:25px Elite;margin:0 0 10px;color:#e8dcc1}.soon-card p{margin:0;line-height:1.5;color:#9da394;font-size:14px}.soon-note{margin-top:20px;color:var(--gold);font:10px Mono;letter-spacing:.1em;text-transform:uppercase}.footer{border-top:1px solid #42473d;padding:14px 0 18px;color:#8f9588;font:11px Mono;display:flex;justify-content:space-between}.footer span:last-child{color:#c0b484}
     .launch-screen{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:20px;background:#11150fef;opacity:1;visibility:visible;transition:opacity .2s ease}.launch-screen[hidden]{display:none}.loader-card{width:min(450px,100%);padding:30px;background:var(--paper);color:var(--ink);border:1px solid #aa9560;box-shadow:8px 9px #080a08}.loader-kicker{color:var(--red);font:10px Mono;letter-spacing:.16em;text-transform:uppercase}.loader-card h2{font:30px Elite;margin:12px 0 7px}.loader-copy{margin:0;color:#625e4e;font-size:14px;line-height:1.5}.loader-track{height:9px;margin:25px 0 11px;background:#c7b98f;border:1px solid #9f916e;overflow:hidden}.loader-bar{height:100%;width:0;background:var(--green);transition:width .2s ease}.loader-status{display:flex;justify-content:space-between;color:#756d58;font:10px Mono;letter-spacing:.06em;text-transform:uppercase}.loader-percent{color:var(--green);font-weight:700}
     @media(max-width:700px){.wrap{width:min(100% - 28px,560px)}.topbar{height:auto;padding:16px 0}.status{display:none}main{padding:54px 0 65px}.lede{font-size:16px}.section-head{margin-top:52px;align-items:start;gap:12px;flex-direction:column}.game-grid{grid-template-columns:1fr}.game-card,.soon-card{min-height:330px}.game-title{font-size:35px}.footer{gap:12px;flex-direction:column}}
+    @media(max-width:480px){
+      .wrap{width:calc(100% - 20px)}
+      .topbar{padding:12px 0}
+      .brand{gap:9px}
+      .mark{width:38px;height:38px;font-size:22px}
+      .brand-name{font-size:11px;letter-spacing:.12em}
+      .brand-sub{font-size:10px;margin-top:2px}
+      main{padding:30px 0 38px}
+      .eyebrow{gap:8px;font-size:9px;letter-spacing:.14em}
+      .eyebrow:before{width:24px}
+      h1{font-size:clamp(36px,13vw,48px);margin:14px 0 13px}
+      .lede{font-size:14px;line-height:1.5}
+      .section-head{margin:34px 0 12px;gap:7px}
+      .section-head h2{font-size:22px}
+      .section-head p{font-size:9px;line-height:1.4}
+      .game-card,.soon-card{min-height:0}
+      .game-card-main{padding:20px 18px 22px}
+      .game-card-main:after{right:15px;top:14px;font-size:15px}
+      .game-label{font-size:9px}
+      .game-title{font-size:30px;margin:12px 0 7px}
+      .game-copy{font-size:13px;line-height:1.5}
+      .tags{gap:6px;margin-top:14px}
+      .tag{padding:6px 8px;font-size:9px}
+      .game-card-foot{align-items:stretch;flex-direction:column;gap:11px;padding:13px 15px}
+      .play{width:100%;min-height:48px}
+      .meta{text-align:left;font-size:9px;line-height:1.45}
+      .soon-card{padding:22px;min-height:240px}
+      .soon-card h3{font-size:22px}
+      .soon-card p{font-size:13px}
+      .footer{padding:12px 0 18px;font-size:9px}
+    }
     @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition-duration:.001ms!important}}
   </style>
 </head>
