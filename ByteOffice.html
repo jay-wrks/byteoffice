@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- All application assets live in the ByteOffice subfolder. -->
   <base href="/ByteOffice/" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://raw.githubusercontent.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://apis.google.com https://raw.githubusercontent.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; frame-src 'self' https://*.firebaseapp.com https://accounts.google.com https://apis.google.com; font-src 'self' data:; img-src 'self' data: blob: https:; object-src 'none'; base-uri 'self'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://cdn.statically.io https://raw.githubusercontent.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://apis.google.com https://cdn.statically.io https://raw.githubusercontent.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; frame-src 'self' https://*.firebaseapp.com https://accounts.google.com https://apis.google.com; font-src 'self' data:; img-src 'self' data: blob: https:; object-src 'none'; base-uri 'self'" />
   <title>Byte Office — Learn Java by Running the Machine</title>
   <link rel="stylesheet" href="libs/fonts/fonts.css?v=20260911-0110" />
   <link rel="stylesheet" href="css/core.css?v=20260911-0110" />
@@ -31,7 +31,8 @@
   <script>
     window.__BYTE_OFFICE_JAVA_RUNTIME_BASE__='https://raw.githubusercontent.com/jay-wrks/byteoffice/73de0b2272f4751a61db4968d858bd5a8c5d76ca/ByteOffice/';
   </script>
-  <script src="https://raw.githubusercontent.com/jay-wrks/byteoffice/73de0b2272f4751a61db4968d858bd5a8c5d76ca/ByteOffice/libs/cheerpj/4.3/loader.js"></script>
+  <!-- %40 avoids CheerpJ's Firefox stack parser treating the CDN revision @ as a separator. -->
+  <script src="https://cdn.statically.io/gh/jay-wrks/byteoffice%4073de0b2272f4751a61db4968d858bd5a8c5d76ca/ByteOffice/libs/cheerpj/4.3/loader.js"></script>
   <!-- Firebase Auth + Firestore. Config values are public; rules protect the data. -->
   <script defer src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script defer src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
