@@ -26,9 +26,6 @@ document.addEventListener("click",e=>{
 $("#modalClose").addEventListener("click",()=>closeModal());
 els.modal.addEventListener("click",e=>{if(e.target===els.modal){ if(currentPage==='map'&&els.modal.classList.contains('roadmap-modal')) closeRoadmapRoute(); else closeModal(); }});
 $("#soundBtn").addEventListener("click",e=>{settings.sfx=!settings.sfx;saveSettings();e.currentTarget.textContent=settings.sfx?'🔊':'🔇';});
-$("#homeResumeBtn").addEventListener("click",()=>enterGame(clamp(parseInt(workspaceStore.lastLevel||0,10),0,levels.length-1)));
-$("#homeMapBtn").addEventListener("click",()=>openRoadmap('home'));
-$("#homeSettingsBtn").addEventListener("click",()=>{const p=$("#homeSettingsPanel"); if(p._hideTimer) clearTimeout(p._hideTimer); p.hidden=false; p.classList.remove('closing'); requestAnimationFrame(()=>requestAnimationFrame(()=>p.classList.add('open'))); syncSettingsUI(); sfx('ui');});
 $("#homeSettingsClose").addEventListener("click",()=>{const p=$("#homeSettingsPanel"); p.classList.remove('open'); p.classList.add('closing'); sfx('ui'); p._hideTimer=setTimeout(()=>{p.hidden=true;p.classList.remove('closing');},240);});
 [['musicToggle','music'],['sfxToggle','sfx'],['transitionToggle','transitions'],['motionToggle','reducedMotion'],['tipsToggle','editorTips'],['unlockLevelsToggle','unlockAllLevels'],['answersToggle','showAnswers']].forEach(([id,key])=>$("#"+id).addEventListener('change',e=>{settings[key]=e.target.checked;saveSettings(); if(key==='unlockAllLevels'&&currentPage==='map') showRoadmap();}));
 $("#resetProgressBtn").addEventListener("click",resetProgress);

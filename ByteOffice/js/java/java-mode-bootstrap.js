@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const ASSET_VERSION='20260912-1138';
+  const ASSET_VERSION='20260913-1015';
 
   function versioned(src){
     const base=window.__BYTE_OFFICE_ASSET_BASE__||document.baseURI||window.location.href;
@@ -67,8 +67,34 @@
       console.error('ByteOffice Java bootstrap failed:',err);
       const footer=document.querySelector('#footerMessage');
       if(footer) footer.textContent='Java runtime failed to initialize: '+(err?.message||String(err));
+      throw err;
     }
   }
 
-  boot();
+  function releaseBootScreen(){
+    const curtain=document.querySelector('#pageCurtain[data-boot-screen="true"]');
+    if(!curtain) return;
+    curtain.setAttribute('aria-hidden','true');
+    curtain.classList.remove('entering');
+    curtain.classList.add('leaving');
+    setTimeout(()=>{
+      curtain.classList.remove('active','leaving');
+      curtain.removeAttribute('data-boot-screen');
+    },300);
+  }
+
+  // Expose startup readiness so navigation can acknowledge clicks immediately
+  // while the heavier Java/Monaco layer is still loading.
+  window.byteOfficeJavaReady=boot();
+  window.byteOfficeJavaReady.then(
+    ()=>{
+      window.byteOfficeRuntimeReady=true;
+      releaseBootScreen();
+    },
+    ()=>{
+      window.byteOfficeRuntimeReady=false;
+      const label=document.querySelector('#curtainLabel');
+      if(label) label.textContent='Runtime failed to start. Refresh to try again.';
+    }
+  );
 })();

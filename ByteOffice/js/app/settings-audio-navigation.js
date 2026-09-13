@@ -163,10 +163,34 @@ function enterGame(index=levelIndex){
     // above the game after a level is chosen from List View.
     closeMapOverlay(true);
     setBasePage('game');
-    loadLevel(index);
-    currentPage='game';
+    const openAssignment=()=>{
+      loadLevel(index);
+      currentPage='game';
+    };
+    // The home screen is intentionally available before the Java runtime is
+    // ready. Queue the assignment load rather than losing the user's first
+    // click while CheerpJ and the editor finish booting.
+    if(!window.byteOfficeRuntimeReady && window.byteOfficeJavaReady){
+      els.curtainLabel.textContent='Preparing processing floor…';
+      window.byteOfficeJavaReady.then(openAssignment).catch(()=>{});
+    }else openAssignment();
   });
 }
+
+// Bind first-screen navigation before the deferred Java bootstrap adds the
+// editor and game controls. This keeps Resume responsive on cold loads.
+function bindEarlyHomeNavigation(){
+  const resume=$('#homeResumeBtn'), map=$('#homeMapBtn'), settingsButton=$('#homeSettingsBtn');
+  if(resume) resume.addEventListener('click',()=>enterGame(clamp(parseInt(workspaceStore.lastLevel||0,10),0,levels.length-1)));
+  if(map) map.addEventListener('click',()=>openRoadmap('home'));
+  if(settingsButton) settingsButton.addEventListener('click',()=>{
+    const p=$('#homeSettingsPanel'); if(p._hideTimer) clearTimeout(p._hideTimer);
+    p.hidden=false; p.classList.remove('closing');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>p.classList.add('open')));
+    syncSettingsUI(); sfx('ui');
+  });
+}
+bindEarlyHomeNavigation();
 function openRoadmap(origin=currentPage){
   roadmapOrigin=origin==='map'?'home':origin;
   pageTransition('Unfolding assignment map…',()=>{ showRoadmap(); setBasePage('map'); });
