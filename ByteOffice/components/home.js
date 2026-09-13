@@ -16,7 +16,7 @@ window.ByteOfficeComponents.home = String.raw`
 </div>
 <div class="home-actions">
 <button class="home-primary" id="homeResumeBtn" disabled><span>▶</span><b>Start assignment</b><small>Restoring your Google session…</small></button>
-<button class="home-action" id="homeMapBtn"><span>⌘</span><b>View map</b><small>Browse the assignment roadmap</small></button>
+<button class="home-action" id="homeMapBtn" disabled><span>⌘</span><b>View map</b><small>Sign in to browse the roadmap</small></button>
 <button class="home-action" id="homeSettingsBtn"><span>⚙</span><b>Settings</b><small>Audio, motion and interface</small></button>
 </div>
 <div class="home-cloud-card" aria-live="polite">

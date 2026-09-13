@@ -10,7 +10,7 @@
     appId:'1:444843895218:web:9cac8134442e1172e3dcab'
   };
 
-  const status=$('#homeAuthStatus'), authTitle=$('#homeAuthTitle'), authKicker=$('#homeAuthKicker'), authStats=$('#homeAuthStats'), authButton=$('#homeAuthBtn'), resumeButton=$('#homeResumeBtn'), consolidatedList=$('#homeLeaderboardTop3'), leaderboardLists={stars:$('#homeLeaderboardStars'),steps:$('#homeLeaderboardSteps'),actions:$('#homeLeaderboardActions')};
+  const status=$('#homeAuthStatus'), authTitle=$('#homeAuthTitle'), authKicker=$('#homeAuthKicker'), authStats=$('#homeAuthStats'), authButton=$('#homeAuthBtn'), resumeButton=$('#homeResumeBtn'), mapButton=$('#homeMapBtn'), consolidatedList=$('#homeLeaderboardTop3'), leaderboardLists={stars:$('#homeLeaderboardStars'),steps:$('#homeLeaderboardSteps'),actions:$('#homeLeaderboardActions')};
   if(!status||!authButton||!consolidatedList||!leaderboardLists.stars||!leaderboardLists.steps||!leaderboardLists.actions) return;
 
   function startFirebase(){
@@ -121,6 +121,7 @@
       authButton.classList.add('is-signed-in');
       if(resumeHint) resumeHint.textContent=hasStarted?'Continue your saved assignment':'Start your first assignment';
       if(resumeButton) resumeButton.disabled=false;
+      if(mapButton){ mapButton.disabled=false; const mapHint=mapButton.querySelector('small'); if(mapHint) mapHint.textContent='Browse the assignment roadmap'; }
     }else{
       authKicker.textContent='GOOGLE ACCOUNT REQUIRED';
       authTitle.textContent='Sign in to unlock the game';
@@ -132,6 +133,7 @@
       authButton.classList.remove('is-signed-in');
       if(resumeHint) resumeHint.textContent=hasStarted?'Sign in with Google to continue':'Sign in with Google to begin';
       if(resumeButton) resumeButton.disabled=true;
+      if(mapButton){ mapButton.disabled=true; const mapHint=mapButton.querySelector('small'); if(mapHint) mapHint.textContent='Sign in to browse the roadmap'; }
     }
     authButton.disabled=false;
     authButton.classList.remove('is-loading');
@@ -143,6 +145,7 @@
     status.textContent='Checking your saved Google login';
     authButton.disabled=true;
     authButton.classList.add('is-loading');
+    if(mapButton) mapButton.disabled=true;
     const label=authButton.querySelector('span:last-child');
     if(label) label.textContent='Checking session…';
     if(resumeButton) resumeButton.disabled=true;
