@@ -16,6 +16,11 @@ cp -f /home/jay/works/ByteOffice/ByteOffice.html /home/jay/works/JayDsaGames/pub
 echo "└─ ✅ ByteOffice.html copied"
 echo ""
 
+echo "┌─ 📄 Copying index.html"
+cp -f /home/jay/works/ByteOffice/index.html /home/jay/works/JayDsaGames/public/index.html
+echo "└─ ✅ index.html copied"
+echo ""
+
 echo "┌─ ☁️  Deploying Firebase Hosting"
 cd /home/jay/works/JayDsaGames
 firebase deploy --only hosting
