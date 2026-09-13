@@ -48,7 +48,7 @@
   }
 
   function initials(name){
-    return String(name||'Google operator').trim().split(/\s+/).slice(0,2).map(part=>part[0]).join('').toUpperCase()||'?';
+    return String(name||'Google player').trim().split(/\s+/).slice(0,2).map(part=>part[0]).join('').toUpperCase()||'?';
   }
 
   function avatarMarkup(name,photo,extraClass='',id=''){
@@ -83,7 +83,7 @@
     await Promise.all([
       db.collection('userInfo').doc(currentUser.uid).set({
         uid:currentUser.uid,
-        displayName:currentUser.displayName||'Anonymous operator',
+        displayName:currentUser.displayName||'Anonymous player',
         photoURL:currentUser.photoURL||'',
         completed,
         meta:{levels:metaStore.levels||{}},
@@ -98,7 +98,7 @@
     const resumeHint=resumeButton?.querySelector('small');
     if(user){
       authKicker.textContent='SIGNED IN AS';
-      authTitle.textContent=user.displayName||'Google operator';
+      authTitle.textContent=user.displayName||'Google player';
       status.textContent='Ready for your next assignment';
       const authAvatar=$('#homeAuthAvatar');
       if(authAvatar) authAvatar.outerHTML=avatarMarkup(user.displayName,user.photoURL,'home-profile-avatar is-visible','homeAuthAvatar');
@@ -170,7 +170,7 @@
 
   function renderLeaderboardRows(rows,mode,list){
     if(!rows.length){ list.innerHTML='<p class="home-leaderboard-loading">No players have posted a score yet.</p>'; return; }
-    list.innerHTML=rows.map((row,i)=>{const [value,label]=mode.metric(row);return `<div class="home-leaderboard-row"><b>${String(i+1).padStart(2,'0')}</b>${avatarMarkup(row.displayName,row.photoURL,'leaderboard-avatar')}<span title="${escapeHtml(row.displayName||'Anonymous operator')}">${escapeHtml(row.displayName||'Anonymous operator')}</span><strong>${value}</strong><small>${label}</small></div>`;}).join('');
+    list.innerHTML=rows.map((row,i)=>{const [value,label]=mode.metric(row);return `<div class="home-leaderboard-row"><b>${String(i+1).padStart(2,'0')}</b>${avatarMarkup(row.displayName,row.photoURL,'leaderboard-avatar')}<span title="${escapeHtml(row.displayName||'Anonymous player')}">${escapeHtml(row.displayName||'Anonymous player')}</span><strong>${value}</strong><small>${label}</small></div>`;}).join('');
   }
 
   function renderConsolidatedLeaderboard(){
@@ -192,7 +192,7 @@
     if(!top.length){ consolidatedList.innerHTML='<p class="home-leaderboard-loading">No players have posted enough scores yet.</p>'; return; }
     consolidatedList.innerHTML=top.map((row,index)=>{
       const boardRanks=Object.entries(labels).filter(([filter])=>row.ranks[filter]).map(([filter,label])=>`${label} #${row.ranks[filter]}`).join(' · ');
-      return `<div class="home-top3-row"><b class="home-top3-place">${String(index+1).padStart(2,'0')}</b>${avatarMarkup(row.displayName,row.photoURL,'home-top3-avatar')}<span class="home-top3-identity"><strong>${escapeHtml(row.displayName||'Anonymous operator')}</strong><small>${row.points} ranking points · ${boardRanks}</small></span><em>${row.points}<small>PTS</small></em></div>`;
+      return `<div class="home-top3-row"><b class="home-top3-place">${String(index+1).padStart(2,'0')}</b>${avatarMarkup(row.displayName,row.photoURL,'home-top3-avatar')}<span class="home-top3-identity"><strong>${escapeHtml(row.displayName||'Anonymous player')}</strong><small>${row.points} ranking points · ${boardRanks}</small></span><em>${row.points}<small>PTS</small></em></div>`;
     }).join('');
   }
 
