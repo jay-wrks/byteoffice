@@ -63,6 +63,7 @@
   let followFrame=0;
   let targetRetryTimer=0;
   let targetResizeObserver=null;
+  let typingAdvanceTimer=0;
 
   function escapeHtml(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
   function source(){return window.ByteOfficeIDE?.getValue?.()||document.querySelector('#javaEditor')?.value||'';}
@@ -73,20 +74,53 @@
     const textarea=document.querySelector('#javaEditor');
     if(textarea) textarea.readOnly=readOnly;
   }
-  function renderGuideCode(code){
-    const entered=source().split(/\r?\n/).map(line=>line.trim());
+  function guideCodeState(code,value=source()){
+    const entered=String(value).split(/\r?\n/).map(line=>line.trim());
     const lines=String(code).split(/\r?\n/);
     return lines.map(line=>{
       const expected=line.trim();
       const candidate=entered.find(value=>value&&expected.startsWith(value))||'';
       const matched=expected&&candidate?candidate.length:0;
-      const chars=Array.from(line).map((char,index)=>{
+      return Array.from(line).map((char,index)=>{
         const contentIndex=index-(line.length-expected.length);
         const done=/\s/.test(char)||contentIndex>=0&&contentIndex<matched;
-        return `<span class="guide-code-char ${done?'is-entered':'is-needed'}">${escapeHtml(char)||' '}</span>`;
-      }).join('');
+        return {char,done};
+      });
+    });
+  }
+  function renderGuideCode(code,value=source()){
+    return guideCodeState(code,value).map(line=>{
+      const chars=line.map(({char,done})=>`<span class="guide-code-char ${done?'is-entered':'is-needed'}">${escapeHtml(char)||' '}</span>`).join('');
       return `<span class="guide-code-line">${chars||' '}</span>`;
     }).join('');
+  }
+  function updateGuideCodeProgress(code,value=source()){
+    const guideCode=document.querySelector('#byteGuideCard .guide-code');
+    if(!guideCode) return 0;
+    const next=guideCodeState(code,value).flat();
+    const chars=Array.from(guideCode.querySelectorAll('.guide-code-char'));
+    if(chars.length!==next.length) return 0;
+    let enteredCount=0;
+    chars.forEach((span,index)=>{
+      const done=next[index].done;
+      const newlyEntered=done&&span.classList.contains('is-needed');
+      span.classList.toggle('is-entered',done);
+      span.classList.toggle('is-needed',!done);
+      if(!newlyEntered) return;
+      span.style.setProperty('--guide-char-delay',`${enteredCount*28}ms`);
+      span.classList.remove('just-entered');
+      void span.offsetWidth;
+      span.classList.add('just-entered');
+      span.addEventListener('animationend',()=>span.classList.remove('just-entered'),{once:true});
+      enteredCount++;
+    });
+    if(enteredCount){
+      guideCode.classList.remove('is-correct-input');
+      void guideCode.offsetWidth;
+      guideCode.classList.add('is-correct-input');
+      guideCode.addEventListener('animationend',()=>guideCode.classList.remove('is-correct-input'),{once:true});
+    }
+    return enteredCount;
   }
   function stepSatisfied(step,value=source()){
     if(step?.required){
@@ -133,6 +167,7 @@
   }
   function removeLayer(){
     stopFollow();
+    if(typingAdvanceTimer){clearTimeout(typingAdvanceTimer);typingAdvanceTimer=0;}
     if(targetRetryTimer){clearTimeout(targetRetryTimer);targetRetryTimer=0;}
     setEditorGuideLock(false);
     targetResizeObserver?.disconnect();
@@ -262,6 +297,7 @@
     if((step.openApiPanel||step.openApi) && typeof setCommandTrayCollapsed==='function') setCommandTrayCollapsed(false,{remember:false});
     setEditorGuideLock(step.lockEditor);
     const layer=ensureLayer(), card=layer.querySelector('#byteGuideCard');
+    card.classList.remove('typing-success');
     const progress=Math.round((session.stepIndex/Math.max(1,steps.length))*100);
     const copy=step.runtime&&session.runtimeCopy?session.runtimeCopy:step;
     const compileError=step.phase==='compile'&&session.compileError;
@@ -375,16 +411,39 @@
   }
   function sourceChanged(){
     if(!session) return;
-    let changed=false, value=source();
+    const value=source(), step=currentStep();
+    const enteredCount=step?.code?updateGuideCodeProgress(step.code,value):0;
+    if(typingAdvanceTimer){
+      if(stepSatisfied(step,value)) return;
+      clearTimeout(typingAdvanceTimer);typingAdvanceTimer=0;
+      document.querySelector('#byteGuideCard')?.classList.remove('typing-success');
+    }
+    if(step?.condition&&stepSatisfied(step,value)&&enteredCount){
+      const sessionAtInput=session, stepIndexAtInput=session.stepIndex;
+      const card=document.querySelector('#byteGuideCard');
+      card?.classList.add('typing-success');
+      const feedback=card?.querySelector('.byte-guide-feedback');
+      if(feedback) feedback.textContent='Correct — nice work.';
+      const successDelay=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches?0:360;
+      typingAdvanceTimer=setTimeout(()=>{
+        typingAdvanceTimer=0;
+        if(session!==sessionAtInput||session.stepIndex!==stepIndexAtInput||!stepSatisfied(currentStep())) return;
+        let changed=false;
+        while(currentStep()?.condition&&stepSatisfied(currentStep())){session.stepIndex++;changed=true;}
+        if(changed) session.stepIndex>=(guides[session.levelId]||[]).length?finish():render();
+      },successDelay);
+      return;
+    }
+    let changed=false;
     while(currentStep()?.condition&&stepSatisfied(currentStep(),value)){session.stepIndex++;changed=true;}
     if(changed) session.stepIndex>=(guides[session.levelId]||[]).length?finish():render();
     else if(currentStep()?.condition){
       const feedback=document.querySelector('#byteGuideCard .byte-guide-feedback');
       if(feedback) feedback.textContent=currentStep().waiting||'Complete the highlighted step to continue.';
-      if(currentStep()?.code) render();
     }
   }
   function start(index){
+    if(typingAdvanceTimer){clearTimeout(typingAdvanceTimer);typingAdvanceTimer=0;}
     const id=levels?.[index]?.id;
     if(!guides[id]){
       finish();

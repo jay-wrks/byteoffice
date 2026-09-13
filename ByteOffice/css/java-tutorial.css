@@ -20,7 +20,7 @@
 .byte-guide-card h2{margin:5px 0 0;font:22px/1.1 "Special Elite",serif;color:#312d24}
 .byte-guide-copy{padding:12px 2px 3px;font-size:13px;line-height:1.48}
 .byte-guide-copy p{margin:0}
-.byte-guide-copy code{display:inline-block;margin:7px 0 2px;padding:6px 8px;background:#292d27;color:#d4d0be;border:1px solid #5a634e;font:700 12px/1.35 "DM Mono",monospace;white-space:pre}.guide-code-line{display:block;min-height:1.35em}.guide-code-char.is-needed{background:#68795b;color:#fff1cf}.guide-code-char.is-entered{color:#b7b4a5}
+.byte-guide-copy code{display:inline-block;margin:7px 0 2px;padding:6px 8px;background:#292d27;color:#d4d0be;border:1px solid #5a634e;font:700 12px/1.35 "DM Mono",monospace;white-space:pre}.guide-code-line{display:block;min-height:1.35em}.guide-code-char{position:relative;display:inline-block;z-index:0;color:#b7b4a5;transition:color .18s ease}.guide-code-char::before{content:"";position:absolute;inset:0;z-index:-1;background:#68795b;transform:scaleX(0);transform-origin:right center;transition:transform .22s cubic-bezier(.4,0,1,1)}.guide-code-char.is-needed{color:#fff1cf}.guide-code-char.is-needed::before{transform:scaleX(1);transform-origin:left center}.guide-code-char.just-entered{animation:byteGuideCorrectChar .34s cubic-bezier(.2,.9,.3,1) var(--guide-char-delay,0ms) both}.guide-code.is-correct-input{animation:byteGuideCorrectCode .3s ease-out both}
 .byte-guide-progress{display:flex;align-items:center;gap:7px;margin-top:11px;color:#756b57;font:800 8px "DM Mono",monospace;letter-spacing:.1em}
 .byte-guide-progress i{display:block;height:5px;flex:1;background:#c7b992;overflow:hidden}
 .byte-guide-progress i::after{content:"";display:block;width:var(--guide-progress);height:100%;background:#6f815f}
@@ -41,5 +41,7 @@
 @keyframes byteGuideIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
 @keyframes byteGuideShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 @keyframes byteGuideSpin{to{transform:rotate(360deg)}}
+@keyframes byteGuideCorrectChar{0%,100%{transform:none;text-shadow:none}42%{color:#fff3b0;transform:translateY(-2px) scale(1.12);text-shadow:0 0 7px rgba(232,201,111,.85)}}
+@keyframes byteGuideCorrectCode{0%,100%{border-color:#5a634e;box-shadow:none}45%{border-color:#e8c96f;box-shadow:0 0 0 2px rgba(232,201,111,.18)}}
 @media(max-width:760px){.byte-guide-card{padding:13px;border-width:3px}.byte-guide-card h2{font-size:19px}.byte-guide-copy{font-size:12px}.byte-guide-bot{flex-basis:42px;width:42px;height:42px}.byte-guide-bot::before{font-size:21px}.byte-guide-bot::after{left:6px}}
-@media(prefers-reduced-motion:reduce){#byteGuideFocus{transition:none}.byte-guide-card,.byte-guide-card.shake{animation:none}.byte-guide-next:disabled::before{animation:none}}
+@media(prefers-reduced-motion:reduce){#byteGuideFocus{transition:none}.byte-guide-card,.byte-guide-card.shake,.guide-code-char.just-entered,.guide-code.is-correct-input{animation:none}.guide-code-char,.guide-code-char::before{transition:none}.byte-guide-next:disabled::before{animation:none}}
