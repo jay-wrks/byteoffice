@@ -75,7 +75,7 @@
     if(!currentUser) return;
     const stats=cloudStats();
     await Promise.all([
-      db.collection('users').doc(currentUser.uid).set({completed,meta:{levels:metaStore.levels||{}}},{merge:true}),
+      db.collection('usersInfo').doc(currentUser.uid).set({completed,meta:{levels:metaStore.levels||{}}},{merge:true}),
       db.collection('leaderboard').doc(currentUser.uid).set({
         uid:currentUser.uid,
         displayName:currentUser.displayName||'Anonymous operator',
@@ -153,7 +153,7 @@
     setAuthUi(user);
     if(!user) return;
     try{
-      const snap=await db.collection('users').doc(user.uid).get();
+      const snap=await db.collection('usersInfo').doc(user.uid).get();
       mergeCloudProgress(snap.exists?snap.data():null);
       await syncCloudProgress();
     }catch(err){ status.textContent='Signed in · cloud sync unavailable'; console.warn('Byte Office cloud sync failed',err); }
