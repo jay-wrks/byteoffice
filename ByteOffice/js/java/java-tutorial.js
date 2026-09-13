@@ -10,6 +10,7 @@
       {target:'#byteMonaco',kicker:'STEP 2 · WRITE',title:'Send it out',body:'Add the second instruction. It tells Byte to carry the box to OUTBOX and release it there.',code:'bot.send();',condition:source=>/\bbot\s*\.\s*send\s*\(\s*\)\s*;/.test(source),waiting:'Add bot.send(); so Byte has somewhere to deliver the box.'},
       {target:'#runBtn',kicker:'NEXT · RUN',title:'Start the machine',body:'Your two instructions are ready. Use the highlighted <b>RUN</b> control below to hand Program.java to the browser Java compiler, then watch Byte execute it.',on:'run',externalAction:true},
       {target:'#runBtn',phase:'compile',mode:'compile',kicker:'JAVA COMPILER',title:'Compiling your program…',body:'The browser is compiling Program.java now. The RUN control is showing its live loading state. This can take a moment the first time while the Java tools are prepared. Please wait here and do not click RUN again.',button:'Waiting for compiler…',locked:true},
+      {target:'#runBtn',kicker:'STEP 3 · START',title:'Run the machine',body:'Compilation is ready. Now press the highlighted <b>RUN</b> control to start Byte and watch your two instructions become physical movement.',on:'run',externalAction:true},
       {target:'#workerWrap',runtime:true,follow:true,kicker:'BYTE IS READY',title:'Watch the code become motion',body:'The glowing execution marker in Program.java will stay synchronized with Byte. Each physical movement starts from the Java line highlighted in the IDE.',button:'Watching Byte…',locked:true}
     ],
     2:[
@@ -60,6 +61,7 @@
   let activeTarget=null;
   let positionFrame=0;
   let followFrame=0;
+  let targetRetryTimer=0;
   let targetResizeObserver=null;
 
   function escapeHtml(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -99,6 +101,7 @@
   }
   function removeLayer(){
     stopFollow();
+    if(targetRetryTimer){clearTimeout(targetRetryTimer);targetRetryTimer=0;}
     targetResizeObserver?.disconnect();
     targetResizeObserver=null;
     if(activeTarget) activeTarget.classList.remove('byte-guide-focus-target');
@@ -107,7 +110,14 @@
   }
   function targetFor(step){
     let target=document.querySelector(step.target);
-    if(!target||target.getBoundingClientRect().width<8||target.getBoundingClientRect().height<8){
+    const targetReady=target&&target.getBoundingClientRect().width>=8&&target.getBoundingClientRect().height>=8;
+    if(!targetReady){
+      if(session&&!targetRetryTimer){
+        targetRetryTimer=setTimeout(()=>{
+          targetRetryTimer=0;
+          if(session) position(true);
+        },120);
+      }
       target=document.querySelector('#programList')||document.querySelector('#app');
     }
     return target;

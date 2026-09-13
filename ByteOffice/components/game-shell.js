@@ -27,6 +27,7 @@ window.ByteOfficeComponents.gameShell = String.raw`
 <div>Program size: <b id="programSize">0</b></div>
 <div>Executed steps: <b id="stepCount">0</b></div>
 <div class="footer-message" id="footerMessage">Build a program, then press Run.</div>
+<div class="site-version">v1.0.0</div>
 </footer>
 </div>
 `;

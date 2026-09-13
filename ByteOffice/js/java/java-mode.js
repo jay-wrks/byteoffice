@@ -971,9 +971,9 @@ public final class GameRunner {
       oldLoadLevel(index);
       const bucket=workspaceBucket(level().id);
       const slot=bucket.slots[workspaceIndex]||[];
-      // Level 3's guide is a fresh pair-swap lesson. Do not let a saved draft
+      // Levels 1 and 3's guides are fresh lessons. Do not let a saved draft
       // reappear when the Java wrapper finishes initializing the editor.
-      if(Number(level()?.id)===3){
+      if(Number(level()?.id)===1||Number(level()?.id)===3){
         assignSource(starterSource());
         bucket.slots[workspaceIndex]=cloneProgram();
         saveWorkspace(false);
