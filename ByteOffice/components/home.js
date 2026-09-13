@@ -37,6 +37,7 @@ ${window.ByteOfficeHeadAvatar.markup('home-brand-mark')}
 <div class="settings-danger-zone" id="resetProgressZone" hidden><div><b>Reset progress</b><small id="resetProgressStatus" aria-live="polite">Permanently clear cloud progress, completed levels, scores, history and saved drafts.</small></div><button id="resetProgressBtn" type="button">Reset</button></div>
 </div>
 <div class="home-meta"><span id="homeCompletion">0 / 50 assignments cleared</span><span>Autosave enabled</span></div>
+<div class="home-maker-signature" role="note" aria-label="Made by Jay for fun"><span class="home-maker-led" aria-hidden="true"></span><span class="home-maker-copy" aria-hidden="true"><span class="home-maker-char">M</span><span class="home-maker-char">a</span><span class="home-maker-char">d</span><span class="home-maker-char">e</span> <span class="home-maker-char">b</span><span class="home-maker-char">y</span> <strong><span class="home-maker-char">J</span><span class="home-maker-char">a</span><span class="home-maker-char">y</span></strong> <span class="home-maker-char">f</span><span class="home-maker-char">o</span><span class="home-maker-char">r</span> <span class="home-maker-char">f</span><span class="home-maker-char">u</span><span class="home-maker-char">n</span></span><span class="home-maker-code" aria-hidden="true">BOT//LAB.01</span></div>
 </div>
 </div>
 </section>
