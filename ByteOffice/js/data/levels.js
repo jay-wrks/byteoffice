@@ -31,6 +31,21 @@ window.BYTE_COMMANDS = {
   const pairs=(a,fn)=>{const o=[];for(let i=0;i<a.length;i+=2)fn(a[i],a[i+1],o);return o};
   const triples=(a,fn)=>{const o=[];for(let i=0;i<a.length;i+=3)fn(a[i],a[i+1],a[i+2],o);return o};
   const abs=Math.abs;
+
+  // Authored Java challenge targets, indexed by level id. These must stay
+  // explicit: a level-number formula cannot describe the source size or the
+  // physical work required by sixty-five different assignments.
+  const challengeGoals = [
+    [2,2], [2,8], [6,18], [5,15], [7,21], [2,10], [2,13], [4,12],
+    [5,20], [7,15], [5,14], [7,21], [14,30], [8,30], [10,24], [8,16],
+    [4,32], [4,40], [5,14], [11,36], [16,66], [9,33], [8,26], [10,44],
+    [9,38], [16,60], [3,12], [11,21], [15,42], [17,76], [7,38], [6,28],
+    [18,88], [9,39], [12,43], [18,102], [13,61], [12,54], [16,84], [4,48],
+    [21,117], [14,28], [22,38], [8,28], [8,46], [13,36], [14,46], [18,42],
+    [8,24], [11,68], [6,60], [8,56], [6,84], [6,84], [6,108], [13,61],
+    [11,26], [6,438], [14,100], [9,71], [13,100], [9,21], [14,134], [8,39],
+    [7,21]
+  ];
   const specs = [
     ["First Stamp","Your first shift is deliberately tiny. Learn the two machines before management adds buttons.","Send only the first INBOX value to the OUTBOX, then stop.",[7,3,-2],[11,4,9],0, a=>[a[0]],"One INBOX followed by one OUTBOX is enough."],
     ["Mail Conveyor","The belt is moving now. Your program must keep working until the INBOX is empty.","Copy every INBOX value to the OUTBOX in the same order.",[3,8,1,6],[-2,0,11],0,a=>a.slice(),"Build a tiny loop: INBOX, OUTBOX, then jump back."],
@@ -109,10 +124,10 @@ window.BYTE_COMMANDS = {
     const commands=unlockedFor(id);
     const output=solve(input.slice());
     const output2=solve(input2.slice());
+    const [sizeGoal,stepGoal]=challengeGoals[i];
     return {
       id,title,story,objective,input:input.slice(),output,memory,commands,
-      sizeGoal: Math.min(44, 4 + Math.ceil(id*0.72) + Math.max(0,memory-2)),
-      stepGoal: Math.min(480, 24 + id*8 + memory*5),
+      sizeGoal,stepGoal,
       hint,
       newCommands:(unlockAt[id]||[]).slice(),
       examples:[{input:input.slice(),output:output.slice()},{input:input2.slice(),output:output2.slice()}]

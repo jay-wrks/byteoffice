@@ -15,8 +15,8 @@ window.ByteOfficeComponents.missionPanel = String.raw`
 <div class="level-examples" id="levelExamples"></div>
 </div>
 <div class="goal-row">
-<div><span>Best size</span><strong id="sizeGoal">—</strong></div>
-<div><span>Best steps</span><strong id="stepGoal">—</strong></div>
+<div><span>Size goal</span><strong id="sizeGoal">—</strong></div>
+<div><span>Steps goal</span><strong id="stepGoal">—</strong></div>
 </div>
 <button class="paper-button" id="hintBtn">Need a hint?</button>
 </section>
