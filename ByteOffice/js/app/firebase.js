@@ -126,9 +126,9 @@
       if(resumeButton) resumeButton.disabled=false;
       if(mapButton){ mapButton.disabled=false; const mapHint=mapButton.querySelector('small'); if(mapHint) mapHint.textContent='Browse the assignment roadmap'; }
     }else if(localTestMode){
-      authKicker.textContent='LOCAL TEST MODE';
+      authKicker.textContent='SIGNED IN AS';
       authTitle.textContent='Development player';
-      status.textContent='Authentication bypassed on localhost';
+      status.textContent='Ready for your next assignment';
       renderAuthStats(cloudStats());
       authStats?.removeAttribute('hidden');
       const authAvatar=$('#homeAuthAvatar');
