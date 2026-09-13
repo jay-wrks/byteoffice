@@ -425,13 +425,22 @@ window.playByteBotApiPreview=async function(action,host){
   }
   try{
     document.body.classList.add('java-api-preview-active');
-    resetPhysicalScene(before);
-    placeWorkerHome(true);
-    if(event==='jump'){
-      setPose('thinking');
-      await showThoughtBubble('Checking the machine state…',{kind:action==='hasnext'?'think':'calc',duration:760});
-      setPose('');
-    }else await animateTransition({status:'ok',event,before,after,executedPc:-1,instruction:{op,arg:0}});
+    while(host.isConnected && !document.querySelector('#modal')?.classList.contains('closing') && !document.querySelector('#modal')?.classList.contains('hidden')){
+      resetPhysicalScene(before);
+      placeWorkerHome(true);
+      // Hold the initial arrangement long enough for learners to understand
+      // which boxes and memory slots are involved before motion begins.
+      await wait(1000);
+      if(!host.isConnected||document.querySelector('#modal')?.classList.contains('closing')||document.querySelector('#modal')?.classList.contains('hidden')) break;
+      if(event==='jump'){
+        setPose('thinking');
+        await showThoughtBubble('Checking the machine state…',{kind:action==='hasnext'?'think':'calc',duration:760});
+        setPose('');
+      }else await animateTransition({status:'ok',event,before,after,executedPc:-1,instruction:{op,arg:0}});
+      // Pause on the completed physical state just as we pause on the setup
+      // state, so learners can see where every box ended before replaying.
+      if(host.isConnected) await wait(1000);
+    }
   }finally{
     clearTransientBoxes();
     document.body.classList.remove('java-api-preview-active');

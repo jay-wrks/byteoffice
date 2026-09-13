@@ -401,7 +401,7 @@ public final class GameRunner {
       {signature:'bot.memorySize()',summary:'Get the number of floor-memory slots.',returns:'int',changes:'nothing',detail:'Returns the number of physical memory slots available on the current level.',rules:'Slot indexes run from 0 through memorySize() - 1.',example:'for (int slot = 0; slot < bot.memorySize(); slot++) { ... }'},
       {signature:'bot.isEmpty(slot)',summary:'Check whether a floor slot is empty.',returns:'boolean',changes:'nothing',detail:'Reports whether the selected floor-memory slot currently has no box.',rules:'The slot must exist; it does not move or expose any box value.',example:'if (!bot.isEmpty(0)) { bot.pick(0); }'}
     ];
-    els.palette.innerHTML=methods.map((item,index)=>`<button type="button" class="command-card java-api-card" data-java-api="${index}"><strong>${escapeHtml(item.signature)}</strong><span>${escapeHtml(item.summary)}</span></button>`).join('');
+    els.palette.innerHTML=methods.map((item,index)=>`<button type="button" class="command-card java-api-card" data-java-api="${index}" data-java-api-name="${escapeHtml(item.signature)}"><strong>${escapeHtml(item.signature)}</strong><span>${escapeHtml(item.summary)}</span></button>`).join('');
     els.palette.querySelectorAll('[data-java-api]').forEach(btn=>btn.addEventListener('click',()=>showJavaApiDetails(methods[Number(btn.dataset.javaApi)])));
   };
 

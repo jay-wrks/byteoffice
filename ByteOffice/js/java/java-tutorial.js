@@ -31,6 +31,11 @@
       {target:'#runBtn',phase:'compile',mode:'compile',kicker:'JAVA COMPILER',title:'Compiling your program…',body:'The browser is compiling Program.java now. The RUN control is showing its live loading state. Please wait until compilation finishes before running the pair swap.',button:'Waiting for compiler…',locked:true},
       {target:'#runBtn',kicker:'STEP 5 · START',title:'Run the pair swap',body:'Compilation is ready. Press <b>RUN</b>. Each pair should leave the OUTBOX in reverse order: second box first, saved first box second.',on:'run',externalAction:true},
       {target:'#scene',kicker:'WATCH BYTE',title:'Floor memory changes the route',body:'Byte used Slot A as a temporary shelf, so he could reverse every pair without losing the first box.',button:'Finish guide'}
+    ],
+    4:[
+      {target:'.objective-box',kicker:'BYTE BRIEFING',title:'Add the pair values.',body:'Level 4 introduces physical addition. For every pair of boxes, Byte must combine the two values and send their sum to OUTBOX.',button:'Show me the ByteBot API →'},
+      {target:'#commandTray',kicker:'BYTEBOT API',title:'ByteBot’s command panel',body:'This panel is Byte’s command shelf. Each tile represents one physical action you can call from Java, such as taking, sending, storing, or adding boxes.',button:'Open sum API →',openApiPanel:true},
+      {target:'[data-java-api-name="bot.add(slot)"]',kicker:'BYTEBOT API · ADDITION',title:'Open bot.add(slot)',body:'This is the command Level 4 introduces. Open the highlighted <b>bot.add(slot)</b> tile to watch Byte physically combine the held box with a floor-memory value.',externalAction:true,openApi:true}
     ]
   };
 
@@ -66,7 +71,7 @@
     layer=document.createElement('div');
     layer.id='byteGuideLayer';
     layer.setAttribute('aria-hidden','false');
-    layer.innerHTML='<div id="byteGuideFocus" aria-hidden="true"></div><section id="byteGuideCard" class="byte-guide-card" role="dialog" aria-live="polite" aria-labelledby="byteGuideTitle" aria-describedby="byteGuideBody"></section>';
+    layer.innerHTML='<div id="byteGuideShield" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div id="byteGuideFocus" aria-hidden="true"></div><section id="byteGuideCard" class="byte-guide-card" role="dialog" aria-live="polite" aria-labelledby="byteGuideTitle" aria-describedby="byteGuideBody"></section>';
     document.body.appendChild(layer);
     layer.addEventListener('click',event=>{
       const button=event.target.closest('button');
@@ -107,6 +112,32 @@
     }
     return target;
   }
+  function revealInScrollContainers(target){
+    if(!target) return;
+    let parent=target.parentElement;
+    while(parent&&parent!==document.body){
+      const style=getComputedStyle(parent);
+      if((style.overflowY==='auto'||style.overflowY==='scroll')&&parent.scrollHeight>parent.clientHeight){
+        const targetRect=target.getBoundingClientRect(), parentRect=parent.getBoundingClientRect();
+        if(targetRect.top<parentRect.top||targetRect.bottom>parentRect.bottom){
+          parent.scrollTop+=(targetRect.top+targetRect.height/2)-(parentRect.top+parentRect.height/2);
+        }
+      }
+      parent=parent.parentElement;
+    }
+  }
+  function positionShield(rect,pad){
+    const panes=document.querySelectorAll('#byteGuideShield i');
+    if(panes.length<4) return;
+    const left=Math.max(0,rect.left-pad), top=Math.max(0,rect.top-pad);
+    const right=Math.min(window.innerWidth,rect.right+pad), bottom=Math.min(window.innerHeight,rect.bottom+pad);
+    const width=window.innerWidth, height=window.innerHeight;
+    const boxes=[[0,0,width,top],[0,bottom,width,height],[0,top,left,bottom],[right,top,width,bottom]];
+    panes.forEach((pane,index)=>{
+      const [x,y,x2,y2]=boxes[index];
+      pane.style.left=`${x}px`;pane.style.top=`${y}px`;pane.style.width=`${Math.max(0,x2-x)}px`;pane.style.height=`${Math.max(0,y2-y)}px`;
+    });
+  }
   function position(forceVisibility=false,moveCard=true){
     if(!session||!currentStep()) return;
     const layer=ensureLayer(), focus=layer.querySelector('#byteGuideFocus'), card=layer.querySelector('#byteGuideCard'), target=targetFor(currentStep());
@@ -136,6 +167,7 @@
     const pad=6;
     focus.style.left=`${Math.max(4,rect.left-pad)}px`;focus.style.top=`${Math.max(4,rect.top-pad)}px`;
     focus.style.width=`${Math.min(window.innerWidth-8,rect.width+pad*2)}px`;focus.style.height=`${Math.min(window.innerHeight-8,rect.height+pad*2)}px`;
+    positionShield(rect,pad);
     const margin=16, gap=18, cardRect=card.getBoundingClientRect(), cardWidth=cardRect.width, cardHeight=cardRect.height;
     let left=rect.left, top=rect.bottom+gap, placement='below';
     if(rect.width>cardWidth*1.35&&rect.right+gap+cardWidth<=window.innerWidth-margin){left=rect.right+gap;top=rect.top;placement='right';}
@@ -149,6 +181,7 @@
     if(!session){removeLayer();return;}
     const steps=guides[session.levelId]||[], step=currentStep();
     if(!step){finish();return;}
+    if((step.openApiPanel||step.openApi) && typeof setCommandTrayCollapsed==='function') setCommandTrayCollapsed(false,{remember:false});
     const layer=ensureLayer(), card=layer.querySelector('#byteGuideCard');
     const progress=Math.round((session.stepIndex/Math.max(1,steps.length))*100);
     const copy=step.runtime&&session.runtimeCopy?session.runtimeCopy:step;
@@ -165,6 +198,7 @@
     const feedback=compileError?'Compilation failed. Review the highlighted error in Program.java, correct the code, then press RUN again.':(step.condition&&!step.condition(source())?step.waiting||'Complete the highlighted step to continue.':'');
     card.innerHTML=`<div class="byte-guide-head"><div class="byte-guide-bot" aria-hidden="true"></div><div><span class="byte-guide-kicker">${escapeHtml(display.kicker)}</span><h2 id="byteGuideTitle">${escapeHtml(display.title)}</h2></div></div><div class="byte-guide-copy" id="byteGuideBody"><p>${body}</p></div><div class="byte-guide-progress"><span>GUIDE ${session.stepIndex+1} / ${steps.length}</span><i style="--guide-progress:${progress}%"></i></div><div class="byte-guide-feedback" aria-live="polite">${feedback}</div>${actions}`;
     position();
+    if(step.openApi) requestAnimationFrame(()=>{revealInScrollContainers(targetFor(step));position(true);});
     syncFollow();
   }
   function finish(){
@@ -273,13 +307,34 @@
   }
   function start(index){
     const id=levels?.[index]?.id;
-    if(!guides[id]){finish();return;}
+    if(!guides[id]){
+      finish();
+      return;
+    }
     session={levelId:id,stepIndex:0};render();
   }
   function levelPassed(id){if(session?.levelId===id) finish();}
 
   document.addEventListener('input',event=>{if(event.target?.id==='javaEditor')sourceChanged();});
   function handleRunGuideClick(event){
+    if(session?.levelId===4&&currentStep()?.openApiPanel){
+      const apiTile=event.target?.closest?.('.java-api-card');
+      if(apiTile){
+        // Guide every tile click toward the newly introduced addition API.
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        setTimeout(()=>{if(session?.levelId===4&&currentStep()?.openApiPanel) advance();},0);
+        return;
+      }
+    }
+    if(session?.levelId===4&&currentStep()?.openApiPanel&&event.target.closest('#commandTrayToggle')){
+      setTimeout(()=>{if(session?.levelId===4&&currentStep()?.openApiPanel) advance();},0);
+      return;
+    }
+    if(session?.levelId===4&&currentStep()?.openApi&&event.target.closest('.java-api-card')){
+      finish();
+      return;
+    }
     if(!session?.levelId||!event.target.closest('#runBtn')) return;
     if(currentStep()?.on==='run') advance();
   }
