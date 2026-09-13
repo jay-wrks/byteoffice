@@ -67,6 +67,7 @@
 .machine-btn.run{white-space:nowrap;overflow:hidden;transition:width .24s ease,background-color .22s ease,box-shadow .22s ease,opacity .22s ease}
 .machine-btn.run.is-compiling{display:inline-flex;align-items:center;justify-content:center}
 .machine-btn.run.is-compiling{background:#66758a}
+.machine-btn.run.is-running{display:inline-flex;align-items:center;justify-content:center;background:#8a6b36;color:#fff1cf;border-color:#5d4826}
 .machine-btn.run.compile-state-transition{animation:byteRunStateChange .24s ease both}
 .run-button-content{display:inline-flex;align-items:center;justify-content:center;gap:7px;animation:byteRunContentChange .24s ease both}
 .run-loading-spinner{width:11px;height:11px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff4d0;border-radius:50%;animation:byteRunSpin .7s linear infinite}

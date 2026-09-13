@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const ASSET_VERSION='20260914-0215';
+  const ASSET_VERSION='20260914-0500';
 
   function versioned(src){
     const base=window.__BYTE_OFFICE_ASSET_BASE__||document.baseURI||window.location.href;
@@ -61,7 +61,7 @@
       await loadClassicScript('js/java/java-solutions.js');
       await loadClassicScript('js/java/java-workspace-tabs.js');
       await loadClassicScript('js/java/ide-layout-controls.js');
-      await loadClassicScript('js/app/bindings.js');
+      await loadClassicScript('js/app/bindings.js?v=20260914-0420');
       await loadClassicScript('js/java/execution-highlighter.js');
       await loadClassicScript('js/java/java-tutorial.js?v=20260914-0330');
     }catch(err){

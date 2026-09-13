@@ -97,6 +97,7 @@ public final class GameRunner {
   let runStartedAt=null;
   let compileTimer=null;
   let compileJob=null;
+  let pendingReset=false;
   let lastCompileDiagnostics='';
   const javaUndo=[];
   const javaRedo=[];
@@ -294,6 +295,26 @@ public final class GameRunner {
     }
   }
 
+  function setRunUi(runningNow){
+    const run=document.querySelector('#runBtn');
+    if(!run) return;
+    if(!run.dataset.readyLabel) run.dataset.readyLabel=run.innerHTML;
+    const state=runningNow?'running':'ready';
+    const changed=run.dataset.runState!==state;
+    run.dataset.runState=state;
+    run.classList.toggle('is-running',!!runningNow);
+    run.setAttribute('aria-busy',runningNow?'true':'false');
+    const content=runningNow
+      ? '<span class="run-button-content"><span class="run-loading-spinner" aria-hidden="true"></span> RUNNING…</span>'
+      : `<span class="run-button-content">${run.dataset.readyLabel}</span>`;
+    if(changed){
+      run.innerHTML=content;
+      run.classList.remove('compile-state-transition');
+      void run.offsetWidth;
+      run.classList.add('compile-state-transition');
+    }else run.innerHTML=content;
+  }
+
   function highlightJavaLine(line){
     activeJavaLine=Number.isFinite(+line)?+line:-1;
     const gutter=document.querySelector('#javaLineNumbers');
@@ -463,7 +484,10 @@ public final class GameRunner {
 
   function releaseExecution(count=1){
     if(!execution) return;
-    execution.permits+=count;
+    // RUN is an open gate, not a batch of saved STEP permits. Banking permits
+    // here meant that PAUSE changed the UI while later ByteBot calls continued
+    // consuming the large RUN allowance.
+    if(execution.mode!=='run') execution.permits+=count;
     while(execution.waiters.length && (execution.mode==='run'||execution.permits>0)){
       if(execution.mode!=='run') execution.permits--;
       const resolve=execution.waiters.shift(); resolve();
@@ -508,7 +532,13 @@ public final class GameRunner {
       const transition={status:'ok',event,before,after,executedPc:line,instruction:{op,arg:slot}};
       notifyJavaEvent('byteoffice-java-action',transition);
       animating=true;
-      try{ await animateTransition(transition); } finally { animating=false; }
+      try{ await animateTransition(transition); } finally {
+        animating=false;
+        if(pendingReset){
+          pendingReset=false;
+          queueMicrotask(()=>window.resetMachine?.());
+        }
+      }
     }
 
     // A tab change/reset may have cancelled this Java session while the
@@ -751,6 +781,7 @@ public final class GameRunner {
 
   async function finishExecution(exitCode){
     if(!execution) return;
+    setRunUi(false);
     if(runStartedAt!==null){ lastRunMs=performance.now()-runStartedAt; runStartedAt=null; updateTimingStatus(); }
     const wasCancelled=execution.cancelled;
     execution.task=null;
@@ -798,7 +829,11 @@ public final class GameRunner {
     if(execution?.task){
       execution.mode=mode;
       running=mode==='run';
-      if(mode==='run') releaseExecution(1000000); else releaseExecution(1);
+      setRunUi(running);
+      if(mode==='run'){
+        execution.permits=0;
+        releaseExecution();
+      }else releaseExecution(1);
       setStatus(mode==='run'?'WORKING':'STEP','working');
       return execution.task;
     }
@@ -809,6 +844,7 @@ public final class GameRunner {
     recordRunStart?.();
     execution={mode,permits:mode==='step'?1:0,waiters:[],cancelled:false,task:null};
     running=mode==='run';
+    setRunUi(running);
     setStatus(mode==='run'?'WORKING':'STEP','working');
     updateJavaStatus('Program running','working');
     notifyJavaPhase('run-start',{mode});
@@ -826,22 +862,28 @@ public final class GameRunner {
   }
 
   window.startRun=function(){
-    if(animating) return;
+    // A paused Java session may still be finishing its current physical
+    // action. RUN must resume that existing session instead of being ignored.
+    if(animating&&!execution?.task) return;
     launchJava('run').catch(err=>{ setStatus('JAVA ERROR','error'); updateJavaStatus('Runtime failed','error'); els.footer.textContent=err.message; });
   };
   window.stepOnce=async function(){
-    if(animating) return false;
+    if(animating&&!execution?.task) return false;
     try{ await launchJava('step'); return true; }
     catch(err){ setStatus('JAVA ERROR','error'); updateJavaStatus('Runtime failed','error'); els.footer.textContent=err.message; return false; }
   };
   window.pause=function(){
-    if(!execution?.task) return;
-    execution.mode='pause'; running=false; setStatus('PAUSED','paused'); updateJavaStatus('Paused at next ByteBot call','paused');
+    // The execution session is authoritative. Its CheerpJ promise can be
+    // temporarily unset while a run is being resumed, so do not drop a
+    // legitimate PAUSE click just because task assignment has not completed.
+    if(!execution) return;
+    execution.mode='pause'; execution.permits=0; running=false; setRunUi(false); setStatus('PAUSED','paused'); updateJavaStatus('Paused at next ByteBot call','paused');
     els.footer.textContent='Java execution paused. STEP executes one ByteBot action; RUN continues.';
   };
   window.stopRun=function(){
     const pending=execution?.task;
     running=false;
+    setRunUi(false);
     if(execution){
       execution.cancelled=true; execution.mode='run';
       javaMachine && (javaMachine.cancelled=true);
@@ -852,6 +894,12 @@ public final class GameRunner {
   };
 
   window.resetMachine=function(message=true){
+    if(animating){
+      pendingReset=true;
+      setStatus('RESETTING','paused');
+      els.footer.textContent='Reset queued. Byte will finish the current physical action, then return to the start.';
+      return;
+    }
     stopRun(); animating=false; activeJavaLine=-1; clearTransientBoxes?.();
     const snap=resetJavaState(level().input);
     resetPhysicalScene(snap); setStatus('READY','ready'); clearActive?.(); placeWorkerHome(true); setPose('');
