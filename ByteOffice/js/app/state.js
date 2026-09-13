@@ -212,7 +212,12 @@ function switchWorkspace(next){
 }
 function level(){ return levels[levelIndex]; }
 function wait(ms){ return new Promise(r => setTimeout(r, ms)); }
-function motionScale(){ return [1.55,1.25,1,.72,.46,.32,.23,.16][+els.speed.value-1] || 1; }
+function motionScale(){
+  // API detail previews are teaching animations, so they deliberately run
+  // slowly and must not inherit the user's live-game speed setting.
+  if(window.byteOfficeApiPreviewSlow) return 1.8;
+  return [1.55,1.25,1,.72,.46,.32,.23,.16][+els.speed.value-1] || 1;
+}
 function dur(ms){ return Math.max(24, Math.round(ms * motionScale())); }
 function refreshSpeedControl(){
   if(!els.speed) return;

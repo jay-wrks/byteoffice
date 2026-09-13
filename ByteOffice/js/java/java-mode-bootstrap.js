@@ -63,7 +63,7 @@
       await loadClassicScript('js/java/ide-layout-controls.js');
       await loadClassicScript('js/app/bindings.js');
       await loadClassicScript('js/java/execution-highlighter.js');
-      await loadClassicScript('js/java/java-tutorial.js');
+      await loadClassicScript('js/java/java-tutorial.js?v=20260914-0330');
     }catch(err){
       console.error('ByteOffice Java bootstrap failed:',err);
       const footer=document.querySelector('#footerMessage');

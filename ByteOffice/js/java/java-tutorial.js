@@ -21,7 +21,7 @@
       {target:'#runBtn',phase:'compile',mode:'compile',kicker:'JAVA COMPILER',title:'Compiling your program…',body:'Your code changed, so the browser is compiling Program.java first. Please wait for this loading state to finish.',externalAction:true},
       {target:'#runBtn',kicker:'STEP 4 · START',title:'Run the conveyor',body:'Compilation is ready. Now use the highlighted <b>RUN</b> control to start Byte. Byte should repeat the same two physical actions until every inbox box is delivered.',on:'run',externalAction:true},
       {target:'#scene',kicker:'WATCH BYTE',title:'Loops make small ideas scale',body:'One pair of instructions handled the whole conveyor. You’ve just used a Java loop to control a physical machine.',button:'Show me the speed control →'},
-      {target:'.speed-control',extraTarget:'#workerWrap',kicker:'WATCH BYTE · MACHINE CONTROL',title:'Control the pace',body:'Use the <b>SPEED</b> slider while Byte works to slow the animation down for a closer look or speed it up when you already understand the motion. It changes only the playback pace—not your Java program or the assignment result.',button:'Finish guide'}
+      {target:'#workerWrap',extraTarget:'.speed-control',extraTargetInteractive:true,follow:true,kicker:'WATCH BYTE · MACHINE CONTROL',title:'Control the pace',body:'Use the <b>SPEED</b> slider while Byte works to slow the animation down for a closer look or speed it up when you already understand the motion. It changes only the playback pace—not your Java program or the assignment result.',button:'Finish guide'}
     ],
     3:[
       {target:'.objective-box',kicker:'BYTE BRIEFING',title:'Reverse each pair.',body:'Two forms arrive together. Save the first box, send the second box, then bring the saved first box back and send it.',button:'Show me how →'},
@@ -90,8 +90,11 @@
   }
   function stepSatisfied(step,value=source()){
     if(step?.required){
-      const wanted=step.required.trim().replace(/\s+/g,' ');
-      const hasRequired=String(value).split(/\r?\n/).some(line=>line.trim().replace(/\s+/g,' ')===wanted);
+      // Java permits formatting differences around punctuation. Compare the
+      // required instruction by tokens, not by optional spaces, so both
+      // `while (bot.hasNext()) {` and `while(bot.hasNext()) {` are accepted.
+      const wanted=step.required.replace(/\s+/g,'');
+      const hasRequired=String(value).split(/\r?\n/).some(line=>line.replace(/\s+/g,'')===wanted);
       if(!hasRequired) return false;
     }
     return !step?.condition||step.condition(value);
@@ -166,17 +169,30 @@
       parent=parent.parentElement;
     }
   }
-  function positionShield(rect,pad){
-    const panes=document.querySelectorAll('#byteGuideShield i');
-    if(panes.length<4) return;
-    const left=Math.max(0,rect.left-pad), top=Math.max(0,rect.top-pad);
-    const right=Math.min(window.innerWidth,rect.right+pad), bottom=Math.min(window.innerHeight,rect.bottom+pad);
+  function positionShield(rect,pad,secondaryRect=null){
+    const shield=document.querySelector('#byteGuideShield');
+    if(!shield) return;
     const width=window.innerWidth, height=window.innerHeight;
-    const boxes=[[0,0,width,top],[0,bottom,width,height],[0,top,left,bottom],[right,top,width,bottom]];
-    panes.forEach((pane,index)=>{
-      const [x,y,x2,y2]=boxes[index];
-      pane.style.left=`${x}px`;pane.style.top=`${y}px`;pane.style.width=`${Math.max(0,x2-x)}px`;pane.style.height=`${Math.max(0,y2-y)}px`;
-    });
+    const holes=[rect,secondaryRect].filter(Boolean).map(box=>({
+      left:Math.max(0,box.left-pad),top:Math.max(0,box.top-pad),
+      right:Math.min(width,box.right+pad),bottom:Math.min(height,box.bottom+pad)
+    }));
+    const xs=[0,width],ys=[0,height];
+    holes.forEach(box=>{xs.push(box.left,box.right);ys.push(box.top,box.bottom);});
+    xs.sort((a,b)=>a-b);ys.sort((a,b)=>a-b);
+    const unique=(values)=>values.filter((value,index)=>index===0||value!==values[index-1]);
+    const xStops=unique(xs),yStops=unique(ys);
+    shield.innerHTML='';
+    for(let y=0;y<yStops.length-1;y++) for(let x=0;x<xStops.length-1;x++){
+      const cell={left:xStops[x],top:yStops[y],right:xStops[x+1],bottom:yStops[y+1]};
+      const centerX=(cell.left+cell.right)/2,centerY=(cell.top+cell.bottom)/2;
+      if(holes.some(h=>centerX>=h.left&&centerX<=h.right&&centerY>=h.top&&centerY<=h.bottom)) continue;
+      const pane=document.createElement('i');
+      pane.style.left=`${cell.left}px`;pane.style.top=`${cell.top}px`;
+      pane.style.width=`${Math.max(0,cell.right-cell.left)}px`;
+      pane.style.height=`${Math.max(0,cell.bottom-cell.top)}px`;
+      shield.appendChild(pane);
+    }
   }
   function position(forceVisibility=false,moveCard=true){
     if(!session||!currentStep()) return;
@@ -208,11 +224,12 @@
     focus.style.transition=currentStep()?.follow?'none':'';
     focus.style.left=`${Math.max(4,rect.left-pad)}px`;focus.style.top=`${Math.max(4,rect.top-pad)}px`;
     focus.style.width=`${Math.min(window.innerWidth-8,rect.width+pad*2)}px`;focus.style.height=`${Math.min(window.innerHeight-8,rect.height+pad*2)}px`;
-    positionShield(rect,pad);
     const secondaryTarget=step.extraTarget?document.querySelector(step.extraTarget):null;
+    const secondaryRect=secondaryTarget?.getBoundingClientRect()||null;
+    positionShield(rect,pad,secondaryRect);
     if(secondaryFocus){
-      if(secondaryTarget){
-        const secondaryRect=secondaryTarget.getBoundingClientRect();
+      secondaryFocus.classList.toggle('is-interactive',!!step.extraTargetInteractive);
+      if(secondaryRect){
         secondaryFocus.hidden=false;
         secondaryFocus.style.left=`${Math.max(4,secondaryRect.left-pad)}px`;
         secondaryFocus.style.top=`${Math.max(4,secondaryRect.top-pad)}px`;
@@ -235,6 +252,13 @@
     if(!session){removeLayer();return;}
     const steps=guides[session.levelId]||[], step=currentStep();
     if(!step){finish();return;}
+    // The program may start before the guide gets its next paint. Do not
+    // leave the user on a stale RUN instruction once execution is underway.
+    if(step.on==='run'&&window.byteOfficeJavaPhase==='run-start'){
+      session.stepIndex++;
+      render();
+      return;
+    }
     if((step.openApiPanel||step.openApi) && typeof setCommandTrayCollapsed==='function') setCommandTrayCollapsed(false,{remember:false});
     setEditorGuideLock(step.lockEditor);
     const layer=ensureLayer(), card=layer.querySelector('#byteGuideCard');

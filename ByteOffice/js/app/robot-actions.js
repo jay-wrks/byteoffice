@@ -424,6 +424,7 @@ window.playByteBotApiPreview=async function(action,host){
     before={...held,memory:[2]}; after={...held,held:action==='add'?9:5,memory:[2]}; event='math'; op=action==='add'?'ADD':'SUB';
   }
   try{
+    window.byteOfficeApiPreviewSlow=true;
     document.body.classList.add('java-api-preview-active');
     while(host.isConnected && !document.querySelector('#modal')?.classList.contains('closing') && !document.querySelector('#modal')?.classList.contains('hidden')){
       resetPhysicalScene(before);
@@ -442,6 +443,7 @@ window.playByteBotApiPreview=async function(action,host){
       if(host.isConnected) await wait(1000);
     }
   }finally{
+    window.byteOfficeApiPreviewSlow=false;
     clearTransientBoxes();
     document.body.classList.remove('java-api-preview-active');
     ['scene','workerWrap','worker','inbox','outbox','memory','held','steps','footer','lamp','status'].forEach(key=>{els[key]=saved[key];});
