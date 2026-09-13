@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#171a16" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23171a16'/%3E%3Ctext x='16' y='23' text-anchor='middle' fill='%23c3a35a' font-size='22' font-family='serif'%3EJ%3C/text%3E%3C/svg%3E" />
+  <title>Jay DSA Games — Choose your game</title>
+  <style>
+    @font-face{font-family:Libre;src:url('ByteOffice/libs/fonts/libre-franklin-latin-500-normal.woff2')}@font-face{font-family:Libre;src:url('ByteOffice/libs/fonts/libre-franklin-latin-700-normal.woff2');font-weight:700}@font-face{font-family:Elite;src:url('ByteOffice/libs/fonts/special-elite-latin-400-normal.woff2')}@font-face{font-family:Mono;src:url('ByteOffice/libs/fonts/dm-mono-latin-500-normal.woff2')}
+    :root{--night:#171a16;--ink:#24251f;--paper:#f1e6c8;--paper-dark:#d9c99f;--red:#a34939;--green:#60765c;--gold:#c3a35a;--muted:#aaa995}
+    *{box-sizing:border-box}html{background:var(--night)}body{margin:0;min-width:320px;color:var(--paper);font-family:Libre,system-ui,sans-serif;background:radial-gradient(circle at 75% 10%,#384035 0,transparent 31%),linear-gradient(135deg,#222821,#121511 68%);overflow-x:hidden}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;background-image:linear-gradient(transparent 97%,#78816f 98%),linear-gradient(90deg,transparent 97%,#78816f 98%);background-size:48px 48px;mask-image:linear-gradient(to bottom,#000,transparent 85%)}
+    a{color:inherit;text-decoration:none}a:focus-visible{outline:3px solid #e0c477;outline-offset:4px}.wrap{position:relative;z-index:1;width:min(1160px,calc(100% - 40px));margin:auto}.topbar{height:82px;border-bottom:2px solid #484c40;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:12px}.mark{display:grid;place-items:center;width:42px;height:42px;border:2px solid var(--gold);background:#292d26;color:var(--gold);font:25px Elite;transform:rotate(-3deg);box-shadow:3px 3px #090b09}.brand-name{font-weight:700;letter-spacing:.16em;font-size:14px}.brand-sub{font:12px Elite;color:#9e9e8f;margin-top:4px}.status{color:#b8bdac;font:11px Mono;letter-spacing:.08em}.status i{display:inline-block;width:8px;height:8px;margin-right:7px;border-radius:50%;background:#7da16e;box-shadow:0 0 8px #7da16e}
+    main{padding:40px 0 38px}.intro{max-width:700px}.eyebrow{display:flex;align-items:center;gap:12px;color:var(--gold);font:11px Mono;letter-spacing:.2em;text-transform:uppercase}.eyebrow:before{content:"";width:34px;height:2px;background:var(--gold)}h1{font:clamp(43px,6vw,64px)/.98 Elite;margin:18px 0 16px;color:#f4e6c5;letter-spacing:-.03em}h1 em{color:#c7a867;font-style:normal}.lede{max-width:560px;margin:0;color:#c0c3b3;font-size:16px;line-height:1.55}.section-head{display:flex;align-items:end;justify-content:space-between;margin:34px 0 14px}.section-head h2{font:25px Elite;margin:0;color:#f1e5c5}.section-head p{margin:0;color:#9fa395;font:11px Mono;letter-spacing:.08em}
+    .game-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,.8fr);gap:18px}.game-card{position:relative;min-height:280px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;border:1px solid #91835e;background:var(--paper);color:var(--ink);box-shadow:7px 8px 0 #080a08;transition:transform .2s ease,box-shadow .2s ease}.game-card:hover{transform:translateY(-4px) rotate(-.2deg);box-shadow:9px 12px 0 #080a08}.game-card:focus-within{outline:3px solid #e0c477;outline-offset:4px}.game-card-main{padding:24px 30px;background:linear-gradient(120deg,#f6ebcf,#e2d2a8);background-image:linear-gradient(90deg,transparent 0 35px,#d7c391 36px,#d7c391 37px,transparent 38px),repeating-linear-gradient(0deg,transparent 0 29px,#ded0ad 30px),linear-gradient(120deg,#f6ebcf,#e2d2a8);flex:1}.game-card-main:after{content:"01";position:absolute;right:22px;top:18px;color:#a19577;font:18px Mono}.game-label{color:var(--red);font:11px Mono;letter-spacing:.14em;text-transform:uppercase}.game-title{font:35px Elite;margin:15px 0 8px}.game-copy{max-width:420px;margin:0;color:#5c594c;line-height:1.45;font-size:14px}.tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.tag{border:1px solid #a99b79;padding:6px 9px;color:#71694f;font:10px Mono}.game-card-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 20px;background:#353932;color:#e9dfc3}.play{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:46px;padding:0 18px;background:var(--red);color:#fff3dc;border:0;box-shadow:3px 3px #4b211a;font-weight:700;font-size:13px;transition:transform .15s ease,background .15s ease}.play:hover{background:#b85a47}.play:active{transform:translateY(2px);box-shadow:1px 1px #4b211a}.play svg{width:15px}.meta{font:10px Mono;color:#b5b8aa;text-transform:uppercase;letter-spacing:.08em;text-align:right}
+    .soon-card{min-height:280px;border:1px dashed #686e5f;display:flex;flex-direction:column;justify-content:center;padding:28px;color:#c0c3b3;background:#20251f}.soon-icon{width:48px;height:48px;border:1px solid #7f876f;display:grid;place-items:center;color:var(--gold);font:24px Mono;margin-bottom:20px}.soon-card h3{font:25px Elite;margin:0 0 10px;color:#e8dcc1}.soon-card p{margin:0;line-height:1.5;color:#9da394;font-size:14px}.soon-note{margin-top:20px;color:var(--gold);font:10px Mono;letter-spacing:.1em;text-transform:uppercase}.footer{border-top:1px solid #42473d;padding:14px 0 18px;color:#8f9588;font:11px Mono;display:flex;justify-content:space-between}.footer span:last-child{color:#c0b484}
+    .launch-screen{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:20px;background:#11150fef;opacity:1;visibility:visible;transition:opacity .2s ease}.launch-screen[hidden]{display:none}.loader-card{width:min(450px,100%);padding:30px;background:var(--paper);color:var(--ink);border:1px solid #aa9560;box-shadow:8px 9px #080a08}.loader-kicker{color:var(--red);font:10px Mono;letter-spacing:.16em;text-transform:uppercase}.loader-card h2{font:30px Elite;margin:12px 0 7px}.loader-copy{margin:0;color:#625e4e;font-size:14px;line-height:1.5}.loader-track{height:9px;margin:25px 0 11px;background:#c7b98f;border:1px solid #9f916e;overflow:hidden}.loader-bar{height:100%;width:0;background:var(--green);transition:width .2s ease}.loader-status{display:flex;justify-content:space-between;color:#756d58;font:10px Mono;letter-spacing:.06em;text-transform:uppercase}.loader-percent{color:var(--green);font-weight:700}
+    @media(max-width:700px){.wrap{width:min(100% - 28px,560px)}.topbar{height:auto;padding:16px 0}.status{display:none}main{padding:54px 0 65px}.lede{font-size:16px}.section-head{margin-top:52px;align-items:start;gap:12px;flex-direction:column}.game-grid{grid-template-columns:1fr}.game-card,.soon-card{min-height:330px}.game-title{font-size:35px}.footer{gap:12px;flex-direction:column}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition-duration:.001ms!important}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;width:100%">
+      <a class="brand" href="index.html" aria-label="Jay DSA Games home"><span class="mark">J</span><span><span class="brand-name">JAY DSA GAMES</span><span class="brand-sub">small games · big thinking</span></span></a>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="intro" aria-labelledby="page-title">
+      <div class="eyebrow">Game library / 001</div>
+      <h1 id="page-title">Pick a game.<br><em>Make a dent.</em></h1>
+      <p class="lede">A growing collection of hands-on games for curious minds. Choose a challenge and get straight to playing.</p>
+    </section>
+    <section aria-labelledby="games-title">
+      <div class="section-head"><h2 id="games-title">Available now</h2><p>1 game loaded / select to launch</p></div>
+      <div class="game-grid">
+        <article class="game-card">
+          <div class="game-card-main">
+            <div class="game-label">Featured game · Java</div>
+            <h3 class="game-title">Byte Office</h3>
+            <p class="game-copy">Run the machine, solve the missions, and learn Java by programming a tiny office robot one instruction at a time.</p>
+            <div class="tags"><span class="tag">logic</span><span class="tag">puzzles</span><span class="tag">learn Java</span></div>
+          </div>
+          <div class="game-card-foot"><a class="play" href="ByteOffice.html">Launch game <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m6 3 5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg></a><span class="meta">story mode<br>in progress</span></div>
+        </article>
+        <aside class="soon-card" aria-label="More games coming soon">
+          <div class="soon-icon" aria-hidden="true">+</div><h3>More games incoming</h3><p>The arcade is still under construction. New worlds, puzzles, and experiments will appear here soon.</p><div class="soon-note">Next slot reserved</div>
+        </aside>
+      </div>
+    </section>
+  </main>
+  <footer class="footer wrap"><span>© Jay DSA Games</span><span>Keep exploring.</span></footer>
+  <div class="launch-screen" hidden aria-live="polite" aria-busy="true">
+    <div class="loader-card"><div class="loader-kicker">Preparing your workspace</div><h2>Warming up Byte Office</h2><p class="loader-copy">Loading the game files so the machine is ready when you arrive.</p><div class="loader-track"><div class="loader-bar"></div></div><div class="loader-status"><span class="loader-message">Finding game files…</span><span><span class="loader-count">0 / 0</span> · <span class="loader-percent">0%</span></span></div></div>
+  </div>
+  <script>
+    (() => {
+      const launch = document.querySelector('.play');
+      const screen = document.querySelector('.launch-screen');
+      const bar = document.querySelector('.loader-bar');
+      const message = document.querySelector('.loader-message');
+      const count = document.querySelector('.loader-count');
+      const percent = document.querySelector('.loader-percent');
+
+      const sameOrigin = value => {
+        try { const url = new URL(value, location.href); return url.origin === location.origin && !url.hash; } catch { return false; }
+      };
+      const discover = (source, base, add, kind) => {
+        const documentLike = kind === 'html';
+        if (documentLike) {
+          const parsed = new DOMParser().parseFromString(source, 'text/html');
+          const pageBase = new URL(parsed.querySelector('base')?.href || base, base);
+          parsed.querySelectorAll('[src], [href], [data]').forEach(node => {
+            const ref = node.getAttribute('src') || node.getAttribute('href') || node.getAttribute('data');
+            if (ref && sameOrigin(new URL(ref, pageBase))) add(new URL(ref, pageBase));
+          });
+        }
+        if (kind === 'css') {
+          const cssRefs = source.matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)|@import\s*["']([^"']+)["']/gi);
+          for (const match of cssRefs) {
+            const ref = match[1] || match[2];
+            if (ref && sameOrigin(new URL(ref, base))) add(new URL(ref, base));
+          }
+        }
+      };
+      const preload = async entry => {
+        const queue = []; const seen = new Set(); let cursor = 0; let loaded = 0; let failed = 0;
+        const add = value => { const url = new URL(value, entry); if (!sameOrigin(url)) return; url.hash = ''; if (!seen.has(url.href)) { seen.add(url.href); queue.push(url); } };
+        add(entry);
+        const worker = async () => {
+          while (cursor < queue.length) {
+            const url = queue[cursor++];
+            try {
+              const response = await fetch(url.href, { cache: 'force-cache' });
+              if (!response.ok) throw new Error(response.status);
+              const type = response.headers.get('content-type') || '';
+              if (type.includes('text') || /\.(html?|css|js|mjs)(\?|$)/i.test(url.pathname)) {
+                const kind = /\.html?(\?|$)/i.test(url.pathname) ? 'html' : /\.css(\?|$)/i.test(url.pathname) ? 'css' : 'js';
+                discover(await response.text(), url.href, add, kind);
+              }
+            } catch { failed++; }
+            loaded++; const total = Math.max(queue.length, loaded); const progress = Math.round(loaded / total * 100); count.textContent = `${loaded} / ${total}`; percent.textContent = `${progress}%`; bar.style.width = `${Math.min(96, progress)}%`;
+          }
+        };
+        await Promise.all(Array.from({ length: 6 }, worker));
+        return { failed, loaded };
+      };
+      launch.addEventListener('click', async event => {
+        event.preventDefault(); if (launch.dataset.loading) return; launch.dataset.loading = 'true';
+        const entry = launch.href; screen.hidden = false; message.textContent = 'Finding game files…';
+        const result = await preload(entry);
+        const { failed, loaded } = result;
+        if (failed) { message.textContent = 'Some files could not be warmed; launching…'; } else { message.textContent = 'Everything is ready — launching…'; }
+        bar.style.width = '100%'; percent.textContent = '100%'; count.textContent = `${loaded} / ${loaded}`;
+        setTimeout(() => { location.href = entry; }, 220);
+      });
+    })();
+  </script>
+</body>
+</html>
