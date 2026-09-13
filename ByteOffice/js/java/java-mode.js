@@ -1031,8 +1031,6 @@ public final class GameRunner {
         assignSource(starterSource()); bucket.slots[workspaceIndex]=cloneProgram(); saveWorkspace(false); renderProgram(); resetMachine(false);
       }
       renderPalette(); refreshWorkspaceTabs();
-      const title=document.querySelector('.program-header h2'); if(title) title.textContent='Java Program';
-      const cap=document.querySelector('.program-header .small-cap'); if(cap) cap.textContent='BYTEBOT CONTROL';
       if(els.footer) els.footer.textContent='Write real Java in Program.java. ByteOffice owns main() and calls program(ByteBot bot).';
     };
   }

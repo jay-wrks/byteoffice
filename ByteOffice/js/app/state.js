@@ -160,7 +160,7 @@ function refreshWorkspaceTabs(){
 function setAnswerModeControls(on){
   document.querySelector('.program-panel')?.classList.toggle('answer-mode',on);
   // Answer is read-only for editing, but it runs through the exact same machine pipeline.
-  ['clearBtn','undoBtn','redoBtn'].forEach(id=>{const el=$("#"+id); if(el) el.disabled=on;});
+  ['undoBtn','redoBtn'].forEach(id=>{const el=$("#"+id); if(el) el.disabled=on;});
   ['formatBtn','shareBtn','testBtn','runBtn','stepBtn','pauseBtn','resetBtn'].forEach(id=>{const el=$("#"+id); if(el && !(id==='runBtn' && window.byteOfficeCompiling)) el.disabled=false;});
   document.querySelectorAll('.command-card').forEach(b=>b.disabled=on);
 }

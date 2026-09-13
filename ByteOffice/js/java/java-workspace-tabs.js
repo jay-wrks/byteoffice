@@ -32,7 +32,7 @@
 
   function setJavaAnswerControls(on){
     document.querySelector('.program-panel')?.classList.toggle('answer-mode',!!on);
-    ['clearBtn','undoBtn','redoBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!!on;});
+    ['undoBtn','redoBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!!on;});
     ['formatBtn','shareBtn','testBtn','runBtn','stepBtn','pauseBtn','resetBtn'].forEach(id=>{const el=document.getElementById(id);if(el && !(id==='runBtn' && window.byteOfficeCompiling))el.disabled=false;});
     try{window.ByteOfficeIDE?.editor?.updateOptions({readOnly:!!on,domReadOnly:!!on});}catch(_){}
   }

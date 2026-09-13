@@ -10,7 +10,7 @@
     appId:'1:444843895218:web:9cac8134442e1172e3dcab'
   };
 
-  const status=$('#homeAuthStatus'), authTitle=$('#homeAuthTitle'), authKicker=$('#homeAuthKicker'), authStats=$('#homeAuthStats'), authButton=$('#homeAuthBtn'), resumeButton=$('#homeResumeBtn'), mapButton=$('#homeMapBtn'), consolidatedList=$('#homeLeaderboardTop3'), leaderboardLists={stars:$('#homeLeaderboardStars'),steps:$('#homeLeaderboardSteps'),actions:$('#homeLeaderboardActions')};
+  const status=$('#homeAuthStatus'), authTitle=$('#homeAuthTitle'), authKicker=$('#homeAuthKicker'), authStats=$('#homeAuthStats'), authButton=$('#homeAuthBtn'), resumeButton=$('#homeResumeBtn'), mapButton=$('#homeMapBtn'), resetZone=$('#resetProgressZone'), consolidatedList=$('#homeLeaderboardTop3'), leaderboardLists={stars:$('#homeLeaderboardStars'),steps:$('#homeLeaderboardSteps'),actions:$('#homeLeaderboardActions')};
   if(!status||!authButton||!consolidatedList||!leaderboardLists.stars||!leaderboardLists.steps||!leaderboardLists.actions) return;
 
   function startFirebase(){
@@ -28,6 +28,8 @@
   const leaderboardRowsByFilter={stars:null,steps:null,actions:null};
   const googleMark='<svg class="google-mark" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.24-.16-1.82H9v3.44h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.91c1.7-1.57 2.69-3.88 2.69-6.6Z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.2l-2.91-2.26c-.8.54-1.82.86-3.05.86-2.35 0-4.34-1.59-5.05-3.72H.94v2.33A9 9 0 0 0 0 9c0 1.45.35 2.82.94 4.01l3.01-2.33Z"/><path fill="#FBBC05" d="M3.95 10.68A5.4 5.4 0 0 1 3.67 9c0-.58.1-1.15.28-1.68V4.99H.94A9 9 0 0 0 0 9c0 1.45.35 2.82.94 4.01l3.01-2.33Z"/><path fill="#EA4335" d="M9 3.6c1.32 0 2.5.45 3.43 1.34l2.57-2.57C13.46.92 11.42 0 9 0A9 9 0 0 0 .94 4.99l3.01 2.33C4.66 5.19 6.65 3.6 9 3.6Z"/></svg>';
   let currentUser=null;
+  let cloudWriteQueue=Promise.resolve();
+  let cloudResetInProgress=false;
 
   function cloudStats(){
     const levelMetaValues=Object.values(metaStore.levels||{});
@@ -91,22 +93,62 @@
   }
 
   async function syncCloudProgress(){
-    if(!currentUser) return;
+    if(!currentUser||cloudResetInProgress) return;
+    const user=currentUser;
     const stats=cloudStats();
-    await Promise.all([
-      db.collection('userInfo').doc(currentUser.uid).set({
-        uid:currentUser.uid,
-        displayName:currentUser.displayName||'Anonymous player',
-        photoURL:currentUser.photoURL||'',
-        completed,
-        meta:{levels:metaStore.levels||{}},
+    const snapshot={
+        uid:user.uid,
+        displayName:user.displayName||'Anonymous player',
+        photoURL:user.photoURL||'',
+        completed:[...completed],
+        meta:{levels:JSON.parse(JSON.stringify(metaStore.levels||{}))},
         ...stats
-      },{merge:true})
-    ]);
+      };
+    cloudWriteQueue=cloudWriteQueue.catch(()=>{}).then(()=>db.collection('userInfo').doc(user.uid).set(snapshot,{merge:true}));
+    return cloudWriteQueue;
+  }
+
+  async function resetCloudProgress(){
+    if(!currentUser) throw new Error('Sign in before resetting progress.');
+    const uid=currentUser.uid;
+    const displayName=currentUser.displayName||'Anonymous player';
+    const photoURL=currentUser.photoURL||'';
+    cloudResetInProgress=true;
+    try{
+      cloudWriteQueue=cloudWriteQueue.catch(()=>{}).then(()=>db.collection('userInfo').doc(uid).set({
+        uid,
+        displayName,
+        photoURL,
+        completed:[],
+        meta:{levels:{}},
+        completedLevels:0,
+        totalStars:0,
+        totalSteps:0,
+        totalSize:0,
+        hasScore:false,
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+      }));
+      await cloudWriteQueue;
+    }finally{
+      // The caller clears the local state in its next microtask. Keep ordinary
+      // autosync writes blocked until that local reset has finished.
+      setTimeout(()=>{ cloudResetInProgress=false; },0);
+    }
+    try{ localStorage.removeItem(LEADERBOARD_CACHE_KEY); }catch(_){}
+    Object.entries(leaderboardRowsByFilter).forEach(([filter,rows])=>{
+      if(!Array.isArray(rows)) return;
+      const next=rows.filter(row=>row.uid!==uid);
+      leaderboardRowsByFilter[filter]=next;
+      renderLeaderboardRows(next,leaderboardModes[filter],leaderboardLists[filter]);
+    });
+    renderConsolidatedLeaderboard();
+    renderAuthStats({completedLevels:0,totalStars:0,totalSteps:0,totalSize:0});
+    status.textContent='Progress reset locally and in the cloud';
   }
 
   function setAuthUi(user){
     currentUser=user||null;
+    if(resetZone) resetZone.hidden=true;
     const hasStarted=Object.prototype.hasOwnProperty.call(workspaceStore,'lastLevel')||completed.length>0;
     const resumeHint=resumeButton?.querySelector('small');
     if(user){
@@ -149,6 +191,7 @@
     const label=authButton.querySelector('span:last-child');
     if(label) label.textContent='Checking session…';
     if(resumeButton) resumeButton.disabled=true;
+    if(resetZone) resetZone.hidden=true;
   }
 
   function showAuthGate(){
@@ -265,9 +308,10 @@
       renderAuthStats(cloudStats());
       await syncCloudProgress();
     }catch(err){ status.textContent='Signed in · cloud sync unavailable'; console.warn('Byte Office cloud sync failed',err); }
+    finally{ if(currentUser?.uid===user.uid && resetZone) resetZone.hidden=false; }
   });
 
-  window.byteOfficeCloud={auth,db,get currentUser(){return currentUser;},syncCloudProgress};
+  window.byteOfficeCloud={auth,db,get currentUser(){return currentUser;},syncCloudProgress,resetProgress:resetCloudProgress};
   window.byteOfficeRequireAuth=()=>{ if(currentUser) return true; showAuthGate(); return false; };
   Object.keys(leaderboardModes).forEach(filter=>renderLeaderboardPreview(filter));
   }

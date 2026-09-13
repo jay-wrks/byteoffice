@@ -1,7 +1,4 @@
 .java-program-panel{--java-ink:#1e293b;--java-muted:#64748b;--java-line:#d6dde7;--java-surface:#fbfcfe;--java-code:#111827;--java-code-soft:#1f2937;min-width:0}
-.java-program-panel .program-header{gap:14px}
-.java-header-actions{display:flex;align-items:center;gap:9px}
-.java-version-badge{display:inline-flex;align-items:center;justify-content:center;min-height:28px;padding:0 9px;border:1px solid rgba(30,41,59,.14);border-radius:8px;background:rgba(255,255,255,.64);font-size:11px;font-weight:900;letter-spacing:.08em;color:#334155}
 .java-editor-toolbar{flex-wrap:wrap;row-gap:7px}
 .java-editor-toolbar .editor-tip{flex:1 1 100%;white-space:normal;line-height:1.35}
 .java-program-list{position:relative!important;padding:0!important;overflow:hidden!important;min-height:300px;background:#111827!important;border-color:rgba(15,23,42,.28)!important}
@@ -85,4 +82,4 @@
 .java-compile-error-sheet pre{max-height:52vh;overflow:auto;white-space:pre-wrap;word-break:break-word;margin:14px 0 25px;padding:18px;background:#0d100d;border:1px solid #734038;color:#ffd7be;font:13px/1.55 "DM Mono",monospace}
 .java-compile-error-close{align-self:flex-start;margin:0!important;background:#70845e!important;color:#fff4dc!important}
 @media(max-width:1180px){.java-api-palette{grid-template-columns:1fr}.java-editor-toolbar .editor-tip{display:none}}
-@media(max-width:760px){.java-editor-body{grid-template-columns:38px minmax(0,1fr)}.java-line-numbers,.java-editor{font-size:12px;line-height:20px}.java-line-numbers span{height:20px}.java-editor{padding-left:11px}.java-version-badge{display:none}}
+@media(max-width:760px){.java-editor-body{grid-template-columns:38px minmax(0,1fr)}.java-line-numbers,.java-editor{font-size:12px;line-height:20px}.java-line-numbers span{height:20px}.java-editor{padding-left:11px}}

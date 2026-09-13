@@ -1,12 +1,5 @@
 .java-program-panel{--ide-ink:#23201c;--ide-paper:#f1e6c8;--ide-paper2:#e4d2a8;--ide-red:#a34939;--ide-green:#587260;--ide-steel:#6e7471;--ide-cream:#d7c79f;--ide-dark:#262723;--ide-dark2:#1d1f1b;--ide-line:#514b3d;--ide-gold:#bf9b4e;--ide-muted:#8d856f}
 
-/* The IDE is part of ByteOffice's factory, not a foreign app embedded in it. */
-.java-program-panel .program-header{background:linear-gradient(180deg,#eee4ca,#ddd0ad)!important;border-bottom:2px solid #8f846b!important;box-shadow:inset 0 -1px #f8eed8}
-.java-program-panel .program-header h2{font-family:"Special Elite",serif!important;color:#292720}
-.java-program-panel .java-version-badge{background:#4d5148!important;color:#f0e6cb!important;border:2px solid #282b26!important;border-radius:3px!important;box-shadow:0 2px 0 #22251f!important;font-family:"DM Mono",monospace!important;letter-spacing:.06em!important}
-.java-program-panel .clear-btn{background:#d8c8a5!important;border:1px solid #8f8268!important;color:#5c3028!important;box-shadow:2px 2px #a69879!important;border-radius:2px!important}
-.java-program-panel .clear-btn:hover{background:#eadab5!important}
-
 .java-program-panel .workspace-switcher{background:#c8bda0!important;border-bottom:2px solid #8a8069!important;box-shadow:inset 0 1px rgba(255,255,255,.45)}
 .java-program-panel .workspace-tab{border-radius:0!important;background:#d7caa8!important;color:#5f584a!important;border-right:1px solid #a79a7b!important;box-shadow:none!important;font-family:"DM Mono",monospace!important}
 .java-program-panel .workspace-tab.active{background:#f0e4c5!important;color:#2c2923!important;box-shadow:inset 0 -3px var(--ide-red)!important}
@@ -77,12 +70,6 @@
 
 /* Compact IDE density: keep the game controls readable while giving Program.java the space. */
 .java-program-panel{min-height:0!important;overflow:hidden!important}
-.java-program-panel .program-header{padding:7px 10px!important;min-height:48px!important}
-.java-program-panel .program-header h2{font-size:17px!important;line-height:1!important;margin:2px 0 0!important}
-.java-program-panel .program-header .small-cap{font-size:8px!important;line-height:1!important}
-.java-program-panel .java-header-actions{gap:6px!important;align-items:center!important}
-.java-program-panel .java-version-badge{padding:5px 7px!important;font-size:8px!important;line-height:1!important}
-.java-program-panel .clear-btn{padding:5px 7px!important;font-size:8px!important;margin:0!important}
 .java-program-panel .workspace-switcher{min-height:34px!important;padding:0 8px!important}
 .java-program-panel .workspace-tabs{min-height:34px!important;align-items:end!important}
 .java-program-panel .workspace-tab{min-height:29px!important;height:29px!important;padding:0 10px!important;font-size:9px!important}

@@ -1,16 +1,6 @@
 window.ByteOfficeComponents = window.ByteOfficeComponents || {};
 window.ByteOfficeComponents.programPanel = String.raw`
 <aside class="program-panel java-program-panel">
-<div class="program-header">
-<div>
-<span class="small-cap">BYTEBOT CONTROL</span>
-<h2>Java Program</h2>
-</div>
-<div class="java-header-actions">
-<span class="java-version-badge">Java 8</span>
-<button class="clear-btn" id="clearBtn">Reset Code</button>
-</div>
-</div>
 <div aria-label="Java source editor" class="program-list java-program-list" id="programList"></div>
 <div class="command-tray java-api-tray" id="commandTray">
 <div class="tray-head">

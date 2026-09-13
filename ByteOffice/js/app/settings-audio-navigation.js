@@ -39,14 +39,46 @@ function syncDeveloperSettingsForViewport(){
 }
 syncDeveloperSettingsForViewport();
 window.addEventListener('resize',syncDeveloperSettingsForViewport,{passive:true});
-function resetProgress(){
-  if(!window.confirm('Reset all completed levels, stars, best scores and campaign history? Saved drafts will remain.')) return;
-  completed=[];
-  localStorage.setItem('byteOfficeCompletedV17','[]');
-  metaStore={}; saveMeta();
-  refreshHome();
-  if(currentPage==='map') showRoadmap();
-  sfx('target');
+async function resetProgress(){
+  const cloud=window.byteOfficeCloud, user=cloud?.currentUser;
+  if(!user) return;
+  if(!window.confirm('Permanently reset all Byte Office progress for this account? This clears cloud progress, completed levels, scores, history and saved drafts.')) return;
+
+  const button=$('#resetProgressBtn'), status=$('#resetProgressStatus');
+  if(button){ button.disabled=true; button.textContent='Resetting…'; }
+  if(status) status.textContent='Clearing your cloud and local progress…';
+  try{
+    await cloud.resetProgress();
+    stopRun?.();
+    completed=[];
+    metaStore={};
+    workspaceStore={};
+    levelIndex=0;
+    workspaceIndex=0;
+    program=[];
+    selectedRow=null;
+    undoStack=[];
+    redoStack=[];
+    breakpoints=new Set();
+    breakpointResumePc=null;
+    answerMode=false;
+    hasLoadedLevel=false;
+    localStorage.removeItem('byteOfficeCompletedV17');
+    localStorage.removeItem(META_STORAGE_KEY);
+    localStorage.removeItem(WORKSPACE_STORAGE_KEY);
+    localStorage.removeItem('byteOfficeIdeMaximized');
+    delete window.byteOfficeLastRunStars;
+    refreshHome();
+    if(currentPage==='map') showRoadmap();
+    if(status) status.textContent='Progress and saved drafts were reset locally and in the cloud.';
+    sfx('target');
+  }catch(err){
+    console.warn('Byte Office progress reset failed',err);
+    if(status) status.textContent='Reset failed. Nothing was cleared locally; check your connection and try again.';
+    sfx('invalid');
+  }finally{
+    if(button){ button.disabled=false; button.textContent='Reset'; }
+  }
 }
 function audioContext(){
   if(!window.AudioContext) return null;

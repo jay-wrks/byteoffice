@@ -3,7 +3,7 @@ window.addEventListener('pointerdown',unlockAudio,{once:true,capture:true});
 window.addEventListener('keydown',unlockAudio,{once:true,capture:true});
 document.addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b || b.disabled) return;
-  if(!b.matches('#runBtn,#stepBtn,#pauseBtn,#resetBtn,#clearBtn,.command-btn,.program-row button')) sfx('ui');
+  if(!b.matches('#runBtn,#stepBtn,#pauseBtn,#resetBtn,.command-btn,.program-row button')) sfx('ui');
 },true);
 
 $("#runBtn").addEventListener("click",()=>window.startRun?.());
@@ -11,7 +11,6 @@ $("#runBtn").addEventListener("click",()=>window.startRun?.());
 // exactly one physical ByteBot action instead of restarting Program.java.
 $("#stepBtn").addEventListener("click",async()=>{ await window.stepOnce?.(); });
 $("#pauseBtn").addEventListener("click",()=>window.pause?.()); $("#resetBtn").addEventListener("click",()=>window.resetMachine?.());
-$("#clearBtn").addEventListener("click",()=>{ if(animating) return; commitEdit(); stopRun(); program=[]; selectedRow=null; renderProgram(); resetMachine(); saveWorkspace(); });
 $("#homeBtn").addEventListener("click",()=>goHome());
 $("#levelBtn").addEventListener("click",()=>openRoadmap('game')); $("#dashboardBtn").addEventListener("click",showDashboard); $("#achievementsBtn").addEventListener("click",showAchievements); $("#helpBtn").addEventListener("click",showHelp); $("#hintBtn").addEventListener("click",showHint);
 document.addEventListener("click",e=>{
