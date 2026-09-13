@@ -959,7 +959,15 @@ public final class GameRunner {
       oldLoadLevel(index);
       const bucket=workspaceBucket(level().id);
       const slot=bucket.slots[workspaceIndex]||[];
-      if(!slot.some(x=>x?.op==='JAVA' && typeof x.source==='string' && x.source.trim())){
+      // Level 3's guide is a fresh pair-swap lesson. Do not let a saved draft
+      // reappear when the Java wrapper finishes initializing the editor.
+      if(Number(level()?.id)===3){
+        assignSource(starterSource());
+        bucket.slots[workspaceIndex]=cloneProgram();
+        saveWorkspace(false);
+        renderProgram();
+        resetMachine(false);
+      }else if(!slot.some(x=>x?.op==='JAVA' && typeof x.source==='string' && x.source.trim())){
         assignSource(starterSource()); bucket.slots[workspaceIndex]=cloneProgram(); saveWorkspace(false); renderProgram(); resetMachine(false);
       }
       renderPalette(); refreshWorkspaceTabs();
