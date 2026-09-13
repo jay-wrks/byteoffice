@@ -371,3 +371,70 @@ async function animateTransition(r){
   visualState={...r.after,input:[...r.after.input],output:[...r.after.output],memory:[...r.after.memory]};
 }
 
+// Replays the same physical animation pipeline inside an isolated API detail
+// preview. The live level refs are temporarily swapped for the cloned scene,
+// then restored so opening an API card never changes the real machine.
+window.playByteBotApiPreview=async function(action,host){
+  if(!host||typeof animateTransition!=='function'||!els.workerWrap) return;
+  const sourceScene=els.scene?.cloneNode?.(true);
+  if(!sourceScene) return;
+  sourceScene.id='javaApiPreviewScene';
+  sourceScene.style.cssText='position:absolute;inset:0;width:100%;height:100%;min-height:0;display:grid;';
+  sourceScene.querySelectorAll('[id]').forEach(node=>node.removeAttribute('id'));
+  sourceScene.classList.add('factory-scene');
+  host.replaceChildren(sourceScene);
+
+  const previewEls={
+    scene:sourceScene,
+    workerWrap:sourceScene.querySelector('.worker-wrap'),
+    worker:sourceScene.querySelector('.worker'),
+    inbox:sourceScene.querySelector('.inbox-zone .boxes'),
+    outbox:sourceScene.querySelector('.outbox-zone .boxes'),
+    memory:sourceScene.querySelector('.memory-grid'),
+    held:sourceScene.querySelector('.held-card'),
+    steps:document.createElement('span'),
+    footer:document.createElement('span'),
+    lamp:document.createElement('span'),
+    status:document.createElement('span')
+  };
+  if(!previewEls.workerWrap||!previewEls.inbox||!previewEls.outbox||!previewEls.memory||!previewEls.held) return;
+  previewEls.workerWrap.style.cssText='';
+  // API cards include memory commands even when the current level has no
+  // memory slots, so the sample always has one illustrative Slot A.
+  if(!previewEls.memory.querySelector('[data-i="0"]')){
+    const tile=document.createElement('div'); tile.className='memory-tile'; tile.dataset.i='0';
+    tile.innerHTML='<span class="memory-slot-label">A</span><div class="memory-box" aria-label="Floor slot A"></div>';
+    previewEls.memory.replaceChildren(tile);
+  }
+  const saved={};
+  ['scene','workerWrap','worker','inbox','outbox','memory','held','steps','footer','lamp','status'].forEach(key=>{saved[key]=els[key];els[key]=previewEls[key];});
+  const empty={input:[],output:[],memory:[null],held:null,steps:0,pc:-1};
+  const held={input:[],output:[],memory:[null],held:7,steps:1,pc:-1};
+  const stored={input:[],output:[],memory:[7],held:7,steps:1,pc:-1};
+  const placed={input:[],output:[],memory:[7],held:null,steps:1,pc:-1};
+  const sent={input:[],output:[7],memory:[null],held:null,steps:1,pc:-1};
+  let before=empty, after=empty, event='jump', op='';
+  if(action==='take'){before={...empty,input:[7]};after=held;event='read';op='READ';}
+  else if(action==='send'){before=held;after=sent;event='write';op='WRITE';}
+  else if(action==='copyto'){before=held;after=stored;event='store';op='STORE';}
+  else if(action==='copyfrom'){before={...empty,memory:[7]};after=held;event='load';op='LOAD';}
+  else if(action==='place'){before=held;after=placed;event='place';op='PLACE';}
+  else if(action==='pick'){before={...empty,memory:[7]};after=held;event='take';op='TAKE';}
+  else if(action==='add'||action==='subtract'){
+    before={...held,memory:[2]}; after={...held,held:action==='add'?9:5,memory:[2]}; event='math'; op=action==='add'?'ADD':'SUB';
+  }
+  try{
+    document.body.classList.add('java-api-preview-active');
+    resetPhysicalScene(before);
+    placeWorkerHome(true);
+    if(event==='jump'){
+      setPose('thinking');
+      await showThoughtBubble('Checking the machine state…',{kind:action==='hasnext'?'think':'calc',duration:760});
+      setPose('');
+    }else await animateTransition({status:'ok',event,before,after,executedPc:-1,instruction:{op,arg:0}});
+  }finally{
+    clearTransientBoxes();
+    document.body.classList.remove('java-api-preview-active');
+    ['scene','workerWrap','worker','inbox','outbox','memory','held','steps','footer','lamp','status'].forEach(key=>{els[key]=saved[key];});
+  }
+};

@@ -356,10 +356,18 @@ public final class GameRunner {
   };
 
   function showJavaApiDetails(item){
+    const action=(item.signature.match(/bot\.([A-Za-z]+)/)||[])[1]?.toLowerCase()||'thinking';
     showModal(`<div class="java-api-detail">
       <div class="java-api-detail-kicker">BYTEBOT API</div>
       <h2><code>${escapeHtml(item.signature)}</code></h2>
       <p class="java-api-detail-summary">${escapeHtml(item.summary)}</p>
+      <div class="java-api-demo" data-api-action="${escapeHtml(action)}">
+        <div class="java-api-demo-label">LIVE BYTE SAMPLE</div>
+        <div class="java-api-demo-stage" id="javaApiDemoStage">
+          <div id="javaApiBotPreview" aria-label="Animated ByteBot command sample"></div>
+        </div>
+        <small>Byte demonstrates the physical effect of this command.</small>
+      </div>
       <div class="java-api-detail-grid">
         <div><span>RETURNS</span><strong>${escapeHtml(item.returns)}</strong></div>
         <div><span>CHANGES</span><strong>${escapeHtml(item.changes)}</strong></div>
@@ -371,6 +379,7 @@ public final class GameRunner {
       <div class="java-api-detail-example"><span>EXAMPLE</span><code>${escapeHtml(item.example)}</code></div>
       <button type="button" class="modal-primary" id="javaApiDetailClose">Close API details</button>
     </div>`);
+    window.playByteBotApiPreview?.(action,document.querySelector('#javaApiBotPreview'));
     document.querySelector('#javaApiDetailClose')?.addEventListener('click',()=>closeModal(),{once:true});
   }
 

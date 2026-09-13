@@ -42,6 +42,22 @@
 .java-api-detail-example{display:flex;flex-direction:column;gap:8px;padding:12px;background:#fff2cd;border:1px dashed #8f8267}
 .java-api-detail-example code{font:13px/1.45 "DM Mono",monospace;color:#8d3f34;white-space:pre-wrap}
 .java-api-detail #javaApiDetailClose{align-self:flex-start;margin-top:2px}
+.java-api-demo{padding:10px;background:#30342f;border:2px solid #5d674f;color:#e9dfc2}
+.java-api-demo-label{font:800 9px/1 "DM Mono",monospace;letter-spacing:.14em;color:#d8bd6a;margin-bottom:7px}
+.java-api-demo-stage{height:320px;position:relative;overflow:hidden;background:#5c594f;border:1px solid #1f231e}
+.java-api-demo-stage .factory-scene{position:absolute;inset:0;height:100%!important;min-height:0!important;width:100%;display:grid;grid-template-columns:72px 1fr 72px;background:linear-gradient(90deg,#716d61 0 72px,#a6a08c 72px calc(100% - 72px),#716d61 calc(100% - 72px))}
+.java-api-demo-stage .factory-scene .conveyor{padding:9px 6px}.java-api-demo-stage .zone-label{font-size:7px;padding:4px 5px;margin-bottom:8px}.java-api-demo-stage .value-box{width:42px;height:31px;font-size:13px}.java-api-demo-stage .boxes{gap:5px}
+.java-api-demo-stage .work-floor{padding:12px 5px}.java-api-demo-stage .memory-title{font-size:7px;margin-top:18px}.java-api-demo-stage .memory-grid{gap:5px;margin-top:5px}.java-api-demo-stage .memory-tile{width:42px;height:36px}.java-api-demo-stage .memory-tile span{font-size:7px}.java-api-demo-stage .memory-tile b{font-size:14px}
+.java-api-demo-stage .worker-wrap{transform:scale(.48)!important;transform-origin:50% 88%}.java-api-demo-stage .worker-wrap{z-index:12}
+.java-api-demo-stage .value-box,.java-api-demo-stage .memory-box.has-value,.java-api-demo-stage .held-card.has-value{opacity:1!important;visibility:visible!important;color:#252522!important;text-shadow:none!important}
+.java-api-demo-stage .value-box,.java-api-demo-stage .memory-box.has-value{font-family:"DM Mono",monospace;font-weight:800}
+.java-api-demo-stage .memory-box{width:42px!important;height:31px!important;font-size:13px!important}
+/* The worker is scaled for the compact stage, so compensate the carried
+   tile; its visible footprint should match every floor/conveyor tile. */
+.java-api-demo-stage .held-card{left:-20px!important;top:65px!important;width:87px!important;height:65px!important;font-size:35px!important}
+.java-api-preview-active .transfer-box,.java-api-preview-active .copy-transfer-box,.java-api-preview-active .math-stage-v8 .math-operand{width:42px!important;height:31px!important;font:800 13px/1 "DM Mono",monospace!important}
+.java-api-demo-stage .java-api-preview-label{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:20;color:#eee1bd;font:800 8px "DM Mono",monospace;letter-spacing:.1em;white-space:nowrap}
+.java-api-demo-stage+small{display:block;margin-top:7px;color:#cfc5a8;font-size:10px;line-height:1.35}
 .java-api-tray.collapsed .java-api-palette,.java-api-tray.collapsed .tray-subtitle{display:none!important}
 .java-api-tray.collapsed{max-height:none}
 .java-program-panel.answer-mode .java-editor{pointer-events:auto;opacity:1}
