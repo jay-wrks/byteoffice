@@ -4,6 +4,7 @@
   const originalSwitchWorkspace=window.switchWorkspace;
   const originalSaveSettings=window.saveSettings;
   let savedTransitionSpeed=null;
+  let switchRequest=0;
 
   function setTransitionSpeedMax(){
     const speed=document.querySelector('#speedRange');
@@ -32,7 +33,7 @@
   function setJavaAnswerControls(on){
     document.querySelector('.program-panel')?.classList.toggle('answer-mode',!!on);
     ['clearBtn','undoBtn','redoBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!!on;});
-    ['formatBtn','shareBtn','testBtn','runBtn','stepBtn','pauseBtn','resetBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=false;});
+    ['formatBtn','shareBtn','testBtn','runBtn','stepBtn','pauseBtn','resetBtn'].forEach(id=>{const el=document.getElementById(id);if(el && !(id==='runBtn' && window.byteOfficeCompiling))el.disabled=false;});
     try{window.ByteOfficeIDE?.editor?.updateOptions({readOnly:!!on,domReadOnly:!!on});}catch(_){}
   }
 
@@ -102,9 +103,11 @@
   }
 
   window.switchWorkspace=async function(next){
+    const request=++switchRequest;
     if((next==='answer' && typeof answerMode!=='undefined' && answerMode) ||
        (next!=='answer' && (typeof answerMode==='undefined'||!answerMode) && parseInt(next,10)===workspaceIndex)) return;
     await resetBeforeWorkspaceChange();
+    if(request!==switchRequest) return;
     if(next==='answer') return enterAnswer();
     return returnToDraft(next);
   };

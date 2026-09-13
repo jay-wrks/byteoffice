@@ -104,7 +104,11 @@ function saveWorkspace(showState=true){
   const l=levels[levelIndex]; if(!l) return;
   const bucket=workspaceBucket(l.id);
   bucket.active=workspaceIndex;
-  bucket.slots[workspaceIndex]=cloneProgram();
+  // Copy the live entries directly so Java source text is preserved. The
+  // legacy command clone only copied op/arg and silently dropped `source`.
+  bucket.slots[workspaceIndex]=Array.isArray(program)
+    ? program.map(entry=>({...entry}))
+    : [];
   workspaceStore.lastLevel=levelIndex;
   try {
     localStorage.setItem(WORKSPACE_STORAGE_KEY,JSON.stringify(workspaceStore));
@@ -157,7 +161,7 @@ function setAnswerModeControls(on){
   document.querySelector('.program-panel')?.classList.toggle('answer-mode',on);
   // Answer is read-only for editing, but it runs through the exact same machine pipeline.
   ['clearBtn','undoBtn','redoBtn'].forEach(id=>{const el=$("#"+id); if(el) el.disabled=on;});
-  ['formatBtn','shareBtn','testBtn','runBtn','stepBtn','pauseBtn','resetBtn'].forEach(id=>{const el=$("#"+id); if(el) el.disabled=false;});
+  ['formatBtn','shareBtn','testBtn','runBtn','stepBtn','pauseBtn','resetBtn'].forEach(id=>{const el=$("#"+id); if(el && !(id==='runBtn' && window.byteOfficeCompiling)) el.disabled=false;});
   document.querySelectorAll('.command-card').forEach(b=>b.disabled=on);
 }
 function renderAnswerProgram(){
@@ -201,7 +205,7 @@ function switchWorkspace(next){
   if(!answerMode) saveWorkspace(false);
   stopRun(); answerMode=false; setAnswerModeControls(false); setCommandTrayCollapsed(draftCommandTrayCollapsed,{remember:false}); workspaceIndex=next;
   const bucket=workspaceBucket(level().id); bucket.active=workspaceIndex;
-  program=(bucket.slots[workspaceIndex]||[]).map(x=>({op:x.op,arg:x.arg}));
+  program=(bucket.slots[workspaceIndex]||[]).map(x=>({...x}));
   loadBreakpoints();
   selectedRow=null; undoStack=[]; redoStack=[]; renderProgram(); resetMachine(false); refreshWorkspaceTabs(); saveWorkspace();
   els.footer.textContent=`Worktree ${String.fromCharCode(65+workspaceIndex)} loaded. Changes save automatically.`;
@@ -223,7 +227,7 @@ function loadLevel(index){
   stopRun(); levelIndex = index; selectedRow = null; undoStack = []; redoStack = [];
   const l = level();
   const bucket=workspaceBucket(l.id); workspaceIndex=bucket.active; answerMode=false; setAnswerModeControls(false); setCommandTrayCollapsed(draftCommandTrayCollapsed,{remember:false});
-  program=(bucket.slots[workspaceIndex]||[]).map(x=>({op:x.op,arg:x.arg}));
+  program=(bucket.slots[workspaceIndex]||[]).map(x=>({...x}));
   loadBreakpoints();
   els.levelNumber.textContent = `LEVEL ${String(l.id).padStart(2,"0")}`;
   els.levelTitle.textContent = l.title; els.levelStory.textContent = l.story; els.levelObjective.textContent = l.objective;

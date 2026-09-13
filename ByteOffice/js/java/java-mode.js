@@ -94,7 +94,6 @@ public final class GameRunner {
   let lastCompileMs=null;
   let lastRunMs=null;
   let runStartedAt=null;
-  let editTimer=null;
   let compileTimer=null;
   let compileJob=null;
   let lastCompileDiagnostics='';
@@ -225,6 +224,42 @@ public final class GameRunner {
     el.title=`Last compile: ${formatDuration(lastCompileMs)} · Last run: ${formatDuration(lastRunMs)}`;
   }
 
+  function setCompileUi(pending){
+    const run=document.querySelector('#runBtn');
+    window.byteOfficeCompiling=!!pending;
+    if(!run) return;
+    if(!run.dataset.readyLabel) run.dataset.readyLabel=run.innerHTML;
+    const state=pending?'compiling':'ready';
+    const changed=run.dataset.compileState!==state;
+    const generation=(setCompileUi.generation||0)+1;
+    setCompileUi.generation=generation;
+    clearTimeout(setCompileUi.timer);
+    clearTimeout(setCompileUi.widthTimer);
+    run.disabled=!!pending;
+    run.classList.toggle('is-compiling',!!pending);
+    run.setAttribute('aria-busy',pending?'true':'false');
+    run.dataset.compileState=state;
+    const content=pending
+      ? '<span class="run-button-content"><span class="run-loading-spinner" aria-hidden="true"></span> COMPILING…</span>'
+      : `<span class="run-button-content">${run.dataset.readyLabel}</span>`;
+    if(changed){
+      const from=run.getBoundingClientRect().width;
+      run.style.width=`${from}px`;
+      run.innerHTML=content;
+      run.style.width='auto';
+      const to=run.getBoundingClientRect().width;
+      run.style.width=`${from}px`;
+      run.classList.remove('compile-state-transition');
+      void run.offsetWidth;
+      run.classList.add('compile-state-transition');
+      requestAnimationFrame(()=>{if(setCompileUi.generation===generation)run.style.width=`${to}px`;});
+      setCompileUi.timer=setTimeout(()=>{if(setCompileUi.generation===generation)run.classList.remove('compile-state-transition');},240);
+      setCompileUi.widthTimer=setTimeout(()=>{if(setCompileUi.generation===generation)run.style.width='';},260);
+    }else{
+      run.innerHTML=content;
+    }
+  }
+
   function highlightJavaLine(line){
     activeJavaLine=Number.isFinite(+line)?+line:-1;
     const gutter=document.querySelector('#javaLineNumbers');
@@ -274,13 +309,10 @@ public final class GameRunner {
       compiledSource=null;
       updateLineNumbers();
       if(els.size) els.size.textContent=botCallCount();
-      if(editTimer) clearTimeout(editTimer);
-      editTimer=setTimeout(()=>{
-        if(javaUndo[javaUndo.length-1]!==old) javaUndo.push(old);
-        if(javaUndo.length>80) javaUndo.shift();
-        javaRedo.length=0;
-        saveWorkspace(); updateEditorButtons();
-      },300);
+      if(javaUndo[javaUndo.length-1]!==old) javaUndo.push(old);
+      if(javaUndo.length>80) javaUndo.shift();
+      javaRedo.length=0;
+      saveWorkspace(); updateEditorButtons();
       scheduleCompile();
     });
     if(els.size) els.size.textContent=botCallCount();
@@ -566,6 +598,7 @@ public final class GameRunner {
 
   async function compileSource(source,{quiet=false}={}){
     const startedAt=performance.now();
+    setCompileUi(true);
     updateTimingStatus('compile');
     try{
       await ensureJavaRuntime();
@@ -607,10 +640,11 @@ public final class GameRunner {
 
   async function compileCurrentSource(force=false,{showError=false,quiet=false}={}){
     const source=sourceFromProgram();
-    if(!force && compiledSource===source){ updateTimingStatus(); return true; }
+    if(!force && compiledSource===source){ setCompileUi(false); updateTimingStatus(); return true; }
     if(compileJob){
       const result=await compileJob;
       if(sourceFromProgram()!==source) return compileCurrentSource(false,{showError,quiet});
+      setCompileUi(false);
       if(!result&&showError) showCompileErrorPopup(lastCompileDiagnostics);
       return result;
     }
@@ -620,6 +654,7 @@ public final class GameRunner {
     try{ result=await job; }
     finally{ if(compileJob===job) compileJob=null; }
     if(sourceFromProgram()!==source) return compileCurrentSource(false,{showError,quiet});
+    setCompileUi(false);
     if(!result&&showError) showCompileErrorPopup(lastCompileDiagnostics);
     return result;
   }
@@ -633,6 +668,7 @@ public final class GameRunner {
         if(pending&&typeof pending.then==='function') await pending;
         await compileCurrentSource(false,{quiet:true});
       }catch(err){
+        setCompileUi(false);
         setStatus('READY','ready');
         updateJavaStatus('Editing · compile on Run','idle');
         els.footer.textContent='Java source changed. Click RUN to check compilation.';

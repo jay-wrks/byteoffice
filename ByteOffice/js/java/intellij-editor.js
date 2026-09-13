@@ -4,7 +4,7 @@
   // Monaco is vendored into the repository so the IDE does not depend on a CDN.
   const APP_BASE=window.__BYTE_OFFICE_ASSET_BASE__||new URL('./',document.baseURI||window.location.href).href;
   const MONACO=new URL('libs/monaco/vs/',APP_BASE).href.replace(/\/$/,'');
-  let editor=null, model=null, textarea=null, decorations=[], loading=null, pendingExecutionLine=-1, scrollAnimation=0, executionMarker=null, executionMarkerLine=-1;
+  let editor=null, model=null, textarea=null, decorations=[], loading=null, pendingExecutionLine=-1, scrollAnimation=0, executionMarker=null, executionMarkerLine=-1, mountGeneration=0;
 
   function positionExecutionMarker(line, animate){
     if(!executionMarker||!editor||!Number.isInteger(line)||line<1) return;
@@ -106,7 +106,7 @@
       <div class="byte-ide-tabbar"><div class="byte-ide-tab active" id="ideFileTab"><span>Program.java</span><i class="dirty" aria-hidden="true"></i></div></div>
       <div class="byte-ide-breadcrumb"><span>ByteOffice</span><i>›</i><span>src</span><i>›</i><span>Program.java</span><i>›</i><b>program(ByteBot bot)</b></div>
       <div class="byte-monaco-wrap"><div id="byteMonaco" class="byte-monaco"></div><div id="byteIdeLoading" class="byte-ide-loading">Loading Java IDE…</div></div>
-      <div class="byte-ide-status"><span>ByteOffice Java IDE</span><span id="ideTiming" title="Compilation and execution timings">Compile — · Run —</span><span id="ideCursor">Ln 1, Col 1</span><span>Spaces: 4</span><span>UTF-8</span><span>Java 8</span></div>
+    <div class="byte-ide-status"><span id="ideTiming" title="Compilation and execution timings">Compile — · Run —</span><span id="ideCursor">Ln 1, Col 1</span><span>Spaces: 4</span><span>UTF-8</span><span>Java 8</span></div>
     </div>`;
   }
 
@@ -137,7 +137,7 @@
     monaco.editor.setModelMarkers(model,'byteoffice-live',markers);
   }
 
-  async function mountEditor(){
+  async function mountEditor(generation=mountGeneration){
     const host=document.querySelector('#programList');
     if(!host) return;
     textarea=host.querySelector('#javaEditor');
@@ -163,13 +163,14 @@
     host.insertAdjacentHTML('beforeend',chrome());
 
     const monaco=await loadMonaco();
+    if(generation!==mountGeneration || !textarea.isConnected) return;
     defineTheme(monaco);registerCompletions(monaco);
     model=monaco.editor.createModel(initial,'java',monaco.Uri.parse('inmemory://byteoffice/Program.java'));
     const mount=document.querySelector('#byteMonaco');
     if(!mount) throw new Error('ByteOffice Monaco mount element is missing.');
 
     editor=monaco.editor.create(mount,{
-      model,theme:'byteoffice-darcula',readOnly:false,domReadOnly:false,automaticLayout:true,fontSize:13,fontFamily:'DM Mono, Menlo, Monaco, Consolas, monospace',fontLigatures:false,
+      model,theme:'byteoffice-darcula',readOnly:!!window.answerMode,domReadOnly:!!window.answerMode,automaticLayout:true,fontSize:13,fontFamily:'DM Mono, Menlo, Monaco, Consolas, monospace',fontLigatures:false,
       // Portal Monaco widgets so autocomplete and hover cards cannot be
       // clipped or painted underneath the neighboring floor panel.
       fixedOverflowWidgets:true,overflowWidgetsDomNode:overflowHost(),
@@ -280,6 +281,9 @@
       },
       clearExecution(){cancelAnimationFrame(scrollAnimation);if(decorations.length) decorations=editor.deltaDecorations(decorations,[]);executionMarkerLine=-1;if(executionMarker){executionMarker.hidden=true;executionMarker.style.transition='none';}}
     };
+    // Answer.java can be mounted after the tab switch has already happened.
+    // Re-apply the mode here so the newly created Monaco instance is locked.
+    editor.updateOptions({readOnly:!!window.answerMode,domReadOnly:!!window.answerMode});
     document.querySelector('.java-program-panel')?.classList.remove('byte-workspace-switching');
     window.dispatchEvent(new Event('byteoffice-ide-ready'));
     window.ByteOfficeJava?.scheduleCompile?.(0);
@@ -293,10 +297,11 @@
   const oldRender=window.renderProgram;
   if(typeof oldRender==='function'){
     window.renderProgram=function(){
+      const generation=++mountGeneration;
       if(editor){editor.dispose();model?.dispose();executionMarker?.remove();executionMarker=null;executionMarkerLine=-1;editor=null;model=null;window.ByteOfficeIDE=null;}
       oldRender.apply(this,arguments);
       document.querySelector('#programList .java-editor-shell')?.classList.add('byte-monaco-pending');
-      queueMicrotask(()=>mountEditor().catch(err=>{console.error('ByteOffice IDE failed:',err);const host=document.querySelector('#programList');if(host){const ta=host.querySelector('#javaEditor');if(ta){ta.classList.remove('byte-java-source-bridge');ta.style.display='block';}}}));
+      queueMicrotask(()=>mountEditor(generation).catch(err=>{if(generation!==mountGeneration)return;console.error('ByteOffice IDE failed:',err);const host=document.querySelector('#programList');if(host){const ta=host.querySelector('#javaEditor');if(ta){ta.classList.remove('byte-java-source-bridge');ta.style.display='block';}}}));
     };
   }
 
@@ -307,5 +312,5 @@
     if(window.ByteOfficeIDE&&Number.isFinite(n)&&n>0) window.ByteOfficeIDE.highlightLine(n);
   };
 
-  if(document.querySelector('#javaEditor')) mountEditor().catch(console.error);
+  if(document.querySelector('#javaEditor')) mountEditor(mountGeneration).catch(console.error);
 })();
