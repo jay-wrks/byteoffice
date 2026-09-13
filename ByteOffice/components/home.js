@@ -4,15 +4,17 @@ window.ByteOfficeComponents.home = String.raw`
 <div aria-hidden="true" class="home-backdrop-grid"></div>
 <div class="home-desk">
 <div class="home-brand-row">
-${window.ByteOfficeHeadAvatar.markup('home-brand-mark')}
 <div><span class="home-kicker">DEPARTMENT OF TINY PROGRAMS <span class="site-version">· v1.0.0</span></span><h1>BYTE OFFICE</h1></div>
 </div>
 <div class="home-file-card">
 <div class="home-file-tab">EMPLOYEE TERMINAL</div>
+<div class="home-resume-brief">
+${window.ByteOfficeHeadAvatar.markup('home-assignment-bot')}
 <div class="home-resume-copy">
 <span id="homeProgressLabel">CURRENT ASSIGNMENT</span>
 <h2 id="homeLevelTitle">Level 01 · Mail Room</h2>
 <p id="homeLevelSummary">Your saved worktrees and progress are ready.</p>
+</div>
 </div>
 <div class="home-actions">
 <button class="home-primary" id="homeResumeBtn" disabled><span>▶</span><b>Start assignment</b><small>Restoring your Google session…</small></button>
