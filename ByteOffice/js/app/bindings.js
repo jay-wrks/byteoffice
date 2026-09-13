@@ -1,4 +1,4 @@
-const unlockAudio=()=>{ audioContext(); if(settings.music) startMusic(); };
+const unlockAudio=()=>{ audioUnlocked=true; audioContext(); if(settings.music) startMusic(); };
 window.addEventListener('pointerdown',unlockAudio,{once:true,capture:true});
 window.addEventListener('keydown',unlockAudio,{once:true,capture:true});
 document.addEventListener('click',e=>{

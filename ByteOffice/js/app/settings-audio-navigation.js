@@ -1,3 +1,4 @@
+let audioUnlocked=false;
 function favoriteSet(){ return new Set(metaStore.favorites||[]); }
 function toggleFavorite(id){ const f=favoriteSet(); f.has(id)?f.delete(id):f.add(id); metaStore.favorites=[...f]; saveMeta(); showRoadmap(); }
 
@@ -49,6 +50,7 @@ function resetProgress(){
 }
 function audioContext(){
   if(!window.AudioContext) return null;
+  if(!audioUnlocked) return null;
   const ctx=audioContext.ctx||(audioContext.ctx=new AudioContext());
   if(ctx.state==='suspended') ctx.resume().catch(()=>{});
   return ctx;

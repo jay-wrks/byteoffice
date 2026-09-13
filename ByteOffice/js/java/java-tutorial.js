@@ -180,7 +180,9 @@
     positionShield(rect,pad);
     const margin=16, gap=18, cardRect=card.getBoundingClientRect(), cardWidth=cardRect.width, cardHeight=cardRect.height;
     let left=rect.left, top=rect.bottom+gap, placement='below';
-    if(rect.width>cardWidth*1.35&&rect.right+gap+cardWidth<=window.innerWidth-margin){left=rect.right+gap;top=rect.top;placement='right';}
+    const preferLeft=currentStep()?.target==='#byteMonaco';
+    if(preferLeft&&rect.left-cardWidth-gap>=margin){left=rect.left-cardWidth-gap;top=rect.top;placement='left';}
+    else if(rect.width>cardWidth*1.35&&rect.right+gap+cardWidth<=window.innerWidth-margin){left=rect.right+gap;top=rect.top;placement='right';}
     else if(top+cardHeight>window.innerHeight-margin&&rect.top-cardHeight-gap>=margin){top=rect.top-cardHeight-gap;placement='above';}
     else if(top+cardHeight>window.innerHeight-margin){top=window.innerHeight-cardHeight-margin;}
     left=Math.max(margin,Math.min(window.innerWidth-cardWidth-margin,left));
