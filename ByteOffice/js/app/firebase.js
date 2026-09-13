@@ -10,8 +10,8 @@
     appId:'1:444843895218:web:9cac8134442e1172e3dcab'
   };
 
-  const status=$('#homeAuthStatus'), authTitle=$('#homeAuthTitle'), authKicker=$('#homeAuthKicker'), authButton=$('#homeAuthBtn'), resumeButton=$('#homeResumeBtn'), leaderboardList=$('#homeLeaderboardList');
-  if(!status||!authButton||!leaderboardList) return;
+  const status=$('#homeAuthStatus'), authTitle=$('#homeAuthTitle'), authKicker=$('#homeAuthKicker'), authButton=$('#homeAuthBtn'), resumeButton=$('#homeResumeBtn'), consolidatedList=$('#homeLeaderboardTop3'), leaderboardLists={stars:$('#homeLeaderboardStars'),steps:$('#homeLeaderboardSteps'),actions:$('#homeLeaderboardActions')};
+  if(!status||!authButton||!consolidatedList||!leaderboardLists.stars||!leaderboardLists.steps||!leaderboardLists.actions) return;
 
   function startFirebase(){
     // Firebase scripts are deferred so they do not block the game shell. Keep
@@ -22,14 +22,20 @@
   const app=firebase.initializeApp(firebaseConfig);
   const auth=firebase.auth(app), db=firebase.firestore(app);
   const provider=new firebase.auth.GoogleAuthProvider();
+  const LEADERBOARD_CACHE_KEY='byteOfficeLeaderboardCacheV2';
+  const LEADERBOARD_CACHE_TTL=5*60*1000;
+  const leaderboardRequests={};
+  const leaderboardRowsByFilter={stars:null,steps:null,actions:null};
   let currentUser=null;
 
   function cloudStats(){
     const levelMetaValues=Object.values(metaStore.levels||{});
     return {
       completedLevels:completed.length,
+      totalStars:levelMetaValues.reduce((n,m)=>n+(m.sizeStar?1:0)+(m.stepStar?1:0),0),
       totalSteps:levelMetaValues.reduce((n,m)=>n+(Number.isFinite(m.bestSteps)?m.bestSteps:0),0),
       totalSize:levelMetaValues.reduce((n,m)=>n+(Number.isFinite(m.bestSize)?m.bestSize:0),0),
+      hasScore:completed.length>0,
       updatedAt:firebase.firestore.FieldValue.serverTimestamp()
     };
   }
@@ -139,13 +145,92 @@
     }finally{ authButton.disabled=false; }
   }
 
-  async function renderLeaderboardPreview(){
+  const leaderboardModes={
+    stars:{rule:'STARS · CLEARS',where:true,primary:['totalStars','desc'],secondary:['completedLevels','desc'],metric:row=>[row.totalStars||0,'stars']},
+    steps:{rule:'STEPS · CLEARS',where:true,primary:['totalSteps','asc'],secondary:['completedLevels','desc'],metric:row=>[row.totalSteps||0,'steps']},
+    actions:{rule:'ACTIONS · CLEARS',where:true,primary:['totalSize','asc'],secondary:['completedLevels','desc'],metric:row=>[row.totalSize||0,'actions']}
+  };
+
+  function readLeaderboardCache(filter){
     try{
-      const snap=await db.collection('userInfo').orderBy('completedLevels','desc').orderBy('totalSteps','asc').limit(15).get();
-      const rows=snap.docs.map(doc=>doc.data());
-      if(!rows.length){ leaderboardList.innerHTML='<p class="home-leaderboard-loading">No operators have posted a score yet.</p>'; return; }
-      leaderboardList.innerHTML=rows.map((row,i)=>`<div class="home-leaderboard-row"><b>${String(i+1).padStart(2,'0')}</b>${avatarMarkup(row.displayName,row.photoURL,'leaderboard-avatar')}<span title="${escapeHtml(row.displayName||'Anonymous operator')}">${escapeHtml(row.displayName||'Anonymous operator')}</span><strong>${row.completedLevels||0}</strong><small>${row.totalSteps||0}</small></div>`).join('');
-    }catch(_){ leaderboardList.innerHTML='<p class="home-leaderboard-loading">Standings will appear here soon.</p>'; }
+      const cache=JSON.parse(localStorage.getItem(LEADERBOARD_CACHE_KEY)||'{}');
+      const entry=cache?.[filter];
+      if(!entry||!Array.isArray(entry.rows)) return null;
+      return {rows:entry.rows,fresh:Date.now()-Number(entry.savedAt||0)<LEADERBOARD_CACHE_TTL};
+    }catch(_){ return null; }
+  }
+
+  function writeLeaderboardCache(filter,rows){
+    try{
+      const cache=JSON.parse(localStorage.getItem(LEADERBOARD_CACHE_KEY)||'{}');
+      cache[filter]={savedAt:Date.now(),rows};
+      localStorage.setItem(LEADERBOARD_CACHE_KEY,JSON.stringify(cache));
+    }catch(_){ /* Caching is optional and must never block the leaderboard. */ }
+  }
+
+  function renderLeaderboardRows(rows,mode,list){
+    if(!rows.length){ list.innerHTML='<p class="home-leaderboard-loading">No operators have posted a score yet.</p>'; return; }
+    list.innerHTML=rows.map((row,i)=>{const [value,label]=mode.metric(row);return `<div class="home-leaderboard-row"><b>${String(i+1).padStart(2,'0')}</b>${avatarMarkup(row.displayName,row.photoURL,'leaderboard-avatar')}<span title="${escapeHtml(row.displayName||'Anonymous operator')}">${escapeHtml(row.displayName||'Anonymous operator')}</span><strong>${value}</strong><small>${label}</small></div>`;}).join('');
+  }
+
+  function renderConsolidatedLeaderboard(){
+    if(Object.values(leaderboardRowsByFilter).some(rows=>rows===null)){
+      consolidatedList.innerHTML='<p class="home-leaderboard-loading">Building the combined ranking…</p>';
+      return;
+    }
+    const labels={stars:'Stars',steps:'Steps',actions:'Actions'};
+    const totals=new Map();
+    Object.entries(leaderboardRowsByFilter).forEach(([filter,rows])=>rows.forEach((row,index)=>{
+      if(!row.uid) return;
+      const entry=totals.get(row.uid)||{...row,points:0,boards:0,ranks:{}};
+      entry.points+=15-index;
+      entry.boards++;
+      entry.ranks[filter]=index+1;
+      totals.set(row.uid,entry);
+    }));
+    const top=[...totals.values()].sort((a,b)=>b.points-a.points||b.boards-a.boards||b.totalStars-a.totalStars||b.completedLevels-a.completedLevels||a.totalSteps-b.totalSteps||a.totalSize-b.totalSize).slice(0,3);
+    if(!top.length){ consolidatedList.innerHTML='<p class="home-leaderboard-loading">No operators have posted enough scores yet.</p>'; return; }
+    consolidatedList.innerHTML=top.map((row,index)=>{
+      const boardRanks=Object.entries(labels).filter(([filter])=>row.ranks[filter]).map(([filter,label])=>`${label} #${row.ranks[filter]}`).join(' · ');
+      return `<div class="home-top3-row"><b class="home-top3-place">${String(index+1).padStart(2,'0')}</b>${avatarMarkup(row.displayName,row.photoURL,'home-top3-avatar')}<span class="home-top3-identity"><strong>${escapeHtml(row.displayName||'Anonymous operator')}</strong><small>${row.points} ranking points · ${boardRanks}</small></span><em>${row.points}<small>PTS</small></em></div>`;
+    }).join('');
+  }
+
+  async function renderLeaderboardPreview(filter='stars'){
+    const mode=leaderboardModes[filter]||leaderboardModes.stars;
+    const leaderboardList=leaderboardLists[filter];
+    const cached=readLeaderboardCache(filter);
+    if(cached){
+      leaderboardRowsByFilter[filter]=cached.rows;
+      renderConsolidatedLeaderboard();
+      renderLeaderboardRows(cached.rows,mode,leaderboardList);
+      if(cached.fresh) return;
+    }else leaderboardList.innerHTML='<p class="home-leaderboard-loading">Loading standings…</p>';
+    if(leaderboardRequests[filter]) return leaderboardRequests[filter];
+    leaderboardRequests[filter]=(async()=>{
+      try{
+        let query=db.collection('userInfo');
+        if(mode.where) query=query.where('hasScore','==',true);
+        const snap=await query.orderBy(mode.primary[0],mode.primary[1]).orderBy(mode.secondary[0],mode.secondary[1]).limit(15).get();
+        const rows=snap.docs.map(doc=>{const row=doc.data();return {
+          uid:doc.id,
+          displayName:typeof row.displayName==='string'?row.displayName:'Anonymous operator',
+          photoURL:safePhotoUrl(row.photoURL),
+          completedLevels:Number.isInteger(row.completedLevels)?row.completedLevels:0,
+          totalStars:Number.isInteger(row.totalStars)?row.totalStars:0,
+          totalSteps:Number.isInteger(row.totalSteps)?row.totalSteps:0,
+          totalSize:Number.isInteger(row.totalSize)?row.totalSize:0
+        };});
+        writeLeaderboardCache(filter,rows);
+        leaderboardRowsByFilter[filter]=rows;
+        renderConsolidatedLeaderboard();
+        renderLeaderboardRows(rows,mode,leaderboardList);
+      }catch(_){
+        if(!cached){ leaderboardRowsByFilter[filter]=[]; renderConsolidatedLeaderboard(); }
+        if(!cached) leaderboardList.innerHTML='<p class="home-leaderboard-loading">Standings will appear here soon.</p>';
+      }finally{ delete leaderboardRequests[filter]; }
+    })();
+    return leaderboardRequests[filter];
   }
 
   authButton.addEventListener('click',()=>currentUser?auth.signOut():signIn());
@@ -162,7 +247,7 @@
 
   window.byteOfficeCloud={auth,db,get currentUser(){return currentUser;},syncCloudProgress};
   window.byteOfficeRequireAuth=()=>{ if(currentUser) return true; showAuthGate(); return false; };
-  renderLeaderboardPreview();
+  Object.keys(leaderboardModes).forEach(filter=>renderLeaderboardPreview(filter));
   }
 
   startFirebase();

@@ -11,10 +11,13 @@ service cloud.firestore {
         && request.auth.uid == uid
         && request.resource.data.uid == uid
         && request.resource.data.displayName is string
+        && request.resource.data.hasScore is bool
+        && request.resource.data.totalStars is int
         && request.resource.data.completedLevels is int
         && request.resource.data.totalSteps is int
         && request.resource.data.totalSize is int
         && request.resource.data.completedLevels >= 0
+        && request.resource.data.totalStars >= 0
         && request.resource.data.totalSteps >= 0
         && request.resource.data.totalSize >= 0;
       allow delete: if false;
