@@ -169,7 +169,7 @@
   }
 
   function renderLeaderboardRows(rows,mode,list){
-    if(!rows.length){ list.innerHTML='<p class="home-leaderboard-loading">No operators have posted a score yet.</p>'; return; }
+    if(!rows.length){ list.innerHTML='<p class="home-leaderboard-loading">No players have posted a score yet.</p>'; return; }
     list.innerHTML=rows.map((row,i)=>{const [value,label]=mode.metric(row);return `<div class="home-leaderboard-row"><b>${String(i+1).padStart(2,'0')}</b>${avatarMarkup(row.displayName,row.photoURL,'leaderboard-avatar')}<span title="${escapeHtml(row.displayName||'Anonymous operator')}">${escapeHtml(row.displayName||'Anonymous operator')}</span><strong>${value}</strong><small>${label}</small></div>`;}).join('');
   }
 
@@ -189,7 +189,7 @@
       totals.set(row.uid,entry);
     }));
     const top=[...totals.values()].sort((a,b)=>b.points-a.points||b.boards-a.boards||b.totalStars-a.totalStars||b.completedLevels-a.completedLevels||a.totalSteps-b.totalSteps||a.totalSize-b.totalSize).slice(0,3);
-    if(!top.length){ consolidatedList.innerHTML='<p class="home-leaderboard-loading">No operators have posted enough scores yet.</p>'; return; }
+    if(!top.length){ consolidatedList.innerHTML='<p class="home-leaderboard-loading">No players have posted enough scores yet.</p>'; return; }
     consolidatedList.innerHTML=top.map((row,index)=>{
       const boardRanks=Object.entries(labels).filter(([filter])=>row.ranks[filter]).map(([filter,label])=>`${label} #${row.ranks[filter]}`).join(' · ');
       return `<div class="home-top3-row"><b class="home-top3-place">${String(index+1).padStart(2,'0')}</b>${avatarMarkup(row.displayName,row.photoURL,'home-top3-avatar')}<span class="home-top3-identity"><strong>${escapeHtml(row.displayName||'Anonymous operator')}</strong><small>${row.points} ranking points · ${boardRanks}</small></span><em>${row.points}<small>PTS</small></em></div>`;
