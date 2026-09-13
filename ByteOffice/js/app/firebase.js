@@ -22,6 +22,9 @@
   const app=firebase.initializeApp(firebaseConfig);
   const auth=firebase.auth(app), db=firebase.firestore(app);
   const provider=new firebase.auth.GoogleAuthProvider();
+  // Local test mode bypasses the UI gate only on loopback hosts. It never
+  // creates a Firebase user and never changes production authentication.
+  const localTestMode=window.__BYTE_OFFICE_LOCAL_TEST_MODE__===true;
   const LEADERBOARD_CACHE_KEY='byteOfficeLeaderboardCacheV2';
   const LEADERBOARD_CACHE_TTL=5*60*1000;
   const leaderboardRequests={};
@@ -119,6 +122,19 @@
       if(authAvatar) authAvatar.outerHTML=avatarMarkup(user.displayName,user.photoURL,'home-profile-avatar is-visible','homeAuthAvatar');
       setAuthButtonLabel('Sign out');
       authButton.classList.add('is-signed-in');
+      if(resumeHint) resumeHint.textContent=hasStarted?'Continue your saved assignment':'Start your first assignment';
+      if(resumeButton) resumeButton.disabled=false;
+      if(mapButton){ mapButton.disabled=false; const mapHint=mapButton.querySelector('small'); if(mapHint) mapHint.textContent='Browse the assignment roadmap'; }
+    }else if(localTestMode){
+      authKicker.textContent='LOCAL TEST MODE';
+      authTitle.textContent='Development player';
+      status.textContent='Authentication bypassed on localhost';
+      renderAuthStats(cloudStats());
+      authStats?.removeAttribute('hidden');
+      const authAvatar=$('#homeAuthAvatar');
+      if(authAvatar) authAvatar.outerHTML=avatarMarkup('Local test player','', 'home-profile-avatar is-visible','homeAuthAvatar');
+      setAuthButtonLabel('Sign in with Google');
+      authButton.classList.remove('is-signed-in');
       if(resumeHint) resumeHint.textContent=hasStarted?'Continue your saved assignment':'Start your first assignment';
       if(resumeButton) resumeButton.disabled=false;
       if(mapButton){ mapButton.disabled=false; const mapHint=mapButton.querySelector('small'); if(mapHint) mapHint.textContent='Browse the assignment roadmap'; }
@@ -268,7 +284,7 @@
   });
 
   window.byteOfficeCloud={auth,db,get currentUser(){return currentUser;},syncCloudProgress};
-  window.byteOfficeRequireAuth=()=>{ if(currentUser) return true; showAuthGate(); return false; };
+  window.byteOfficeRequireAuth=()=>{ if(currentUser||localTestMode) return true; showAuthGate(); return false; };
   Object.keys(leaderboardModes).forEach(filter=>renderLeaderboardPreview(filter));
   }
 

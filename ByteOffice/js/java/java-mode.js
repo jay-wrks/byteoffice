@@ -86,6 +86,7 @@ public final class GameRunner {
   let javaMachine=null;
   let expectedOutput=[];
   let javaRuntimePromise=null;
+  let compilerJarPromise=null;
   let compiledSource=null;
   let execution=null;
   let headless=false;
@@ -208,6 +209,30 @@ public final class GameRunner {
     runtimeMessage=text;
     const el=document.querySelector('#javaRuntimeStatus');
     if(el){ el.textContent=text; el.dataset.kind=kind; }
+  }
+
+  function showJavaLoadingScreen(message){
+    const curtain=document.querySelector('#pageCurtain');
+    const label=document.querySelector('#curtainLabel');
+    if(!curtain||!label) return;
+    label.textContent=message;
+    curtain.dataset.javaLoading='true';
+    curtain.setAttribute('aria-hidden','false');
+    curtain.classList.remove('leaving');
+    curtain.classList.add('active','entering');
+  }
+
+  function hideJavaLoadingScreen(){
+    const curtain=document.querySelector('#pageCurtain[data-java-loading="true"]');
+    if(!curtain) return;
+    curtain.classList.remove('entering');
+    curtain.classList.add('leaving');
+    setTimeout(()=>{
+      if(curtain.dataset.javaLoading!=='true') return;
+      curtain.classList.remove('active','leaving');
+      curtain.setAttribute('aria-hidden','true');
+      delete curtain.dataset.javaLoading;
+    },300);
   }
 
   function formatDuration(ms){
@@ -512,21 +537,45 @@ public final class GameRunner {
   async function ensureJavaRuntime(){
     if(javaRuntimePromise) return javaRuntimePromise;
     javaRuntimePromise=(async()=>{
-      updateJavaStatus('Loading Java 8 JVM…','loading');
+      updateJavaStatus('Downloading Java runtime…','loading');
+      showJavaLoadingScreen('Downloading Java runtime…');
       if(typeof cheerpjInit!=='function') throw new Error('CheerpJ loader is unavailable. Serve ByteOffice over HTTP/HTTPS and check your connection.');
-      // Keep normal application assets local, but resolve CheerpJ's /app/
-      // filesystem from the external runtime host. This keeps the large JVM,
-      // WASM files and tools.jar out of Firebase Hosting.
-      const runtimeBase=window.__BYTE_OFFICE_JAVA_RUNTIME_BASE__||window.__BYTE_OFFICE_ASSET_BASE__||new URL('./',document.baseURI||window.location.href).href;
-      await cheerpjInit({version:8,status:'none',natives,overrideDocumentBase:runtimeBase});
+      // The JVM and WASM assets are served by CheerpJ's external CDN, while
+      // the compiler archive is mounted separately below.
+      await cheerpjInit({version:8,status:'none',natives});
       updateJavaStatus('Java compiler ready','ready');
       return true;
     })().catch(err=>{
       javaRuntimePromise=null;
+      hideJavaLoadingScreen();
       updateJavaStatus('JVM failed','error');
       throw err;
     });
     return javaRuntimePromise;
+  }
+
+  async function ensureCompilerJar(){
+    if(compilerJarPromise) return compilerJarPromise;
+    compilerJarPromise=(async()=>{
+      updateJavaStatus('Downloading Java compiler…','loading');
+      showJavaLoadingScreen('Downloading Java compiler…');
+      const compilerBase=window.__BYTE_OFFICE_JAVA_COMPILER_BASE__||window.__BYTE_OFFICE_JAVA_RUNTIME_BASE__||window.__BYTE_OFFICE_ASSET_BASE__||new URL('./',document.baseURI||window.location.href).href;
+      const compilerAsset=new URL('java/tools.jar',compilerBase).href;
+      const response=await fetch(compilerAsset,{cache:'force-cache'});
+      if(!response.ok) throw new Error(`Java compiler asset is unavailable (${compilerAsset}). Check the external Java runtime CDN.`);
+      // The /app mount follows the page origin, which is intentionally not
+      // where the hosted compiler jar lives. Copy the external jar into the
+      // CheerpJ string filesystem so the compiler works on local and hosted
+      // builds with the same virtual classpath.
+      const bytes=new Uint8Array(await response.arrayBuffer());
+      cheerpOSAddStringFile('/str/byteoffice-tools.jar',bytes);
+      return true;
+    })().catch(err=>{
+      compilerJarPromise=null;
+      hideJavaLoadingScreen();
+      throw err;
+    });
+    return compilerJarPromise;
   }
 
   function mountSources(source){
@@ -548,12 +597,12 @@ public final class GameRunner {
   }
 
   async function runJavaCompiler(){
-    const runtimeBase=window.__BYTE_OFFICE_JAVA_RUNTIME_BASE__||window.__BYTE_OFFICE_ASSET_BASE__||new URL('./',document.baseURI||window.location.href).href;
-    const compilerAsset=new URL('java/tools.jar',runtimeBase).href;
-    const assetCheck=await fetch(compilerAsset,{method:'HEAD',cache:'no-store'}).catch(()=>null);
-    if(!assetCheck?.ok){
-      throw new Error(`Java compiler asset is unavailable (${compilerAsset}). Check the external Java runtime CDN.`);
-    }
+    // Some valid static CDNs reject HEAD requests even though the jar is
+    // available to CheerpJ. Fetch the archive into /str/ once instead.
+    await ensureCompilerJar();
+    hideJavaLoadingScreen();
+    updateJavaStatus('Compiling Program.java…','loading');
+    els.footer.textContent='Compiling your Java source inside the browser…';
     const original={log:console.log,warn:console.warn,error:console.error};
     const diagnostics=[];
     const capture=(method)=>(...args)=>{
@@ -567,9 +616,9 @@ public final class GameRunner {
     try{
       const exit=await cheerpjRunMain(
         'com.sun.tools.javac.Main',
-        '/app/ByteOffice/java/tools.jar:/files/',
-        '-g:lines,source','-d','/files',
-        '/str/byteoffice/ByteBot.java','/str/byteoffice/GameRunner.java','/str/Program.java'
+        '/str/byteoffice-tools.jar:/files/',
+        '/str/byteoffice/ByteBot.java','/str/byteoffice/GameRunner.java','/str/Program.java',
+        '-d','/files/','-Xlint'
       );
       return {exit,diagnostics:[...new Set(diagnostics)].join('\n')};
     }finally{
@@ -602,8 +651,6 @@ public final class GameRunner {
     updateTimingStatus('compile');
     try{
       await ensureJavaRuntime();
-      updateJavaStatus('Compiling Program.java…','loading');
-      els.footer.textContent='Compiling your Java source inside the browser…';
       mountSources(instrumentJavaSource(source));
       const result=await runJavaCompiler();
       if(result.exit!==0) return finishCompileFailure(startedAt,result.diagnostics,quiet);

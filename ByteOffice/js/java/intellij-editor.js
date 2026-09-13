@@ -286,7 +286,6 @@
     editor.updateOptions({readOnly:!!window.answerMode,domReadOnly:!!window.answerMode});
     document.querySelector('.java-program-panel')?.classList.remove('byte-workspace-switching');
     window.dispatchEvent(new Event('byteoffice-ide-ready'));
-    window.ByteOfficeJava?.scheduleCompile?.(0);
     if(pendingExecutionLine>0){
       const line=pendingExecutionLine;
       pendingExecutionLine=-1;
