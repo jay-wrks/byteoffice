@@ -10,7 +10,7 @@
     appId:'1:444843895218:web:9cac8134442e1172e3dcab'
   };
 
-  const status=$('#homeAuthStatus'), authTitle=$('#homeAuthTitle'), authKicker=$('#homeAuthKicker'), authButton=$('#homeAuthBtn'), resumeButton=$('#homeResumeBtn'), consolidatedList=$('#homeLeaderboardTop3'), leaderboardLists={stars:$('#homeLeaderboardStars'),steps:$('#homeLeaderboardSteps'),actions:$('#homeLeaderboardActions')};
+  const status=$('#homeAuthStatus'), authTitle=$('#homeAuthTitle'), authKicker=$('#homeAuthKicker'), authStats=$('#homeAuthStats'), authButton=$('#homeAuthBtn'), resumeButton=$('#homeResumeBtn'), consolidatedList=$('#homeLeaderboardTop3'), leaderboardLists={stars:$('#homeLeaderboardStars'),steps:$('#homeLeaderboardSteps'),actions:$('#homeLeaderboardActions')};
   if(!status||!authButton||!consolidatedList||!leaderboardLists.stars||!leaderboardLists.steps||!leaderboardLists.actions) return;
 
   function startFirebase(){
@@ -26,6 +26,7 @@
   const LEADERBOARD_CACHE_TTL=5*60*1000;
   const leaderboardRequests={};
   const leaderboardRowsByFilter={stars:null,steps:null,actions:null};
+  const googleMark='<svg class="google-mark" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.24-.16-1.82H9v3.44h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.91c1.7-1.57 2.69-3.88 2.69-6.6Z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.2l-2.91-2.26c-.8.54-1.82.86-3.05.86-2.35 0-4.34-1.59-5.05-3.72H.94v2.33A9 9 0 0 0 0 9c0 1.45.35 2.82.94 4.01l3.01-2.33Z"/><path fill="#FBBC05" d="M3.95 10.68A5.4 5.4 0 0 1 3.67 9c0-.58.1-1.15.28-1.68V4.99H.94A9 9 0 0 0 0 9c0 1.45.35 2.82.94 4.01l3.01-2.33Z"/><path fill="#EA4335" d="M9 3.6c1.32 0 2.5.45 3.43 1.34l2.57-2.57C13.46.92 11.42 0 9 0A9 9 0 0 0 .94 4.99l3.01 2.33C4.66 5.19 6.65 3.6 9 3.6Z"/></svg>';
   let currentUser=null;
 
   function cloudStats(){
@@ -45,6 +46,18 @@
       const url=new URL(value||'');
       return /^https?:$/.test(url.protocol)?url.href:'';
     }catch(_){ return ''; }
+  }
+
+  function setAuthButtonLabel(label){
+    authButton.innerHTML=`${googleMark}<span>${escapeHtml(label)}</span>`;
+  }
+
+  function renderAuthStats(stats){
+    if(!authStats) return;
+    Object.entries(stats||{}).forEach(([key,value])=>{
+      const target=authStats.querySelector(`[data-stat="${key}"]`);
+      if(target&&Number.isFinite(value)) target.textContent=String(value);
+    });
   }
 
   function initials(name){
@@ -100,9 +113,11 @@
       authKicker.textContent='SIGNED IN AS';
       authTitle.textContent=user.displayName||'Google player';
       status.textContent='Ready for your next assignment';
+      renderAuthStats(cloudStats());
+      authStats?.removeAttribute('hidden');
       const authAvatar=$('#homeAuthAvatar');
       if(authAvatar) authAvatar.outerHTML=avatarMarkup(user.displayName,user.photoURL,'home-profile-avatar is-visible','homeAuthAvatar');
-      authButton.textContent='Sign out';
+      setAuthButtonLabel('Sign out');
       authButton.classList.add('is-signed-in');
       if(resumeHint) resumeHint.textContent=hasStarted?'Continue your saved assignment':'Start your first assignment';
       if(resumeButton) resumeButton.disabled=false;
@@ -110,9 +125,10 @@
       authKicker.textContent='GOOGLE ACCOUNT REQUIRED';
       authTitle.textContent='Sign in to unlock the game';
       status.textContent='Google sign-in required · no guest mode';
+      authStats?.setAttribute('hidden','');
       const authAvatar=$('#homeAuthAvatar');
       if(authAvatar) authAvatar.outerHTML=avatarMarkup('', '', 'home-profile-avatar is-visible','homeAuthAvatar');
-      authButton.textContent='Sign in with Google';
+      setAuthButtonLabel('Sign in with Google');
       authButton.classList.remove('is-signed-in');
       if(resumeHint) resumeHint.textContent=hasStarted?'Sign in with Google to continue':'Sign in with Google to begin';
       if(resumeButton) resumeButton.disabled=true;
@@ -182,17 +198,19 @@
     const totals=new Map();
     Object.entries(leaderboardRowsByFilter).forEach(([filter,rows])=>rows.forEach((row,index)=>{
       if(!row.uid) return;
-      const entry=totals.get(row.uid)||{...row,points:0,boards:0,ranks:{}};
-      entry.points+=15-index;
+      const entry=totals.get(row.uid)||{...row,points:0,boards:0,ranks:{},boardPoints:{}};
+      const boardPoints=15-index;
+      entry.points+=boardPoints;
       entry.boards++;
       entry.ranks[filter]=index+1;
+      entry.boardPoints[filter]=boardPoints;
       totals.set(row.uid,entry);
     }));
-    const top=[...totals.values()].sort((a,b)=>b.points-a.points||b.boards-a.boards||b.totalStars-a.totalStars||b.completedLevels-a.completedLevels||a.totalSteps-b.totalSteps||a.totalSize-b.totalSize).slice(0,3);
+    const top=[...totals.values()].sort((a,b)=>b.points-a.points||b.boards-a.boards||b.totalStars-a.totalStars||b.completedLevels-a.completedLevels||a.totalSteps-b.totalSteps||a.totalSize-b.totalSize).slice(0,5);
     if(!top.length){ consolidatedList.innerHTML='<p class="home-leaderboard-loading">No players have posted enough scores yet.</p>'; return; }
     consolidatedList.innerHTML=top.map((row,index)=>{
-      const boardRanks=Object.entries(labels).filter(([filter])=>row.ranks[filter]).map(([filter,label])=>`${label} #${row.ranks[filter]}`).join(' · ');
-      return `<div class="home-top3-row"><b class="home-top3-place">${String(index+1).padStart(2,'0')}</b>${avatarMarkup(row.displayName,row.photoURL,'home-top3-avatar')}<span class="home-top3-identity"><strong>${escapeHtml(row.displayName||'Anonymous player')}</strong><small>${row.points} ranking points · ${boardRanks}</small></span><em>${row.points}<small>PTS</small></em></div>`;
+      const boardScores=Object.entries(labels).map(([filter,label])=>{const rank=row.ranks[filter],placeClass=rank&&rank<=3?` is-place-${rank}`:'';return `<span class="home-top3-board-score${rank?'':' is-empty'}${placeClass}"><b>${label}${rank?` #${rank}`:''}</b><small>${rank?`${row.boardPoints[filter]} pts`:'—'}</small></span>`;}).join('');
+      return `<div class="home-top3-row"><b class="home-top3-place">${String(index+1).padStart(2,'0')}</b>${avatarMarkup(row.displayName,row.photoURL,'home-top3-avatar')}<span class="home-top3-identity"><strong>${escapeHtml(row.displayName||'Anonymous player')}</strong></span>${boardScores}<em>${row.points}<small>PTS</small></em></div>`;
     }).join('');
   }
 
@@ -214,7 +232,7 @@
         const snap=await query.orderBy(mode.primary[0],mode.primary[1]).orderBy(mode.secondary[0],mode.secondary[1]).limit(15).get();
         const rows=snap.docs.map(doc=>{const row=doc.data();return {
           uid:doc.id,
-          displayName:typeof row.displayName==='string'?row.displayName:'Anonymous operator',
+          displayName:typeof row.displayName==='string'?row.displayName:'Anonymous player',
           photoURL:safePhotoUrl(row.photoURL),
           completedLevels:Number.isInteger(row.completedLevels)?row.completedLevels:0,
           totalStars:Number.isInteger(row.totalStars)?row.totalStars:0,
@@ -241,6 +259,7 @@
     try{
       const snap=await db.collection('userInfo').doc(user.uid).get();
       mergeCloudProgress(snap.exists?snap.data():null);
+      renderAuthStats(cloudStats());
       await syncCloudProgress();
     }catch(err){ status.textContent='Signed in · cloud sync unavailable'; console.warn('Byte Office cloud sync failed',err); }
   });
