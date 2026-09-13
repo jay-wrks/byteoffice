@@ -68,7 +68,7 @@ public void program(ByteBot bot) {
 
 There is no Byte Office application server.
 
-The browser loads CheerpJ 4.3 and starts a Java 8 JVM in WebAssembly. The bundled `java/tools.jar` compiler runs inside CheerpJ. Byte Office writes these sources into that filesystem:
+The browser loads CheerpJ 4.3 and starts a Java 8 JVM in WebAssembly. CheerpJ and the `java/tools.jar` compiler are served from the pinned project CDN revision `73de0b2`, while the game UI and application code are served by Firebase Hosting. Byte Office writes these sources into that filesystem:
 
 - the player's `Program.java`
 - the protected `byteoffice.ByteBot` API
@@ -94,9 +94,9 @@ Then open:
 http://localhost:8080
 ```
 
-No Node build, backend API, Docker container or Java installation is required on the player's computer.
+No Node build, backend API, Docker container or Java installation is required on the player's computer. The first Java-mode launch downloads the external runtime; the browser then caches those immutable CDN assets.
 
-An internet connection is currently required to load the CheerpJ runtime from its CDN.
+An internet connection is required to load the CheerpJ runtime and compiler from the CDN. Firebase deployment intentionally excludes `libs/cheerpj/` and `java/`; the deployment script removes those generated copies before publishing.
 
 ## Java execution model
 

@@ -514,11 +514,11 @@ public final class GameRunner {
     javaRuntimePromise=(async()=>{
       updateJavaStatus('Loading Java 8 JVM…','loading');
       if(typeof cheerpjInit!=='function') throw new Error('CheerpJ loader is unavailable. Serve ByteOffice over HTTP/HTTPS and check your connection.');
-      // Byte Office may be hosted below a path such as /ByteOffice/.
-      // Resolve CheerpJ's /app/ filesystem from this app directory so local
-      // assets such as java/tools.jar are found on Firebase Hosting.
-      const appBase=window.__BYTE_OFFICE_ASSET_BASE__||new URL('./',document.baseURI||window.location.href).href;
-      await cheerpjInit({version:8,status:'none',natives,overrideDocumentBase:appBase});
+      // Keep normal application assets local, but resolve CheerpJ's /app/
+      // filesystem from the external runtime host. This keeps the large JVM,
+      // WASM files and tools.jar out of Firebase Hosting.
+      const runtimeBase=window.__BYTE_OFFICE_JAVA_RUNTIME_BASE__||window.__BYTE_OFFICE_ASSET_BASE__||new URL('./',document.baseURI||window.location.href).href;
+      await cheerpjInit({version:8,status:'none',natives,overrideDocumentBase:runtimeBase});
       updateJavaStatus('Java compiler ready','ready');
       return true;
     })().catch(err=>{
@@ -548,11 +548,11 @@ public final class GameRunner {
   }
 
   async function runJavaCompiler(){
-    const appBase=window.__BYTE_OFFICE_ASSET_BASE__||new URL('./',document.baseURI||window.location.href).href;
-    const compilerAsset=new URL('java/tools.jar',appBase).href;
+    const runtimeBase=window.__BYTE_OFFICE_JAVA_RUNTIME_BASE__||window.__BYTE_OFFICE_ASSET_BASE__||new URL('./',document.baseURI||window.location.href).href;
+    const compilerAsset=new URL('java/tools.jar',runtimeBase).href;
     const assetCheck=await fetch(compilerAsset,{method:'HEAD',cache:'no-store'}).catch(()=>null);
     if(!assetCheck?.ok){
-      throw new Error(`Java compiler asset is unavailable (${compilerAsset}). Deploy the complete project root, including java/tools.jar.`);
+      throw new Error(`Java compiler asset is unavailable (${compilerAsset}). Check the external Java runtime CDN.`);
     }
     const original={log:console.log,warn:console.warn,error:console.error};
     const diagnostics=[];

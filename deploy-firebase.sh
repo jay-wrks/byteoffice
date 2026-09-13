@@ -11,6 +11,12 @@ cp -aT /home/jay/works/ByteOffice/ByteOffice /home/jay/works/JayDsaGames/public/
 echo "└─ ✅ ByteOffice/ copied"
 echo ""
 
+echo "┌─ 🪶 Removing external Java runtime assets from Hosting"
+rm -rf /home/jay/works/JayDsaGames/public/ByteOffice/libs/cheerpj
+rm -rf /home/jay/works/JayDsaGames/public/ByteOffice/java
+echo "└─ ✅ CheerpJ + tools.jar will be served by the external CDN"
+echo ""
+
 echo "┌─ 📄 Copying ByteOffice.html"
 cp -f /home/jay/works/ByteOffice/ByteOffice.html /home/jay/works/JayDsaGames/public/ByteOffice.html
 echo "└─ ✅ ByteOffice.html copied"
