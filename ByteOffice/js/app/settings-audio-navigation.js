@@ -127,7 +127,7 @@ function refreshHome(){
   if(resumeButton){
     const label=resumeButton.querySelector('b'), hint=resumeButton.querySelector('small');
     if(label) label.textContent=hasStarted?'Resume work':'Start assignment';
-    if(hint && !window.byteOfficeCloud?.currentUser && !window.__BYTE_OFFICE_LOCAL_TEST_MODE__) hint.textContent=hasStarted?'Sign in with Google to continue':'Sign in with Google to begin';
+    if(hint && !window.byteOfficeCloud?.currentUser) hint.textContent=hasStarted?'Sign in with Google to continue':'Sign in with Google to begin';
   }
   if(els.homeLevelTitle) els.homeLevelTitle.textContent=`Level ${String(l.id).padStart(2,'0')} · ${l.title}`;
   if(els.homeLevelSummary){ const bucket=workspaceBucket(l.id), count=(bucket.slots||[]).reduce((n,x)=>n+(x&&x.length?1:0),0); els.homeLevelSummary.textContent=count?`${count} saved worktree${count===1?'':'s'} ready. Continue exactly where you stopped.`:'No instructions saved yet. Start this assignment when you are ready.'; }
