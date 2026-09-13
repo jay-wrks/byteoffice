@@ -6,7 +6,7 @@ window.ByteOfficeComponents.gameShell = String.raw`
 <div class="brand-mark">B</div>
 <div>
 <div class="brand-name">BYTE OFFICE</div>
-<div class="brand-sub">Department of Tiny Programs</div>
+<div class="brand-sub">Department of Tiny Programs <span class="site-version">· v1.0.0</span></div>
 </div>
 </div>
 <div class="top-actions">

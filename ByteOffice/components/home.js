@@ -5,7 +5,7 @@ window.ByteOfficeComponents.home = String.raw`
 <div class="home-desk">
 <div class="home-brand-row">
 <div class="home-brand-mark">B</div>
-<div><span class="home-kicker">DEPARTMENT OF TINY PROGRAMS</span><h1>BYTE OFFICE</h1></div>
+<div><span class="home-kicker">DEPARTMENT OF TINY PROGRAMS <span class="site-version">· v1.0.0</span></span><h1>BYTE OFFICE</h1></div>
 </div>
 <div class="home-file-card">
 <div class="home-file-tab">EMPLOYEE TERMINAL</div>
