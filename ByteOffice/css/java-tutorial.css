@@ -1,0 +1,39 @@
+/* Guided onboarding ------------------------------------------------------ */
+#byteGuideLayer{position:fixed;inset:0;z-index:21000;pointer-events:none}
+#byteGuideFocus{position:fixed;z-index:1;border:2px solid #e8c96f;border-radius:5px;box-shadow:0 0 0 9999px rgba(8,11,8,.68),0 0 0 5px rgba(232,201,111,.18),0 0 26px rgba(232,201,111,.62);pointer-events:none;transition:left .24s ease,top .24s ease,width .24s ease,height .24s ease}
+.byte-guide-card{position:fixed;z-index:2;width:min(382px,calc(100vw - 32px));padding:15px;background:#efe3c4;color:#28271f;border:4px solid #3f3d35;box-shadow:8px 9px 0 rgba(0,0,0,.45);pointer-events:auto;animation:byteGuideIn .24s cubic-bezier(.2,.8,.2,1) both}
+.byte-guide-card[data-placement=below]::before,.byte-guide-card[data-placement=above]::after,.byte-guide-card[data-placement=right]::before{content:"";position:absolute;width:13px;height:13px;background:#efe3c4;border-left:3px solid #3f3d35;border-top:3px solid #3f3d35;transform:rotate(45deg)}
+.byte-guide-card[data-placement=below]::before{left:29px;top:-10px}
+.byte-guide-card[data-placement=above]::after{left:29px;bottom:-10px;transform:rotate(225deg)}
+.byte-guide-card[data-placement=right]::before{left:-10px;top:29px;transform:rotate(-45deg)}
+.byte-guide-head{display:flex;align-items:flex-start;gap:11px;padding-bottom:12px;border-bottom:1px solid #b5a584}
+.byte-guide-bot{position:relative;flex:0 0 48px;width:48px;height:48px;background:#6f815f;border:3px solid #30362c;box-shadow:3px 3px 0 #8e7952;transform:rotate(-3deg)}
+.byte-guide-bot::before{content:"B";position:absolute;inset:7px 0 0;color:#f6e8c5;text-align:center;font:800 24px/1 "Special Elite",serif}
+.byte-guide-bot::after{content:"•  •";position:absolute;left:8px;top:7px;color:#252b24;font:900 8px/1 "DM Mono",monospace;letter-spacing:5px}
+.byte-guide-kicker{display:block;color:#8c6b2f;font:800 9px/1.2 "DM Mono",monospace;letter-spacing:.16em}
+.byte-guide-card h2{margin:5px 0 0;font:22px/1.1 "Special Elite",serif;color:#312d24}
+.byte-guide-copy{padding:12px 2px 3px;font-size:13px;line-height:1.48}
+.byte-guide-copy p{margin:0}
+.byte-guide-copy code{display:inline-block;margin:7px 0 2px;padding:6px 8px;background:#292d27;color:#f2d98e;border:1px solid #5a634e;font:700 12px/1.35 "DM Mono",monospace;white-space:pre}
+.byte-guide-progress{display:flex;align-items:center;gap:7px;margin-top:11px;color:#756b57;font:800 8px "DM Mono",monospace;letter-spacing:.1em}
+.byte-guide-progress i{display:block;height:5px;flex:1;background:#c7b992;overflow:hidden}
+.byte-guide-progress i::after{content:"";display:block;width:var(--guide-progress);height:100%;background:#6f815f}
+.byte-guide-feedback{min-height:16px;margin-top:7px;color:#9b493b;font:700 9px/1.35 "DM Mono",monospace}
+.byte-guide-actions{display:flex;align-items:center;gap:9px;margin-top:7px;min-height:42px}
+.byte-guide-next,.byte-guide-skip{min-height:42px;border:2px solid #34392f;cursor:pointer;font-weight:800}
+.byte-guide-next{flex:1;padding:9px 12px;background:#6f815f;color:#fff1cf;box-shadow:3px 3px 0 #34392f}
+.byte-guide-next:disabled{opacity:.9;cursor:wait;background:#58654f;color:#e8e5d2}
+.byte-guide-next:disabled::before{content:"";display:inline-block;width:11px;height:11px;margin-right:8px;border:2px solid rgba(255,241,207,.35);border-top-color:#fff1cf;border-radius:50%;vertical-align:-2px;animation:byteGuideSpin .72s linear infinite}
+.byte-guide-card[data-mode=live]{border-color:#cfae5e;box-shadow:8px 9px 0 rgba(0,0,0,.45),0 0 28px rgba(232,201,111,.16)}
+.byte-guide-card[data-mode=live] .byte-guide-kicker::before{content:"LIVE  ";color:#6f815f}
+.byte-guide-card[data-mode=compile] .byte-guide-kicker::before{content:"WAIT  ";color:#9b493b}
+.byte-guide-card[data-mode=error]{border-color:#9b493b}
+.byte-guide-next:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #34392f}
+.byte-guide-skip{padding:8px 10px;background:transparent;color:#665d4c;font:700 9px "DM Mono",monospace}
+.byte-guide-next:focus-visible,.byte-guide-skip:focus-visible{outline:3px solid #b36b3c;outline-offset:2px}
+.byte-guide-card.shake{animation:byteGuideShake .26s ease both}
+@keyframes byteGuideIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes byteGuideShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@keyframes byteGuideSpin{to{transform:rotate(360deg)}}
+@media(max-width:760px){.byte-guide-card{padding:13px;border-width:3px}.byte-guide-card h2{font-size:19px}.byte-guide-copy{font-size:12px}.byte-guide-bot{flex-basis:42px;width:42px;height:42px}.byte-guide-bot::before{font-size:21px}.byte-guide-bot::after{left:6px}}
+@media(prefers-reduced-motion:reduce){#byteGuideFocus{transition:none}.byte-guide-card,.byte-guide-card.shake{animation:none}.byte-guide-next:disabled::before{animation:none}}

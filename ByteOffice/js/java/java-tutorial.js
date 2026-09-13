@@ -1,0 +1,310 @@
+(function(){
+  'use strict';
+
+  const guides={
+    1:[
+      {target:'#scene',kicker:'WELCOME TO BYTE OFFICE',title:'Meet Byte.',body:'You are Byte’s new systems engineer. Your job is to write tiny Java instructions that make this physical worker complete each assignment.',button:'Start the tour →'},
+      {target:'.objective-box',kicker:'YOUR FIRST ASSIGNMENT',title:'One box. One trip.',body:'The question is simple: take the first box from <b>INBOX</b> and deliver that same box to <b>OUTBOX</b>. Read the example values here; the machine will check your result exactly.',button:'Show me the workspace →'},
+      {target:'#programList',kicker:'YOUR JAVA IDE',title:'This is Program.java',body:'This editor is your control room. ByteOffice supplies <code>main()</code> and calls your <code>program(ByteBot bot)</code> method. You write normal Java, then control Byte through physical commands such as <code>bot.take()</code> and <code>bot.send()</code>.',button:'Show me the first instruction →'},
+      {target:'#byteMonaco',kicker:'STEP 1 · WRITE',title:'Pick up the box',body:'Click inside the highlighted <b>Program.java</b> editor and add this line inside <code>program(ByteBot bot)</code>. It tells Byte to walk to INBOX and take the next box into his hands.',code:'bot.take();',condition:source=>/\bbot\s*\.\s*take\s*\(\s*\)\s*;/.test(source),waiting:'Add bot.take(); in Program.java, then I’ll point to the delivery move.'},
+      {target:'#byteMonaco',kicker:'STEP 2 · WRITE',title:'Send it out',body:'Add the second instruction. It tells Byte to carry the box to OUTBOX and release it there.',code:'bot.send();',condition:source=>/\bbot\s*\.\s*send\s*\(\s*\)\s*;/.test(source),waiting:'Add bot.send(); so Byte has somewhere to deliver the box.'},
+      {target:'#runBtn',kicker:'NEXT · RUN',title:'Start the machine',body:'Your two instructions are ready. Use the highlighted <b>RUN</b> control below to hand Program.java to the browser Java compiler, then watch Byte execute it.',on:'run',externalAction:true},
+      {target:'#runBtn',phase:'compile',mode:'compile',kicker:'JAVA COMPILER',title:'Compiling your program…',body:'The browser is compiling Program.java now. The RUN control is showing its live loading state. This can take a moment the first time while the Java tools are prepared. Please wait here and do not click RUN again.',button:'Waiting for compiler…',locked:true},
+      {target:'#workerWrap',runtime:true,follow:true,kicker:'BYTE IS READY',title:'Watch the code become motion',body:'The glowing execution marker in Program.java will stay synchronized with Byte. Each physical movement starts from the Java line highlighted in the IDE.',button:'Watching Byte…',locked:true}
+    ],
+    2:[
+      {target:'.objective-box',kicker:'BYTE BRIEFING',title:'This time, repeat.',body:'There are several boxes on the belt. Instead of writing the same commands again and again, make Java repeat them until INBOX is empty.',button:'Show me how →'},
+      {target:'#byteMonaco',kicker:'STEP 1 · LOOP',title:'Keep working while boxes remain',body:'Wrap the work in a loop. <code>bot.hasNext()</code> is true while INBOX still has another box. Use this exact program shape in Program.java:',code:'while (bot.hasNext()) {\n  bot.take();\n  bot.send();\n}',condition:source=>/\bwhile\s*\(\s*bot\s*\.\s*hasNext\s*\(\s*\)\s*\)/.test(source),waiting:'Create a while (bot.hasNext()) loop in Program.java.'},
+      {target:'#byteMonaco',kicker:'STEP 2 · LOOP BODY',title:'Take one box each round',body:'Inside the loop, tell Byte to take the next INBOX box.',code:'bot.take();',condition:source=>/\bbot\s*\.\s*take\s*\(\s*\)\s*;/.test(source),waiting:'Put bot.take(); inside the loop body.'},
+      {target:'#byteMonaco',kicker:'STEP 3 · LOOP BODY',title:'Send one box each round',body:'Complete the loop body with the delivery instruction. The loop will return to the top for the next box.',code:'bot.send();',condition:source=>/\bbot\s*\.\s*send\s*\(\s*\)\s*;/.test(source),waiting:'Put bot.send(); inside the loop body.'},
+      {target:'#runBtn',phase:'compile',mode:'compile',kicker:'JAVA COMPILER',title:'Compiling your program…',body:'Your code changed, so the browser is compiling Program.java first. Please wait for this loading state to finish.',externalAction:true},
+      {target:'#runBtn',kicker:'STEP 4 · START',title:'Run the conveyor',body:'Compilation is ready. Now use the highlighted <b>RUN</b> control to start Byte. Byte should repeat the same two physical actions until every inbox box is delivered.',on:'run',externalAction:true},
+      {target:'#scene',kicker:'WATCH BYTE',title:'Loops make small ideas scale',body:'One pair of instructions handled the whole conveyor. You’ve just used a Java loop to control a physical machine.',button:'Show me the speed control →'},
+      {target:'.speed-control',kicker:'WATCH BYTE · MACHINE CONTROL',title:'Control the pace',body:'Use the <b>SPEED</b> slider while Byte works to slow the animation down for a closer look or speed it up when you already understand the motion. It changes only the playback pace—not your Java program or the assignment result.',button:'Finish guide'}
+    ],
+    3:[
+      {target:'.objective-box',kicker:'BYTE BRIEFING',title:'Reverse each pair.',body:'Two forms arrive together. Save the first box, send the second box, then bring the saved first box back and send it.',button:'Show me how →'},
+      {target:'#memory',kicker:'NEW MACHINE · FLOOR MEMORY',title:'Meet your floor shelf',body:'This level gives Byte two floor-memory slots. Slot A is a safe place to park the first box while the second one passes through his hands.',button:'Show me the shelf →'},
+      {target:'#byteMonaco',kicker:'STEP 1 · REUSE THE LOOP',title:'Keep handling pairs',body:'Use the loop from Level 2 so Byte keeps working while INBOX has boxes left.',code:'while (bot.hasNext()) {',condition:source=>/\bwhile\s*\(\s*bot\s*\.\s*hasNext\s*\(\s*\)\s*\)/.test(source),waiting:'Wrap the pair routine in while (bot.hasNext()).'},
+      {target:'#byteMonaco',kicker:'STEP 2 · SAVE THE FIRST BOX',title:'Copy it to Slot A',body:'After the first <code>bot.take()</code>, copy the box into floor memory. <code>copyTo(0)</code> keeps the original in Byte’s hands and saves a copy on Slot A.',code:'bot.copyTo(0);',condition:source=>/\bbot\s*\.\s*copyTo\s*\(\s*0\s*\)\s*;/.test(source),waiting:'Add bot.copyTo(0); after Byte takes the first box.'},
+      {target:'#memory .memory-tile',kicker:'FLOOR MEMORY · SLOT A',title:'Your shelf is ready',body:'The highlighted tile is Slot A (index 0). It holds the first box while Byte takes the second one.',button:'I understand →'},
+      {target:'#byteMonaco',kicker:'STEP 3 · OUTPUT THE SECOND',title:'Send the newer box first',body:'Take the second inbox box and send it immediately. That reverses the pair’s order.',code:'bot.take();\nbot.send();',condition:source=>/\bbot\s*\.\s*send\s*\(\s*\)\s*;/.test(source),waiting:'Add the second bot.take(); and bot.send(); inside the loop.'},
+      {target:'#byteMonaco',kicker:'STEP 4 · RESTORE THE FIRST',title:'Bring back Slot A',body:'After sending the second box, copy the saved first box back into Byte’s hands, then send it.',code:'bot.copyFrom(0);\nbot.send();',condition:source=>/\bbot\s*\.\s*copyFrom\s*\(\s*0\s*\)\s*;/.test(source),waiting:'Add bot.copyFrom(0); after the second box is sent.'},
+      {target:'#runBtn',kicker:'STEP 5 · START',title:'Run the pair swap',body:'Press <b>RUN</b>. Each pair should leave the OUTBOX in reverse order: second box first, saved first box second.',button:'I’m ready →',on:'run'},
+      {target:'#runBtn',phase:'compile',mode:'compile',kicker:'JAVA COMPILER',title:'Compiling your program…',body:'The browser is compiling Program.java now. The RUN control is showing its live loading state. Please wait until compilation finishes before watching the result.',button:'Waiting for compiler…',locked:true},
+      {target:'#scene',kicker:'WATCH BYTE',title:'Floor memory changes the route',body:'Byte used Slot A as a temporary shelf, so he could reverse every pair without losing the first box.',button:'Finish guide'}
+    ]
+  };
+
+  const levelOneRuntime={
+    read:{
+      kicker:'BYTE · STEP 1 / 2',
+      title:'Take the box',
+      body:'<code>bot.take()</code> tells Byte to walk to INBOX, lift the next box, and carry it in his hands. The highlighted Java line and his movement are synchronized.',
+      code:'bot.take();',
+      mode:'live'
+    },
+    write:{
+      kicker:'BYTE · STEP 2 / 2',
+      title:'Send the box',
+      body:'<code>bot.send()</code> tells Byte to walk to OUTBOX and release the box there. The assignment checks that delivered value against the question.',
+      code:'bot.send();',
+      mode:'live'
+    }
+  };
+
+  let session=null;
+  let activeTarget=null;
+  let positionFrame=0;
+  let followFrame=0;
+  let targetResizeObserver=null;
+
+  function escapeHtml(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function source(){return window.ByteOfficeIDE?.getValue?.()||document.querySelector('#javaEditor')?.value||'';}
+  function currentStep(){return session?guides[session.levelId]?.[session.stepIndex]:null;}
+  function ensureLayer(){
+    let layer=document.querySelector('#byteGuideLayer');
+    if(layer) return layer;
+    layer=document.createElement('div');
+    layer.id='byteGuideLayer';
+    layer.setAttribute('aria-hidden','false');
+    layer.innerHTML='<div id="byteGuideFocus" aria-hidden="true"></div><section id="byteGuideCard" class="byte-guide-card" role="dialog" aria-live="polite" aria-labelledby="byteGuideTitle" aria-describedby="byteGuideBody"></section>';
+    document.body.appendChild(layer);
+    layer.addEventListener('click',event=>{
+      const button=event.target.closest('button');
+      if(!button||!session) return;
+      if(button.id==='byteGuideNext'){
+        if(currentStep()?.onError||(currentStep()?.phase==='compile'&&session.compileError)){window.ByteOfficeIDE?.focus?.();return;}
+        advance();
+      }
+    });
+    return layer;
+  }
+  function stopFollow(){
+    if(followFrame){cancelAnimationFrame(followFrame);followFrame=0;}
+  }
+  function followTarget(){
+    if(!session||!currentStep()?.follow){followFrame=0;return;}
+    // Keep the explanation card readable while only the spotlight follows Byte.
+    position(false,false);
+    followFrame=requestAnimationFrame(followTarget);
+  }
+  function syncFollow(){
+    if(session&&currentStep()?.follow){
+      if(!followFrame) followFrame=requestAnimationFrame(followTarget);
+    }else stopFollow();
+  }
+  function removeLayer(){
+    stopFollow();
+    targetResizeObserver?.disconnect();
+    targetResizeObserver=null;
+    if(activeTarget) activeTarget.classList.remove('byte-guide-focus-target');
+    activeTarget=null;
+    document.querySelector('#byteGuideLayer')?.remove();
+  }
+  function targetFor(step){
+    let target=document.querySelector(step.target);
+    if(!target||target.getBoundingClientRect().width<8||target.getBoundingClientRect().height<8){
+      target=document.querySelector('#programList')||document.querySelector('#app');
+    }
+    return target;
+  }
+  function position(forceVisibility=false,moveCard=true){
+    if(!session||!currentStep()) return;
+    const layer=ensureLayer(), focus=layer.querySelector('#byteGuideFocus'), card=layer.querySelector('#byteGuideCard'), target=targetFor(currentStep());
+    if(!target||!focus||!card) return;
+    const targetChanged=activeTarget!==target;
+    if(activeTarget&&targetChanged) activeTarget.classList.remove('byte-guide-focus-target');
+    activeTarget=target; activeTarget.classList.add('byte-guide-focus-target');
+    if(targetChanged){
+      targetResizeObserver?.disconnect();
+      targetResizeObserver=null;
+      if(window.ResizeObserver){
+        targetResizeObserver=new ResizeObserver(()=>{
+          if(!session) return;
+          cancelAnimationFrame(positionFrame);
+          positionFrame=requestAnimationFrame(()=>position());
+        });
+        targetResizeObserver.observe(target);
+      }
+    }
+    let rect=target.getBoundingClientRect();
+    const visibleHeight=Math.max(0,Math.min(rect.bottom,window.innerHeight)-Math.max(rect.top,0));
+    const requiredHeight=Math.min(rect.height,window.innerHeight)*.6;
+    if((targetChanged||forceVisibility)&&visibleHeight<requiredHeight){
+      target.scrollIntoView({block:'center',inline:'nearest',behavior:'auto'});
+      rect=target.getBoundingClientRect();
+    }
+    const pad=6;
+    focus.style.left=`${Math.max(4,rect.left-pad)}px`;focus.style.top=`${Math.max(4,rect.top-pad)}px`;
+    focus.style.width=`${Math.min(window.innerWidth-8,rect.width+pad*2)}px`;focus.style.height=`${Math.min(window.innerHeight-8,rect.height+pad*2)}px`;
+    const margin=16, gap=18, cardRect=card.getBoundingClientRect(), cardWidth=cardRect.width, cardHeight=cardRect.height;
+    let left=rect.left, top=rect.bottom+gap, placement='below';
+    if(rect.width>cardWidth*1.35&&rect.right+gap+cardWidth<=window.innerWidth-margin){left=rect.right+gap;top=rect.top;placement='right';}
+    else if(top+cardHeight>window.innerHeight-margin&&rect.top-cardHeight-gap>=margin){top=rect.top-cardHeight-gap;placement='above';}
+    else if(top+cardHeight>window.innerHeight-margin){top=window.innerHeight-cardHeight-margin;}
+    left=Math.max(margin,Math.min(window.innerWidth-cardWidth-margin,left));
+    top=Math.max(margin,Math.min(window.innerHeight-cardHeight-margin,top));
+    if(moveCard){card.style.left=`${left}px`;card.style.top=`${top}px`;card.dataset.placement=placement;}
+  }
+  function render(){
+    if(!session){removeLayer();return;}
+    const steps=guides[session.levelId]||[], step=currentStep();
+    if(!step){finish();return;}
+    const layer=ensureLayer(), card=layer.querySelector('#byteGuideCard');
+    const progress=Math.round((session.stepIndex/Math.max(1,steps.length))*100);
+    const copy=step.runtime&&session.runtimeCopy?session.runtimeCopy:step;
+    const compileError=step.phase==='compile'&&session.compileError;
+    const display=compileError
+      ? {...step,kicker:'JAVA COMPILER · NEEDS ATTENTION',title:'The compiler stopped',body:'The source needs a small fix before Byte can run. Review the compiler message in Program.java, correct the code, and press RUN again.'}
+      : copy;
+    const body=display.body+(display.code?`<br><code>${escapeHtml(display.code)}</code>`:'');
+    const locked=display.locked&&!compileError;
+    const button=compileError?'Back to Program.java':(display.button||'I’ve done that →');
+    const nextButton=display.externalAction||step.runtime?'':`<button type="button" class="byte-guide-next" id="byteGuideNext"${locked?' disabled':''}>${escapeHtml(button)}</button>`;
+    const actions=nextButton?`<div class="byte-guide-actions">${nextButton}</div>`:'';
+    card.dataset.mode=display.mode||step.mode||'';
+    const feedback=compileError?'Compilation failed. Review the highlighted error in Program.java, correct the code, then press RUN again.':(step.condition&&!step.condition(source())?step.waiting||'Complete the highlighted step to continue.':'');
+    card.innerHTML=`<div class="byte-guide-head"><div class="byte-guide-bot" aria-hidden="true"></div><div><span class="byte-guide-kicker">${escapeHtml(display.kicker)}</span><h2 id="byteGuideTitle">${escapeHtml(display.title)}</h2></div></div><div class="byte-guide-copy" id="byteGuideBody"><p>${body}</p></div><div class="byte-guide-progress"><span>GUIDE ${session.stepIndex+1} / ${steps.length}</span><i style="--guide-progress:${progress}%"></i></div><div class="byte-guide-feedback" aria-live="polite">${feedback}</div>${actions}`;
+    position();
+    syncFollow();
+  }
+  function finish(){
+    session=null;removeLayer();
+  }
+  function moveToCompile(){
+    if(!session) return;
+    if(currentStep()?.on==='run') session.stepIndex++;
+    if(currentStep()?.phase==='compile'){
+      session.compileError=false;
+      render();
+    }
+  }
+  function javaPhaseChanged(detail={}){
+    if(!session) return;
+    const phase=detail.phase;
+    if(phase==='run-requested'||phase==='compile-start'){
+      moveToCompile();
+      return;
+    }
+    if(phase==='compile-complete'){
+      if(currentStep()?.phase==='compile'){
+        session.stepIndex++;
+        session.runtimeCopy=null;
+        render();
+      }
+      return;
+    }
+    if(phase==='compile-error'){
+      if(currentStep()?.phase==='compile'){
+        session.compileError=true;
+        render();
+      }
+      return;
+    }
+    if(phase==='run-start'){
+      // A run can begin from the compile step after the same click has
+      // finished compiling. In that case the click handler already missed
+      // the following "press RUN" step, so advance it when execution really
+      // starts instead of leaving the guide pointing at RUN while Byte moves.
+      if(currentStep()?.phase==='compile') session.stepIndex++;
+      if(currentStep()?.on==='run') session.stepIndex++;
+      if(currentStep()?.runtime){
+        session.runtimeCopy={
+          kicker:'BYTE IS READY',
+          title:'Watch the code become motion',
+          body:'The glowing execution marker in Program.java will stay synchronized with Byte. Each physical movement starts from the Java line highlighted in the IDE.',
+          button:'Watching Byte…',
+          mode:'live',
+          locked:true
+        };
+        render();
+      }
+      return;
+    }
+    if(phase==='run-complete'&&!detail.success&&currentStep()?.runtime){
+      session.runtimeCopy={
+        kicker:'BYTE · RUN STOPPED',
+        title:'Let’s try that again',
+        body:'Byte could not finish this run. Review the highlighted Java line and the machine message, correct the code, then press RUN again.',
+        button:'Back to Program.java',
+        mode:'error',
+        locked:false,
+        onError:true
+      };
+      render();
+    }
+  }
+  function javaActionStarted(detail={}){
+    if(session?.levelId!==1||!currentStep()?.runtime) return;
+    const copy=levelOneRuntime[detail.event];
+    if(!copy) return;
+    session.actionCount=(session.actionCount||0)+1;
+    session.runtimeCopy={...copy,kicker:`BYTE · MOVE ${session.actionCount}`,mode:'live',locked:true};
+    if(Number.isFinite(+detail.executedPc)) window.ByteOfficeIDE?.highlightLine?.(+detail.executedPc);
+    render();
+  }
+  function deferAutoCompile(){
+    return !!(session?.levelId===1&&session.stepIndex>=3&&session.stepIndex<=4);
+  }
+  function advance(){
+    while(session){
+      const step=currentStep();
+      if(!step) return finish();
+      if(step.phase==='compile'||step.runtime) return;
+      if(step.condition&&!step.condition(source())){
+        const card=document.querySelector('#byteGuideCard'), feedback=card?.querySelector('.byte-guide-feedback');
+        if(feedback) feedback.textContent=step.waiting||'Complete the highlighted step to continue.';
+        card?.classList.remove('shake');void card?.offsetWidth;card?.classList.add('shake');
+        return;
+      }
+      session.stepIndex++;
+      if(session.stepIndex>=(guides[session.levelId]||[]).length) return finish();
+      if(!currentStep()?.condition||!currentStep().condition(source())) return render();
+    }
+  }
+  function sourceChanged(){
+    if(!session) return;
+    let changed=false, value=source();
+    while(currentStep()?.condition&&currentStep().condition(value)){session.stepIndex++;changed=true;}
+    if(changed) session.stepIndex>=(guides[session.levelId]||[]).length?finish():render();
+    else if(currentStep()?.condition){
+      const feedback=document.querySelector('#byteGuideCard .byte-guide-feedback');
+      if(feedback) feedback.textContent=currentStep().waiting||'Complete the highlighted step to continue.';
+    }
+  }
+  function start(index){
+    const id=levels?.[index]?.id;
+    if(!guides[id]){finish();return;}
+    session={levelId:id,stepIndex:0};render();
+  }
+  function levelPassed(id){if(session?.levelId===id) finish();}
+
+  document.addEventListener('input',event=>{if(event.target?.id==='javaEditor')sourceChanged();});
+  function handleRunGuideClick(event){
+    if(!session?.levelId||!event.target.closest('#runBtn')) return;
+    if(currentStep()?.on==='run') advance();
+  }
+  // Run's own handler is async and can begin compiling before a bubbling
+  // listener gets control. Capture the click first so a ready-to-run guide
+  // step always leaves the card as soon as the user presses RUN.
+  document.addEventListener('click',handleRunGuideClick,true);
+  window.addEventListener('byteoffice-java-phase',event=>javaPhaseChanged(event.detail||{}));
+  window.addEventListener('byteoffice-java-action',event=>javaActionStarted(event.detail||{}));
+  window.addEventListener('byteoffice-ide-ready',()=>{
+    if(!session) return;
+    render();
+    requestAnimationFrame(()=>position(true));
+  });
+  window.addEventListener('resize',()=>{if(session){cancelAnimationFrame(positionFrame);positionFrame=requestAnimationFrame(position);}});
+  window.addEventListener('scroll',()=>{if(session){cancelAnimationFrame(positionFrame);positionFrame=requestAnimationFrame(position);}},true);
+
+  const originalLoadLevel=window.loadLevel;
+  if(typeof originalLoadLevel==='function'){
+    window.loadLevel=function(index){
+      originalLoadLevel.apply(this,arguments);
+      start(index);
+    };
+  }
+  window.ByteOfficeTutorial={start,levelPassed,deferAutoCompile};
+})();

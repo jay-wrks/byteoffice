@@ -228,6 +228,12 @@ function loadLevel(index){
   const l = level();
   const bucket=workspaceBucket(l.id); workspaceIndex=bucket.active; answerMode=false; setAnswerModeControls(false); setCommandTrayCollapsed(draftCommandTrayCollapsed,{remember:false});
   program=(bucket.slots[workspaceIndex]||[]).map(x=>({...x}));
+  // Level 2's tutorial must begin from a clean editor, even when an older
+  // Java draft exists in local storage for the active worktree.
+  if(l.id===2){
+    program=[{op:'JAVA',source:''}];
+    bucket.slots[workspaceIndex]=[{op:'JAVA',source:''}];
+  }
   loadBreakpoints();
   els.levelNumber.textContent = `LEVEL ${String(l.id).padStart(2,"0")}`;
   els.levelTitle.textContent = l.title; els.levelStory.textContent = l.story; els.levelObjective.textContent = l.objective;

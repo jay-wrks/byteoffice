@@ -100,6 +100,15 @@ public final class GameRunner {
   let lastCompileDiagnostics='';
   const javaUndo=[];
   const javaRedo=[];
+  window.byteOfficeJavaPhase='idle';
+
+  function notifyJavaEvent(name,detail={}){
+    try{ window.dispatchEvent(new CustomEvent(name,{detail})); }catch(_){ }
+  }
+  function notifyJavaPhase(phase,detail={}){
+    window.byteOfficeJavaPhase=phase;
+    notifyJavaEvent('byteoffice-java-phase',{phase,...detail});
+  }
 
   function sourceFromProgram(){
     const entry=Array.isArray(program) ? program.find(x=>x&&x.op==='JAVA'&&typeof x.source==='string') : null;
@@ -485,6 +494,7 @@ public final class GameRunner {
     const after=machineSnapshot();
     if(!headless){
       const transition={status:'ok',event,before,after,executedPc:line,instruction:{op,arg:slot}};
+      notifyJavaEvent('byteoffice-java-action',transition);
       animating=true;
       try{ await animateTransition(transition); } finally { animating=false; }
     }
@@ -631,6 +641,7 @@ public final class GameRunner {
   function finishCompileFailure(startedAt,diagnostics,quiet=false){
     lastCompileMs=performance.now()-startedAt;
     lastCompileDiagnostics=String(diagnostics||'').trim()||'The Java compiler rejected Program.java. Check the source and try again.';
+    notifyJavaPhase('compile-error',{diagnostics:lastCompileDiagnostics});
     updateTimingStatus();
     compiledSource=null;
     if(quiet){
@@ -647,6 +658,7 @@ public final class GameRunner {
 
   async function compileSource(source,{quiet=false}={}){
     const startedAt=performance.now();
+    notifyJavaPhase('compile-start');
     setCompileUi(true);
     updateTimingStatus('compile');
     try{
@@ -661,6 +673,7 @@ public final class GameRunner {
       setStatus('READY','ready');
       updateJavaStatus('Compiled · Java 8','ready');
       els.footer.textContent='Java compiled successfully. Ready to run ByteBot.';
+      notifyJavaPhase('compile-complete');
       return true;
     }catch(err){
       return finishCompileFailure(startedAt,err?.message||String(err),quiet);
@@ -707,6 +720,7 @@ public final class GameRunner {
   }
 
   function scheduleCompile(delay=650){
+    if(window.ByteOfficeTutorial?.deferAutoCompile?.()) return;
     if(compileTimer) clearTimeout(compileTimer);
     compileTimer=setTimeout(async()=>{
       compileTimer=null;
@@ -731,6 +745,7 @@ public final class GameRunner {
     running=false;
     if(wasCancelled) return;
     if(exitCode!==0 || javaMachine?.error){
+      notifyJavaPhase('run-complete',{success:false,output:javaMachine?.output||[],error:javaMachine?.error||null});
       setStatus('JAVA ERROR','error');
       if(!javaMachine?.error) els.footer.textContent='Your Java program stopped with an exception. Check the browser Java console for the stack trace.';
       updateJavaStatus('Program stopped','error');
@@ -738,6 +753,8 @@ public final class GameRunner {
     }
     if(!javaMachine) return;
     if(sameArray(javaMachine.output,expectedOutput)){
+      notifyJavaPhase('run-complete',{success:true,output:[...javaMachine.output],steps:javaMachine.steps});
+      window.ByteOfficeTutorial?.levelPassed?.(level().id);
       const calls=botCallCount();
       const sizeStar=calls<=level().sizeGoal;
       const stepStar=javaMachine.steps<=level().stepGoal;
@@ -758,6 +775,7 @@ public final class GameRunner {
       els.footer.textContent=`Passed with real Java · ${javaMachine.steps} ByteBot actions.`;
       updateJavaStatus('Level passed','success');
     }else{
+      notifyJavaPhase('run-complete',{success:false,output:[...javaMachine.output],error:'Output incomplete'});
       setStatus('INCOMPLETE','error');
       els.footer.textContent=`Program finished, but OUTPUT is [${javaMachine.output.join(', ')}]. Expected [${expectedOutput.join(', ')}].`;
       updateJavaStatus('Output incomplete','error');
@@ -772,6 +790,7 @@ public final class GameRunner {
       setStatus(mode==='run'?'WORKING':'STEP','working');
       return execution.task;
     }
+    notifyJavaPhase('run-requested',{mode});
     if(!(await compileCurrentSource(false,{showError:true}))) return null;
     resetJavaState(level().input);
     resetPhysicalScene(machineSnapshot());
@@ -780,6 +799,7 @@ public final class GameRunner {
     running=mode==='run';
     setStatus(mode==='run'?'WORKING':'STEP','working');
     updateJavaStatus('Program running','working');
+    notifyJavaPhase('run-start',{mode});
     runStartedAt=performance.now();
     updateTimingStatus('run');
     const task=cheerpjRunMain('byteoffice.GameRunner','/files');
