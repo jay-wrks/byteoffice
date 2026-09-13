@@ -13,9 +13,8 @@
 .byte-guide-card[data-placement=right]::before{left:-10px;top:29px;transform:rotate(-45deg)}
 .byte-guide-card[data-placement=left]::after{right:-10px;top:29px;transform:rotate(135deg)}
 .byte-guide-head{display:flex;align-items:flex-start;gap:11px;padding-bottom:12px;border-bottom:1px solid #b5a584}
-.byte-guide-bot{position:relative;flex:0 0 48px;width:48px;height:48px;background:#6f815f;border:3px solid #30362c;box-shadow:3px 3px 0 #8e7952;transform:rotate(-3deg)}
-.byte-guide-bot::before{content:"B";position:absolute;inset:7px 0 0;color:#f6e8c5;text-align:center;font:800 24px/1 "Special Elite",serif}
-.byte-guide-bot::after{content:"•  •";position:absolute;left:8px;top:7px;color:#252b24;font:900 8px/1 "DM Mono",monospace;letter-spacing:5px}
+.byte-guide-bot{position:relative;left:auto;top:auto;z-index:auto;flex:0 0 54px;width:54px;height:55px;filter:none!important;pointer-events:none;transition:none;will-change:auto}
+.byte-guide-bot .byte-head-avatar-robot{position:absolute!important;left:2px!important;top:18px!important;width:76px!important;height:60px!important;transform:scale(.64)!important;transform-origin:0 0!important;transition:none!important}
 .byte-guide-kicker{display:block;color:#8c6b2f;font:800 9px/1.2 "DM Mono",monospace;letter-spacing:.16em}
 .byte-guide-card h2{margin:5px 0 0;font:22px/1.1 "Special Elite",serif;color:#312d24}
 .byte-guide-copy{padding:12px 2px 3px;font-size:13px;line-height:1.48}
@@ -43,5 +42,5 @@
 @keyframes byteGuideSpin{to{transform:rotate(360deg)}}
 @keyframes byteGuideCorrectChar{0%,100%{transform:none;text-shadow:none}42%{color:#fff3b0;transform:translateY(-2px) scale(1.12);text-shadow:0 0 7px rgba(232,201,111,.85)}}
 @keyframes byteGuideCorrectCode{0%,100%{border-color:#5a634e;box-shadow:none}45%{border-color:#e8c96f;box-shadow:0 0 0 2px rgba(232,201,111,.18)}}
-@media(max-width:760px){.byte-guide-card{padding:13px;border-width:3px}.byte-guide-card h2{font-size:19px}.byte-guide-copy{font-size:12px}.byte-guide-bot{flex-basis:42px;width:42px;height:42px}.byte-guide-bot::before{font-size:21px}.byte-guide-bot::after{left:6px}}
+@media(max-width:760px){.byte-guide-card{padding:13px;border-width:3px}.byte-guide-card h2{font-size:19px}.byte-guide-copy{font-size:12px}.byte-guide-bot{flex-basis:48px;width:48px;height:50px}.byte-guide-bot .byte-head-avatar-robot{top:16px!important;transform:scale(.57)!important}}
 @media(prefers-reduced-motion:reduce){#byteGuideFocus{transition:none}.byte-guide-card,.byte-guide-card.shake,.guide-code-char.just-entered,.guide-code.is-correct-input{animation:none}.guide-code-char,.guide-code-char::before{transition:none}.byte-guide-next:disabled::before{animation:none}}

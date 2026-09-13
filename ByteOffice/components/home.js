@@ -4,7 +4,7 @@ window.ByteOfficeComponents.home = String.raw`
 <div aria-hidden="true" class="home-backdrop-grid"></div>
 <div class="home-desk">
 <div class="home-brand-row">
-<div class="home-brand-mark">B</div>
+${window.ByteOfficeHeadAvatar.markup('home-brand-mark')}
 <div><span class="home-kicker">DEPARTMENT OF TINY PROGRAMS <span class="site-version">· v1.0.0</span></span><h1>BYTE OFFICE</h1></div>
 </div>
 <div class="home-file-card">

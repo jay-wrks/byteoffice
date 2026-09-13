@@ -68,6 +68,9 @@
   function escapeHtml(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
   function source(){return window.ByteOfficeIDE?.getValue?.()||document.querySelector('#javaEditor')?.value||'';}
   function currentStep(){return session?guides[session.levelId]?.[session.stepIndex]:null;}
+  function renderGuideBot(){
+    return window.ByteOfficeHeadAvatar.markup('byte-guide-bot');
+  }
   function setEditorGuideLock(locked){
     const readOnly=!!locked||!!window.answerMode;
     try{window.ByteOfficeIDE?.editor?.updateOptions({readOnly,domReadOnly:readOnly});}catch(_){ }
@@ -311,7 +314,8 @@
     const actions=nextButton?`<div class="byte-guide-actions">${nextButton}</div>`:'';
     card.dataset.mode=display.mode||step.mode||'';
     const feedback=compileError?'Compilation failed. Review the highlighted error in Program.java, correct the code, then press RUN again.':(!stepSatisfied(step)?step.waiting||'Complete the highlighted step to continue.':'');
-    card.innerHTML=`<div class="byte-guide-head"><div class="byte-guide-bot" aria-hidden="true"></div><div><span class="byte-guide-kicker">${escapeHtml(display.kicker)}</span><h2 id="byteGuideTitle">${escapeHtml(display.title)}</h2></div></div><div class="byte-guide-copy" id="byteGuideBody"><p>${body}</p></div><div class="byte-guide-progress"><span>GUIDE ${session.stepIndex+1} / ${steps.length}</span><i style="--guide-progress:${progress}%"></i></div><div class="byte-guide-feedback" aria-live="polite">${feedback}</div>${actions}`;
+    card.innerHTML=`<div class="byte-guide-head">${renderGuideBot()}<div><span class="byte-guide-kicker">${escapeHtml(display.kicker)}</span><h2 id="byteGuideTitle">${escapeHtml(display.title)}</h2></div></div><div class="byte-guide-copy" id="byteGuideBody"><p>${body}</p></div><div class="byte-guide-progress"><span>GUIDE ${session.stepIndex+1} / ${steps.length}</span><i style="--guide-progress:${progress}%"></i></div><div class="byte-guide-feedback" aria-live="polite">${feedback}</div>${actions}`;
+    window.ByteOfficeHeadAvatar.refresh();
     position();
     if(step.openApi) requestAnimationFrame(()=>{revealInScrollContainers(targetFor(step));position(true);});
     syncFollow();
