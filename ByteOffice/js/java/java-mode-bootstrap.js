@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const ASSET_VERSION='20260913-1235';
+  const ASSET_VERSION='20260913-1237';
 
   function versioned(src){
     const base=window.__BYTE_OFFICE_ASSET_BASE__||document.baseURI||window.location.href;

@@ -268,7 +268,7 @@ function showModal(html){
 }
 function closeModal(immediate=false){
   if(els.modal.classList.contains('hidden')) return;
-  els.modal.classList.remove('java-compile-error-modal','star-reveal-modal');
+  els.modal.classList.remove('java-compile-error-modal','java-api-modal','star-reveal-modal');
   if(immediate){ els.modal.classList.add('hidden'); els.modal.classList.remove('opened','closing','roadmap-modal'); return; }
   els.modal.classList.remove('opened'); els.modal.classList.add('closing'); sfx('ui');
   setTimeout(()=>{ els.modal.classList.add('hidden'); els.modal.classList.remove('closing','roadmap-modal'); },210);

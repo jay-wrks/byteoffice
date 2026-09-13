@@ -28,7 +28,10 @@
 .java-api-card strong{font:800 11px/1.25 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace!important;letter-spacing:0!important;text-transform:none!important;overflow-wrap:anywhere}
 .java-api-card span{font-size:9px!important;line-height:1.35!important;opacity:.78}
 .java-api-card:hover{transform:translateY(-1px)}
-.java-api-detail{display:flex;flex-direction:column;gap:12px}
+.java-api-detail{display:flex;flex-direction:column;gap:12px;min-height:0;overflow:hidden}
+.java-api-detail-scroll{min-height:0;overflow-y:auto;padding-right:5px;scrollbar-gutter:stable}
+.modal.java-api-modal #modalContent{min-height:0;overflow:hidden}
+.modal.java-api-modal .java-api-detail{flex:1 1 auto}
 .java-api-detail-kicker{font:800 10px/1 "DM Mono",monospace;letter-spacing:.18em;color:#8d3f34}
 .java-api-detail h2{margin:0;font:29px/1.1 "Special Elite",serif;color:#292720}
 .java-api-detail h2 code{font:inherit;color:#8d3f34}
