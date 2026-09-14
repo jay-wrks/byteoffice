@@ -24,12 +24,13 @@
     ],
     3:[
       {target:'.objective-box',kicker:'BYTE BRIEFING',title:'Reverse each pair.',body:'Two forms arrive together. Save the first box, send the second box, then bring the saved first box back and send it.',button:'Show me how →'},
-      {target:'#byteMonaco',kicker:'STEP 1 · COMPLETE PROGRAM',title:'Keep handling pairs',body:'Use this complete program to reverse every pair. Byte stores the first box, sends the second box, then sends the stored first box.',code:'while (bot.hasNext()) {\n  bot.take();\n  bot.place(0);\n\n  bot.take();\n  bot.send();\n\n  bot.pick(0);\n  bot.send();\n}',required:'while (bot.hasNext()) {',condition:source=>/\bwhile\s*\(\s*bot\s*\.\s*hasNext\s*\(\s*\)\s*\)\s*\{/.test(source),waiting:'Add the complete pair-swap program in Program.java.'},
-      {target:'#byteMonaco',kicker:'STEP 2 · SAVE THE FIRST BOX',title:'Place it in Slot A',body:'After the first <code>bot.take()</code>, place the box in floor memory. <code>place(0)</code> moves it from Byte’s hands into Slot A.',code:'bot.place(0);',required:'bot.place(0);',condition:source=>/\bbot\s*\.\s*place\s*\(\s*0\s*\)\s*;/.test(source),waiting:'Add bot.place(0); after Byte takes the first box.'},
-      {target:'#byteMonaco',kicker:'STEP 3 · OUTPUT THE SECOND',title:'Send the newer box first',body:'Take the second inbox box and send it immediately. That reverses the pair’s order.',code:'bot.take();\nbot.send();',required:'bot.send();',condition:source=>/\bbot\s*\.\s*send\s*\(\s*\)\s*;/.test(source),waiting:'Add the second bot.take(); and bot.send(); inside the loop.'},
-      {target:'#byteMonaco',kicker:'STEP 4 · RESTORE THE FIRST',title:'Pick back Slot A',body:'After sending the second box, pick the saved first box back into Byte’s hands, then send it.',code:'bot.pick(0);\nbot.send();',required:'bot.pick(0);',condition:source=>/\bbot\s*\.\s*pick\s*\(\s*0\s*\)\s*;/.test(source),waiting:'Add bot.pick(0); after the second box is sent.'},
+      {target:'#byteMonaco',kicker:'STEP 1 · COMPLETE PROGRAM',title:'Keep handling pairs',body:'Use this complete program to reverse every pair. Byte stores the first box, sends the second box, then sends the stored first box.',code:'while (bot.hasNext()) {\n  bot.take();\n  bot.place(0);\n\n  bot.take();\n  bot.send();\n\n  bot.pick(0);\n  bot.send();\n}',required:'while (bot.hasNext()) {',condition:source=>/\bwhile\s*\(\s*bot\s*\.\s*hasNext\s*\(\s*\)\s*\)\s*\{/.test(source),waiting:'Start the complete pair-swap program with while (bot.hasNext()) {.'},
+      {target:'#byteMonaco',kicker:'STEP 2 · TAKE THE FIRST BOX',title:'Take the first box',body:'Inside the loop, take the first box from INBOX. Byte will hold it until you move it into floor memory.',code:'bot.take();',required:'bot.take();',condition:source=>/\bbot\s*\.\s*take\s*\(\s*\)\s*;/.test(source),waiting:'Add bot.take(); inside the pair loop.'},
+      {target:'#byteMonaco',kicker:'STEP 3 · SAVE THE FIRST BOX',title:'Place it in Slot A',body:'After the first <code>bot.take()</code>, place the box in floor memory. <code>place(0)</code> moves it from Byte’s hands into Slot A.',code:'bot.place(0);',required:'bot.place(0);',condition:source=>/\bbot\s*\.\s*place\s*\(\s*0\s*\)\s*;/.test(source),waiting:'Add bot.place(0); after Byte takes the first box.'},
+      {target:'#byteMonaco',kicker:'STEP 4 · OUTPUT THE SECOND',title:'Send the newer box first',body:'Take the second inbox box and send it immediately. That reverses the pair’s order.',code:'bot.take();\nbot.send();',codeOccurrence:{'bot.take();':2},required:'bot.send();',condition:source=>(source.match(/\bbot\s*\.\s*take\s*\(\s*\)\s*;/g)||[]).length>=2&&/\bbot\s*\.\s*send\s*\(\s*\)\s*;/.test(source),waiting:'Add the second bot.take(); and bot.send(); inside the loop.'},
+      {target:'#byteMonaco',kicker:'STEP 5 · RESTORE THE FIRST',title:'Pick back Slot A',body:'After sending the second box, pick the saved first box back into Byte’s hands, then send it.',code:'bot.pick(0);\nbot.send();',codeOccurrence:{'bot.send();':2},required:'bot.pick(0);',condition:source=>/\bbot\s*\.\s*pick\s*\(\s*0\s*\)\s*;/.test(source)&&(source.match(/\bbot\s*\.\s*send\s*\(\s*\)\s*;/g)||[]).length>=2,waiting:'Add bot.pick(0); and the final bot.send(); after the second box is sent.'},
       {target:'#runBtn',phase:'compile',mode:'compile',kicker:'JAVA COMPILER',title:'Compiling your program…',body:'The browser is compiling Program.java now. The RUN control is showing its live loading state. Please wait until compilation finishes before running the pair swap.',button:'Waiting for compiler…',locked:true},
-      {target:'#runBtn',kicker:'STEP 5 · START',title:'Run the pair swap',body:'Compilation is ready. Press <b>RUN</b>. Each pair should leave the OUTBOX in reverse order: second box first, saved first box second.',on:'run',externalAction:true},
+      {target:'#runBtn',kicker:'STEP 6 · START',title:'Run the pair swap',body:'Compilation is ready. Press <b>RUN</b>. Each pair should leave the OUTBOX in reverse order: second box first, saved first box second.',on:'run',externalAction:true},
       {target:'#scene',kicker:'WATCH BYTE',title:'Floor memory changes the route',body:'Byte used Slot A as a temporary shelf, so he could reverse every pair without losing the first box.',button:'Finish guide'}
     ],
     4:[
@@ -37,6 +38,11 @@
       {target:'#commandTray',kicker:'BYTEBOT API',title:'ByteBot’s command panel',body:'This panel is Byte’s command shelf. Each tile represents one physical action you can call from Java, such as taking, sending, storing, or adding boxes.',button:'Open sum API →',openApiPanel:true},
       {target:'[data-java-api-name="bot.add(slot)"]',kicker:'BYTEBOT API · ADDITION',title:'Open bot.add(slot)',body:'This is the command Level 4 introduces. Open the highlighted <b>bot.add(slot)</b> tile to watch Byte physically combine the held box with a floor-memory value.',externalAction:true,openApi:true}
     ]
+  };
+
+  const guidePrograms={
+    2:'while (bot.hasNext()) {\n  bot.take();\n  bot.send();\n}',
+    3:'while (bot.hasNext()) {\n  bot.take();\n  bot.place(0);\n\n  bot.take();\n  bot.send();\n\n  bot.pick(0);\n  bot.send();\n}'
   };
 
   const levelOneRuntime={
@@ -77,14 +83,20 @@
     const textarea=document.querySelector('#javaEditor');
     if(textarea) textarea.readOnly=readOnly;
   }
-  function guideCodeState(code,value=source()){
+  function guideCodeState(code,value=source(),step=currentStep()){
     const entered=String(value).split(/\r?\n/).map(line=>line.trim());
     const lines=String(code).split(/\r?\n/);
     const compact=value=>String(value).replace(/\s+/g,'');
+    const displayedCounts={};
     return lines.map(line=>{
       const expected=line.trim();
       const compactExpected=compact(expected);
-      const candidate=entered.find(value=>value&&compactExpected.startsWith(compact(value)))||'';
+      displayedCounts[expected]=(displayedCounts[expected]||0)+1;
+      const requiredOccurrence=step?.codeOccurrence?.[expected]||displayedCounts[expected];
+      const exactCount=entered.filter(value=>compact(value)===compactExpected).length;
+      const candidate=exactCount>=requiredOccurrence
+        ? expected
+        : entered.find(value=>value&&compact(value)!==compactExpected&&compactExpected.startsWith(compact(value)))||'';
       const compactCandidate=compact(candidate);
       const matched=compactExpected&&compactCandidate?compactCandidate.length:0;
       let compactIndex=0;
@@ -94,38 +106,43 @@
       });
     });
   }
-  function renderGuideCode(code,value=source()){
-    return guideCodeState(code,value).map(line=>{
+  function renderGuideCode(code,value=source(),step=currentStep()){
+    return guideCodeState(code,value,step).map(line=>{
       const chars=line.map(({char,done})=>`<span class="guide-code-char ${done?'is-entered':'is-needed'}">${escapeHtml(char)||' '}</span>`).join('');
       return `<span class="guide-code-line">${chars||' '}</span>`;
     }).join('');
   }
-  function updateGuideCodeProgress(code,value=source()){
-    const guideCode=document.querySelector('#byteGuideCard .guide-code');
-    if(!guideCode) return 0;
-    const next=guideCodeState(code,value).flat();
-    const chars=Array.from(guideCode.querySelectorAll('.guide-code-char'));
-    if(chars.length!==next.length) return 0;
+  function updateGuideCodeProgress(code,value=source(),step=currentStep()){
     let enteredCount=0;
-    chars.forEach((span,index)=>{
-      const done=next[index].done;
-      const newlyEntered=done&&span.classList.contains('is-needed');
-      span.classList.toggle('is-entered',done);
-      span.classList.toggle('is-needed',!done);
-      if(!newlyEntered) return;
-      span.style.setProperty('--guide-char-delay',`${enteredCount*28}ms`);
-      span.classList.remove('just-entered');
-      void span.offsetWidth;
-      span.classList.add('just-entered');
-      span.addEventListener('animationend',()=>span.classList.remove('just-entered'),{once:true});
-      enteredCount++;
+    document.querySelectorAll('#byteGuideLayer .guide-code').forEach(guideCode=>{
+      const isFullProgram=guideCode.dataset.guideCode==='full';
+      const shownCode=isFullProgram?guidePrograms[session?.levelId]:code;
+      if(!shownCode) return;
+      const next=guideCodeState(shownCode,value,isFullProgram?{}:step).flat();
+      const chars=Array.from(guideCode.querySelectorAll('.guide-code-char'));
+      if(chars.length!==next.length) return;
+      let blockEntered=0;
+      chars.forEach((span,index)=>{
+        const done=next[index].done;
+        const newlyEntered=done&&span.classList.contains('is-needed');
+        span.classList.toggle('is-entered',done);
+        span.classList.toggle('is-needed',!done);
+        if(!newlyEntered) return;
+        span.style.setProperty('--guide-char-delay',`${blockEntered*28}ms`);
+        span.classList.remove('just-entered');
+        void span.offsetWidth;
+        span.classList.add('just-entered');
+        span.addEventListener('animationend',()=>span.classList.remove('just-entered'),{once:true});
+        blockEntered++;
+      });
+      if(blockEntered){
+        guideCode.classList.remove('is-correct-input');
+        void guideCode.offsetWidth;
+        guideCode.classList.add('is-correct-input');
+        guideCode.addEventListener('animationend',()=>guideCode.classList.remove('is-correct-input'),{once:true});
+      }
+      enteredCount=Math.max(enteredCount,blockEntered);
     });
-    if(enteredCount){
-      guideCode.classList.remove('is-correct-input');
-      void guideCode.offsetWidth;
-      guideCode.classList.add('is-correct-input');
-      guideCode.addEventListener('animationend',()=>guideCode.classList.remove('is-correct-input'),{once:true});
-    }
     return enteredCount;
   }
   function stepSatisfied(step,value=source()){
@@ -145,7 +162,7 @@
     layer=document.createElement('div');
     layer.id='byteGuideLayer';
     layer.setAttribute('aria-hidden','false');
-    layer.innerHTML='<div id="byteGuideShield" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div id="byteGuideFocus" aria-hidden="true"></div><div id="byteGuideFocusSecondary" aria-hidden="true"></div><section id="byteGuideCard" class="byte-guide-card" role="dialog" aria-live="polite" aria-labelledby="byteGuideTitle" aria-describedby="byteGuideBody"></section>';
+    layer.innerHTML='<div id="byteGuideShield" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div id="byteGuideFocus" aria-hidden="true"></div><div id="byteGuideFocusSecondary" aria-hidden="true"></div><aside id="byteGuideProgramReference" class="byte-guide-card byte-guide-program-reference" aria-label="Complete program reference" hidden></aside><section id="byteGuideCard" class="byte-guide-card" role="dialog" aria-live="polite" aria-labelledby="byteGuideTitle" aria-describedby="byteGuideBody"></section>';
     document.body.appendChild(layer);
     layer.addEventListener('click',event=>{
       const button=event.target.closest('button');
@@ -318,7 +335,44 @@
     else if(top+cardHeight>window.innerHeight-margin){top=window.innerHeight-cardHeight-margin;}
     left=Math.max(margin,Math.min(window.innerWidth-cardWidth-margin,left));
     top=Math.max(margin,Math.min(window.innerHeight-cardHeight-margin,top));
-    if(moveCard){card.style.left=`${left}px`;card.style.top=`${top}px`;card.dataset.placement=placement;}
+    if(moveCard){
+      card.style.left=`${left}px`;card.style.top=`${top}px`;card.dataset.placement=placement;
+      const overview=layer.querySelector('#byteGuideProgramReference:not([hidden])');
+      if(overview){
+        const overviewRect=overview.getBoundingClientRect();
+        const gapBetweenCards=12;
+        let overviewLeft=left-overviewRect.width-gapBetweenCards;
+        let overviewTop=top;
+        if(overviewLeft<margin){
+          // Narrow layouts keep both cards beside the IDE as a compact stack
+          // instead of sending the complete program to the viewport edge.
+          overviewLeft=left;
+          overviewTop=Math.max(margin,top-overviewRect.height-gapBetweenCards);
+          if(overviewTop===margin) overviewTop=Math.min(window.innerHeight-overviewRect.height-margin,top+cardHeight+gapBetweenCards);
+        }
+        if(!overview.dataset.positioned){
+          // Begin exactly where the original full-program card was. On the
+          // next paint, slide that card aside and reveal the line explanation
+          // in the space it vacated.
+          overview.style.transition='none';
+          overview.style.left=`${left}px`;
+          overview.style.top=`${top}px`;
+          overview.dataset.positioned='moving';
+          requestAnimationFrame(()=>requestAnimationFrame(()=>{
+            if(!session||overview.hidden) return;
+            overview.style.transition='';
+            overview.style.left=`${overviewLeft}px`;
+            overview.style.top=`${overviewTop}px`;
+            overview.dataset.positioned='true';
+            card.classList.add('dual-instruction-visible');
+          }));
+        }else if(overview.dataset.positioned==='true'){
+          overview.style.left=`${overviewLeft}px`;
+          overview.style.top=`${overviewTop}px`;
+          card.classList.add('dual-instruction-visible');
+        }
+      }
+    }
   }
   function render(){
     if(!session){removeLayer();return;}
@@ -340,6 +394,7 @@
     if((step.openApiPanel||step.openApi) && typeof setCommandTrayCollapsed==='function') setCommandTrayCollapsed(false,{remember:false});
     setEditorGuideLock(step.lockEditor);
     const layer=ensureLayer(), card=layer.querySelector('#byteGuideCard');
+    const programReference=layer.querySelector('#byteGuideProgramReference');
     card.classList.remove('typing-success');
     const progress=Math.round((session.stepIndex/Math.max(1,steps.length))*100);
     const copy=step.runtime&&session.runtimeCopy?session.runtimeCopy:step;
@@ -347,7 +402,25 @@
     const display=compileError
       ? {...step,kicker:'JAVA COMPILER · NEEDS ATTENTION',title:'The compiler stopped',body:'The source needs a small fix before Byte can run. Review the compiler message in Program.java, correct the code, and press RUN again.'}
       : copy;
-    const body=display.body+(display.code?`<br><code class="guide-code">${renderGuideCode(display.code)}</code>`:'');
+    const fullProgram=guidePrograms[session.levelId];
+    const showProgramReference=!!(fullProgram&&step.code&&step.code!==fullProgram);
+    if(programReference){
+      const wasHidden=programReference.hidden;
+      programReference.hidden=!showProgramReference;
+      if(showProgramReference){
+        if(wasHidden){
+          delete programReference.dataset.positioned;
+          card.classList.add('dual-instruction-pending');
+          card.classList.remove('dual-instruction-visible');
+        }
+        programReference.innerHTML=`<div class="byte-guide-head">${renderGuideBot()}<div><span class="byte-guide-kicker">PROGRAM REFERENCE</span><h2>Complete program</h2></div></div><div class="byte-guide-copy"><p>Keep the whole solution visible while you enter the current instruction.<br><code class="guide-code" data-guide-code="full">${renderGuideCode(fullProgram,source(),{})}</code></p></div>`;
+      }else{
+        programReference.innerHTML='';
+        delete programReference.dataset.positioned;
+        card.classList.remove('dual-instruction-pending','dual-instruction-visible');
+      }
+    }
+    const body=display.body+(display.code?`<br><code class="guide-code" data-guide-code="step">${renderGuideCode(display.code)}</code>`:'');
     const locked=display.locked&&!compileError;
     const button=compileError?'Back to Program.java':(display.button||'I’ve done that →');
     const nextButton=display.externalAction||step.runtime?'':`<button type="button" class="byte-guide-next" id="byteGuideNext"${locked?' disabled':''}>${escapeHtml(button)}</button>`;

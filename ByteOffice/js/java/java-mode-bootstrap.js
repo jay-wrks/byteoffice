@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const ASSET_VERSION='20260914-ide-click-guide';
+  const ASSET_VERSION='20260914-copyable-guide';
 
   function versioned(src){
     const base=window.__BYTE_OFFICE_ASSET_BASE__||document.baseURI||window.location.href;
