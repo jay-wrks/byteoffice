@@ -61,7 +61,7 @@
 .java-api-tray.collapsed .java-api-palette,.java-api-tray.collapsed .tray-subtitle{display:none!important}
 .java-api-tray.collapsed{max-height:none}
 .java-program-panel.answer-mode .java-editor{pointer-events:auto;opacity:1}
-.machine-btn.run{white-space:nowrap;overflow:hidden;transition:width .24s ease,background-color .22s ease,box-shadow .22s ease,opacity .22s ease}
+.machine-btn.run{white-space:nowrap;overflow:hidden;min-width:104px;flex:0 0 auto;transition:width .24s ease,background-color .22s ease,box-shadow .22s ease,opacity .22s ease}
 .machine-btn.run.is-compiling{display:inline-flex;align-items:center;justify-content:center}
 .machine-btn.run.is-compiling{background:#66758a}
 .machine-btn.run.is-running{display:inline-flex;align-items:center;justify-content:center;background:#8a6b36;color:#fff1cf;border-color:#5d4826}

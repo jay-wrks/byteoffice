@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const ASSET_VERSION='20260914-shared-bot';
+  const ASSET_VERSION='20260914-1115';
 
   function versioned(src){
     const base=window.__BYTE_OFFICE_ASSET_BASE__||document.baseURI||window.location.href;

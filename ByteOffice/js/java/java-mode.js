@@ -298,7 +298,15 @@ public final class GameRunner {
   function setRunUi(runningNow){
     const run=document.querySelector('#runBtn');
     if(!run) return;
+    // Compilation owns the button until it has finished. Editor edits call
+    // stopRun() as a safety measure, but that must not replace the accurate
+    // COMPILING state with a stale RUN label while the compiler is active.
+    if(!runningNow && window.byteOfficeCompiling) return;
     if(!run.dataset.readyLabel) run.dataset.readyLabel=run.innerHTML;
+    // A compile-state width animation can still be settling when execution
+    // starts. Clear that temporary width before expanding the label to
+    // RUNNING so the new content cannot be clipped by a stale inline width.
+    if(runningNow) run.style.width='';
     const state=runningNow?'running':'ready';
     const changed=run.dataset.runState!==state;
     run.dataset.runState=state;
@@ -586,11 +594,11 @@ public final class GameRunner {
     Java_byteoffice_ByteBot_nIsEmpty(lib,slot,line){ safeBoolLine(line); slot=Number(slot); return !javaMachine||!validSlot(slot)||javaMachine.memory[slot]===null; }
   };
 
-  async function ensureJavaRuntime(){
+  async function ensureJavaRuntime({background=false}={}){
     if(javaRuntimePromise) return javaRuntimePromise;
     javaRuntimePromise=(async()=>{
       updateJavaStatus('Downloading Java runtime…','loading');
-      showJavaLoadingScreen('Downloading Java runtime…');
+      if(!background) showJavaLoadingScreen('Downloading Java runtime…');
       if(typeof cheerpjInit!=='function') throw new Error('CheerpJ loader is unavailable. Serve ByteOffice over HTTP/HTTPS and check your connection.');
       // The JVM and WASM assets are served by CheerpJ's external CDN, while
       // the compiler archive is mounted separately below.
@@ -606,11 +614,11 @@ public final class GameRunner {
     return javaRuntimePromise;
   }
 
-  async function ensureCompilerJar(){
+  async function ensureCompilerJar({background=false}={}){
     if(compilerJarPromise) return compilerJarPromise;
     compilerJarPromise=(async()=>{
       updateJavaStatus('Downloading Java compiler…','loading');
-      showJavaLoadingScreen('Downloading Java compiler…');
+      if(!background) showJavaLoadingScreen('Downloading Java compiler…');
       const compilerBase=window.__BYTE_OFFICE_JAVA_COMPILER_BASE__||window.__BYTE_OFFICE_JAVA_RUNTIME_BASE__||window.__BYTE_OFFICE_ASSET_BASE__||new URL('./',document.baseURI||window.location.href).href;
       const compilerAsset=new URL('java/tools.jar',compilerBase).href;
       const response=await fetch(compilerAsset,{cache:'force-cache'});
@@ -628,6 +636,23 @@ public final class GameRunner {
       throw err;
     });
     return compilerJarPromise;
+  }
+
+  async function warmCompiler(){
+    try{
+      // Level 1 starts this after its guide has rendered. The runtime pill
+      // is the compact progress indicator; RUN remains available and the
+      // full loading curtain is reserved for a user-requested run.
+      await ensureJavaRuntime({background:true});
+      await ensureCompilerJar({background:true});
+      updateJavaStatus('Java compiler ready','ready');
+      return true;
+    }catch(err){
+      // Preloading is opportunistic. RUN will retry through the normal,
+      // blocking path if the connection or runtime is not ready yet.
+      updateJavaStatus('Compiler downloads on RUN','idle');
+      return false;
+    }
   }
 
   function mountSources(source){
@@ -648,10 +673,10 @@ public final class GameRunner {
     return /(?:Program\.java|error:|warning:|expected|found|illegal|cannot find symbol|\^\s*$)/im.test(text);
   }
 
-  async function runJavaCompiler(){
+  async function runJavaCompiler({background=false}={}){
     // Some valid static CDNs reject HEAD requests even though the jar is
     // available to CheerpJ. Fetch the archive into /str/ once instead.
-    await ensureCompilerJar();
+    await ensureCompilerJar({background});
     hideJavaLoadingScreen();
     updateJavaStatus('Compiling Program.java…','loading');
     els.footer.textContent='Compiling your Java source inside the browser…';
@@ -698,15 +723,15 @@ public final class GameRunner {
     return false;
   }
 
-  async function compileSource(source,{quiet=false}={}){
+  async function compileSource(source,{quiet=false,background=false}={}){
     const startedAt=performance.now();
     notifyJavaPhase('compile-start');
     setCompileUi(true);
     updateTimingStatus('compile');
     try{
-      await ensureJavaRuntime();
+      await ensureJavaRuntime({background});
       mountSources(instrumentJavaSource(source));
-      const result=await runJavaCompiler();
+      const result=await runJavaCompiler({background});
       if(result.exit!==0) return finishCompileFailure(startedAt,result.diagnostics,quiet);
       lastCompileMs=performance.now()-startedAt;
       lastCompileDiagnostics='';
@@ -740,22 +765,22 @@ public final class GameRunner {
     },{once:true});
   }
 
-  async function compileCurrentSource(force=false,{showError=false,quiet=false}={}){
+  async function compileCurrentSource(force=false,{showError=false,quiet=false,background=false}={}){
     const source=sourceFromProgram();
     if(!force && compiledSource===source){ setCompileUi(false); updateTimingStatus(); return true; }
     if(compileJob){
       const result=await compileJob;
-      if(sourceFromProgram()!==source) return compileCurrentSource(false,{showError,quiet});
+      if(sourceFromProgram()!==source) return compileCurrentSource(false,{showError,quiet,background});
       setCompileUi(false);
       if(!result&&showError) showCompileErrorPopup(lastCompileDiagnostics);
       return result;
     }
-    const job=compileSource(source,{quiet});
+    const job=compileSource(source,{quiet,background});
     compileJob=job;
     let result=false;
     try{ result=await job; }
     finally{ if(compileJob===job) compileJob=null; }
-    if(sourceFromProgram()!==source) return compileCurrentSource(false,{showError,quiet});
+    if(sourceFromProgram()!==source) return compileCurrentSource(false,{showError,quiet,background});
     setCompileUi(false);
     if(!result&&showError) showCompileErrorPopup(lastCompileDiagnostics);
     return result;
@@ -1056,6 +1081,7 @@ public final class GameRunner {
     format:formatJavaProgram,
     scheduleCompile,
     ensureRuntime:ensureJavaRuntime,
+    warmCompiler,
     apiSource:BYTEBOT_SOURCE
   };
 })();

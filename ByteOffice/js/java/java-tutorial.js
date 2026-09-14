@@ -80,13 +80,16 @@
   function guideCodeState(code,value=source()){
     const entered=String(value).split(/\r?\n/).map(line=>line.trim());
     const lines=String(code).split(/\r?\n/);
+    const compact=value=>String(value).replace(/\s+/g,'');
     return lines.map(line=>{
       const expected=line.trim();
-      const candidate=entered.find(value=>value&&expected.startsWith(value))||'';
-      const matched=expected&&candidate?candidate.length:0;
+      const compactExpected=compact(expected);
+      const candidate=entered.find(value=>value&&compactExpected.startsWith(compact(value)))||'';
+      const compactCandidate=compact(candidate);
+      const matched=compactExpected&&compactCandidate?compactCandidate.length:0;
+      let compactIndex=0;
       return Array.from(line).map((char,index)=>{
-        const contentIndex=index-(line.length-expected.length);
-        const done=/\s/.test(char)||contentIndex>=0&&contentIndex<matched;
+        const done=/\s/.test(char)||(compactIndex++<matched);
         return {char,done};
       });
     });
@@ -297,6 +300,14 @@
       render();
       return;
     }
+    // The Level 1 warm-up compile runs in the background while the guide is
+    // teaching. If the learner reaches RUN before it finishes, reveal the
+    // existing compile wait step instead of showing a disabled RUN control.
+    if(step.on==='run'&&window.byteOfficeCompiling&&window.byteOfficeJavaPhase==='compile-start'){
+      session.stepIndex++;
+      render();
+      return;
+    }
     if((step.openApiPanel||step.openApi) && typeof setCommandTrayCollapsed==='function') setCommandTrayCollapsed(false,{remember:false});
     setEditorGuideLock(step.lockEditor);
     const layer=ensureLayer(), card=layer.querySelector('#byteGuideCard');
@@ -317,6 +328,10 @@
     card.innerHTML=`<div class="byte-guide-head">${renderGuideBot()}<div><span class="byte-guide-kicker">${escapeHtml(display.kicker)}</span><h2 id="byteGuideTitle">${escapeHtml(display.title)}</h2></div></div><div class="byte-guide-copy" id="byteGuideBody"><p>${body}</p></div><div class="byte-guide-progress"><span>GUIDE ${session.stepIndex+1} / ${steps.length}</span><i style="--guide-progress:${progress}%"></i></div><div class="byte-guide-feedback" aria-live="polite">${feedback}</div>${actions}`;
     window.ByteOfficeHeadAvatar.refresh();
     position();
+    // Recalculate after the current guide card and any button state changes
+    // have painted; this prevents a previous follow target from leaving the
+    // spotlight on Byte when the current step targets RUN.
+    requestAnimationFrame(()=>{if(session) position(true);});
     if(step.openApi) requestAnimationFrame(()=>{revealInScrollContainers(targetFor(step));position(true);});
     syncFollow();
   }
@@ -356,10 +371,10 @@
     if(phase==='run-start'){
       // A run can begin from the compile step after the same click has
       // finished compiling. In that case the click handler already missed
-      // the following "press RUN" step, so advance it when execution really
-      // starts instead of leaving the guide pointing at RUN while Byte moves.
-      if(currentStep()?.phase==='compile') session.stepIndex++;
-      if(currentStep()?.on==='run') session.stepIndex++;
+      // one or more guide transitions. Consume every pending compile/RUN
+      // step when execution really starts, so the guide cannot remain on
+      // "Run the machine" while Byte is already moving.
+      while(currentStep()?.phase==='compile'||currentStep()?.on==='run') session.stepIndex++;
       if(currentStep()?.runtime){
         session.runtimeCopy={
           kicker:'BYTE IS READY',
@@ -396,7 +411,7 @@
     render();
   }
   function deferAutoCompile(){
-    return !!(session?.levelId===1&&session.stepIndex>=3&&session.stepIndex<=4);
+    return false;
   }
   function advance(){
     if(!session) return;
@@ -454,6 +469,19 @@
       return;
     }
     session={levelId:id,stepIndex:0};render();
+    if(id===1){
+      // Let the assignment shell and the first guide card paint before the
+      // compiler warm-up begins. This keeps the lesson responsive and makes
+      // the runtime pill the visible, compact download indicator.
+      requestAnimationFrame(()=>requestAnimationFrame(async()=>{
+        try{
+          await window.ByteOfficeJava?.warmCompiler?.();
+          if(session?.levelId===1){
+            await window.ByteOfficeJava?.compile?.(false,{quiet:true,background:true});
+          }
+        }catch(_){ }
+      }));
+    }
   }
   function levelPassed(id){if(session?.levelId===id) finish();}
 
