@@ -232,6 +232,31 @@ function bindEarlyHomeNavigation(){
   });
 }
 bindEarlyHomeNavigation();
+
+// Hidden roadmap backgrounds are not consistently requested by browsers until
+// the map becomes visible. Warm them into the HTTP/image cache once the home
+// screen has loaded, without competing with its critical rendering work.
+function preloadRoadmapAssets(){
+  if(document.body.dataset.roadmapAssetsPreloaded) return;
+  document.body.dataset.roadmapAssetsPreloaded='true';
+  window.__byteOfficeRoadmapPreloads=[
+    'assets/roadmap/roadmap-tile-a.png',
+    'assets/roadmap/roadmap-tile-b.png',
+    'assets/roadmap/undiscovered-cloud.png'
+  ].map(src=>{
+    const image=new Image();
+    image.decoding='async';
+    image.src=src;
+    return image;
+  });
+}
+function scheduleRoadmapPreload(){
+  if('requestIdleCallback' in window) requestIdleCallback(preloadRoadmapAssets,{timeout:2500});
+  else setTimeout(preloadRoadmapAssets,600);
+}
+if(document.readyState==='complete') scheduleRoadmapPreload();
+else window.addEventListener('load',scheduleRoadmapPreload,{once:true});
+
 function openRoadmap(origin=currentPage){
   roadmapOrigin=origin==='map'?'home':origin;
   pageTransition('Unfolding assignment map…',()=>{ showRoadmap(); setBasePage('map'); });

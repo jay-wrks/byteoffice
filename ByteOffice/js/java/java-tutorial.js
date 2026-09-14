@@ -20,7 +20,7 @@
       {target:'#runBtn',phase:'compile',mode:'compile',kicker:'JAVA COMPILER',title:'Compiling your program…',body:'Your code changed, so the browser is compiling Program.java first. Please wait for this loading state to finish.',externalAction:true},
       {target:'#runBtn',kicker:'STEP 4 · START',title:'Run the conveyor',body:'Compilation is ready. Now use the highlighted <b>RUN</b> control to start Byte. Byte should repeat the same two physical actions until every inbox box is delivered.',on:'run',externalAction:true},
       {target:'#scene',kicker:'WATCH BYTE',title:'Loops make small ideas scale',body:'One pair of instructions handled the whole conveyor. You’ve just used a Java loop to control a physical machine.',button:'Show me the speed control →'},
-      {target:'#workerWrap',extraTarget:'.speed-control',extraTargetInteractive:true,follow:true,kicker:'WATCH BYTE · MACHINE CONTROL',title:'Control the pace',body:'Use the <b>SPEED</b> slider while Byte works to slow the animation down for a closer look or speed it up when you already understand the motion. It changes only the playback pace—not your Java program or the assignment result.',button:'Finish guide'}
+      {target:'#workerWrap',extraTarget:'.speed-control',cardTarget:'.speed-control',extraTargetInteractive:true,follow:true,kicker:'WATCH BYTE · MACHINE CONTROL',title:'Control the pace',body:'Use the <b>SPEED</b> slider while Byte works to slow the animation down for a closer look or speed it up when you already understand the motion. It changes only the playback pace—not your Java program or the assignment result.',button:'Finish guide'}
     ],
     3:[
       {target:'.objective-box',kicker:'BYTE BRIEFING',title:'Reverse each pair.',body:'Two forms arrive together. Save the first box, send the second box, then bring the saved first box back and send it.',button:'Show me how →'},
@@ -327,12 +327,14 @@
         secondaryFocus.style.height=`${Math.min(window.innerHeight-8,secondaryRect.height+pad*2)}px`;
       }else secondaryFocus.hidden=true;
     }
+    const cardTarget=step.cardTarget?document.querySelector(step.cardTarget):null;
+    const anchorRect=cardTarget?.getBoundingClientRect()||rect;
     const margin=16, gap=18, cardRect=card.getBoundingClientRect(), cardWidth=cardRect.width, cardHeight=cardRect.height;
-    let left=rect.left, top=rect.bottom+gap, placement='below';
+    let left=anchorRect.left, top=anchorRect.bottom+gap, placement='below';
     const preferLeft=['#byteMonaco','#programList'].includes(currentStep()?.target);
-    if(preferLeft&&rect.left-cardWidth-gap>=margin){left=rect.left-cardWidth-gap;top=rect.top;placement='left';}
-    else if(rect.width>cardWidth*1.35&&rect.right+gap+cardWidth<=window.innerWidth-margin){left=rect.right+gap;top=rect.top;placement='right';}
-    else if(top+cardHeight>window.innerHeight-margin&&rect.top-cardHeight-gap>=margin){top=rect.top-cardHeight-gap;placement='above';}
+    if(preferLeft&&anchorRect.left-cardWidth-gap>=margin){left=anchorRect.left-cardWidth-gap;top=anchorRect.top;placement='left';}
+    else if(anchorRect.width>cardWidth*1.35&&anchorRect.right+gap+cardWidth<=window.innerWidth-margin){left=anchorRect.right+gap;top=anchorRect.top;placement='right';}
+    else if(top+cardHeight>window.innerHeight-margin&&anchorRect.top-cardHeight-gap>=margin){top=anchorRect.top-cardHeight-gap;placement='above';}
     else if(top+cardHeight>window.innerHeight-margin){top=window.innerHeight-cardHeight-margin;}
     left=Math.max(margin,Math.min(window.innerWidth-cardWidth-margin,left));
     top=Math.max(margin,Math.min(window.innerHeight-cardHeight-margin,top));
