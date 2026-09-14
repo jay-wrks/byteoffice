@@ -37,10 +37,11 @@ function evaluate(){
 
 function showWin(){
   setPose(""); const sizeStar=program.length<=level().sizeGoal, stepStar=engine.steps<=level().stepGoal, next=levelIndex<levels.length-1, m=levelMeta();
+  const replayAction=levelIndex>=3?'<button id="replayLevelBtn" class="paper-button">Optimize Again</button>':'';
   const stars=1+(sizeStar?1:0)+(stepStar?1:0);
   const starMarkup=Array.from({length:3},(_,i)=>`<span class="${i<stars?'earned-star':'empty-star'}" style="--star-delay:${i*180}ms">${i<stars?'★':'☆'}</span>`).join('');
-  showModal(`<div class="win-sheet"><div class="win-stamp">APPROVED</div><h2>Level Complete!</h2><div class="big-stars">${starMarkup}</div><p>You produced exactly the requested OUTBOX.</p><div class="score-cards"><div><span>Program</span><b>${program.length} lines</b><em>${sizeStar?'★ Efficiency goal met':'☆ Goal: '+level().sizeGoal}</em><small>Best: ${m.bestSize??program.length}</small></div><div><span>Runtime</span><b>${engine.steps} steps</b><em>${stepStar?'★ Speed goal met':'☆ Goal: '+level().stepGoal}</em><small>Best: ${m.bestSteps??engine.steps}</small></div></div><div class="win-actions"><button id="replayLevelBtn" class="paper-button">Optimize Again</button>${next?'<button id="nextLevelBtn" class="modal-primary">Next Assignment →</button>':'<button id="nextLevelBtn" class="modal-primary">View Levels</button>'}</div></div>`);
-  $("#replayLevelBtn").addEventListener("click",()=>{closeModal();resetMachine();});
+  showModal(`<div class="win-sheet"><div class="win-stamp">APPROVED</div><h2>Level Complete!</h2><div class="big-stars">${starMarkup}</div><p>You produced exactly the requested OUTBOX.</p><div class="score-cards"><div><span>Program</span><b>${program.length} lines</b><em>${sizeStar?'★ Efficiency goal met':'☆ Goal: '+level().sizeGoal}</em><small>Best: ${m.bestSize??program.length}</small></div><div><span>Runtime</span><b>${engine.steps} steps</b><em>${stepStar?'★ Speed goal met':'☆ Goal: '+level().stepGoal}</em><small>Best: ${m.bestSteps??engine.steps}</small></div></div><div class="win-actions">${replayAction}${next?'<button id="nextLevelBtn" class="modal-primary">Next Assignment →</button>':'<button id="nextLevelBtn" class="modal-primary">View Levels</button>'}</div></div>`);
+  $("#replayLevelBtn")?.addEventListener("click",()=>{closeModal();resetMachine();});
   $("#nextLevelBtn").addEventListener("click",()=>{ if(next) startNextAssignmentFlow(levelIndex+1); else openRoadmap('game'); });
 }
 

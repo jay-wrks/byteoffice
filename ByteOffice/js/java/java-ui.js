@@ -9,6 +9,7 @@
 
   function showJavaWin(){
     const next=levelIndex<levels.length-1;
+    const replayAction=levelIndex>=3?'<button id="replayLevelBtn" class="paper-button">Run Again</button>':'';
     const calls=javaBotCalls();
     const steps=(typeof javaMachine!=='undefined'&&javaMachine?.steps)||Number(els.steps?.textContent)||0;
     const runStars=window.byteOfficeLastRunStars;
@@ -23,7 +24,7 @@
         <div><span>Source</span><b>${calls} ByteBot calls</b><em>Real Java 8</em><small>main() supplied by ByteOffice</small></div>
         <div><span>Runtime</span><b>${steps} actions</b><em>Physical machine execution</em><small>${level().memory} floor slot${level().memory===1?'':'s'} available</small></div>
       </div>
-      <div class="win-actions"><button id="replayLevelBtn" class="paper-button">Run Again</button>${next?'<button id="nextLevelBtn" class="modal-primary">Next Assignment →</button>':'<button id="nextLevelBtn" class="modal-primary">View Levels</button>'}</div>
+      <div class="win-actions">${replayAction}${next?'<button id="nextLevelBtn" class="modal-primary">Next Assignment →</button>':'<button id="nextLevelBtn" class="modal-primary">View Levels</button>'}</div>
     </div>`);
     document.querySelector('#replayLevelBtn')?.addEventListener('click',()=>{closeModal();resetMachine();});
     document.querySelector('#nextLevelBtn')?.addEventListener('click',()=>{if(next)startNextAssignmentFlow(levelIndex+1);else openRoadmap('game');});
