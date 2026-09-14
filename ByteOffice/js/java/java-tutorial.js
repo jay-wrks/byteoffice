@@ -315,14 +315,6 @@
       render();
       return;
     }
-    // The Level 1 warm-up compile runs in the background while the guide is
-    // teaching. If the learner reaches RUN before it finishes, reveal the
-    // existing compile wait step instead of showing a disabled RUN control.
-    if(step.on==='run'&&window.byteOfficeCompiling&&window.byteOfficeJavaPhase==='compile-start'){
-      session.stepIndex++;
-      render();
-      return;
-    }
     if((step.openApiPanel||step.openApi) && typeof setCommandTrayCollapsed==='function') setCommandTrayCollapsed(false,{remember:false});
     setEditorGuideLock(step.lockEditor);
     const layer=ensureLayer(), card=layer.querySelector('#byteGuideCard');
@@ -489,19 +481,6 @@
       return;
     }
     session={levelId:id,stepIndex:0};render();
-    if(id===1){
-      // Let the assignment shell and the first guide card paint before the
-      // compiler warm-up begins. This keeps the lesson responsive and makes
-      // the runtime pill the visible, compact download indicator.
-      requestAnimationFrame(()=>requestAnimationFrame(async()=>{
-        try{
-          await window.ByteOfficeJava?.warmCompiler?.();
-          if(session?.levelId===1){
-            await window.ByteOfficeJava?.compile?.(false,{quiet:true,background:true});
-          }
-        }catch(_){ }
-      }));
-    }
   }
   function levelPassed(id){if(session?.levelId===id) finish();}
 
