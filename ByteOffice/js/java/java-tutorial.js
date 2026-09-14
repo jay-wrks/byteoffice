@@ -148,10 +148,11 @@
   function stepSatisfied(step,value=source()){
     if(step?.required){
       // Java permits formatting differences around punctuation. Compare the
-      // required instruction by tokens, not by optional spaces, so both
-      // `while (bot.hasNext()) {` and `while(bot.hasNext()) {` are accepted.
+      // required instruction by tokens across the whole source. Newlines are
+      // formatting in Java, so `bot.take(); bot.send();` is just as valid as
+      // putting those statements on separate lines.
       const wanted=step.required.replace(/\s+/g,'');
-      const hasRequired=String(value).split(/\r?\n/).some(line=>line.replace(/\s+/g,'')===wanted);
+      const hasRequired=String(value).replace(/\s+/g,'').includes(wanted);
       if(!hasRequired) return false;
     }
     return !step?.condition||step.condition(value);
