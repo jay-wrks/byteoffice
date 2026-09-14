@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const ASSET_VERSION='20260914-control-bar-guide';
+  const ASSET_VERSION='20260914-stable-guide-code-intro';
 
   function versioned(src){
     const base=window.__BYTE_OFFICE_ASSET_BASE__||document.baseURI||window.location.href;

@@ -107,8 +107,12 @@
     });
   }
   function renderGuideCode(code,value=source(),step=currentStep()){
+    let characterIndex=0;
     return guideCodeState(code,value,step).map(line=>{
-      const chars=line.map(({char,done})=>`<span class="guide-code-char ${done?'is-entered':'is-needed'}">${escapeHtml(char)||' '}</span>`).join('');
+      const chars=line.map(({char,done})=>{
+        const delay=Math.min(characterIndex++*16,320);
+        return `<span class="guide-code-char ${done?'is-entered':'is-needed'}" style="--guide-intro-delay:${delay}ms">${escapeHtml(char)||' '}</span>`;
+      }).join('');
       return `<span class="guide-code-line">${chars||' '}</span>`;
     }).join('');
   }
@@ -135,7 +139,10 @@
         span.addEventListener('animationend',()=>span.classList.remove('just-entered'),{once:true});
         blockEntered++;
       });
-      if(blockEntered){
+      // Character feedback should stay local while the user types. Pulse the
+      // whole snippet only once it has become a complete valid instruction;
+      // retriggering the block animation per keystroke reads as flicker.
+      if(blockEntered&&!isFullProgram&&stepSatisfied(step,value)){
         guideCode.classList.remove('is-correct-input');
         void guideCode.offsetWidth;
         guideCode.classList.add('is-correct-input');
