@@ -5,10 +5,9 @@
     1:[
       {target:'#scene',kicker:'WELCOME TO BYTE OFFICE',title:'Meet Byte.',body:'You are Byte’s new systems engineer. Your job is to write tiny Java instructions that make this physical worker complete each assignment.',button:'Start the tour →'},
       {target:'.objective-box',kicker:'YOUR FIRST ASSIGNMENT',title:'One box. One trip.',body:'The question is simple: take the first box from <b>INBOX</b> and deliver that same box to <b>OUTBOX</b>. Read the example values here; the machine will check your result exactly.',button:'Show me the workspace →'},
-      {target:'#programList',kicker:'YOUR JAVA IDE',title:'This is Program.java',body:'This editor is your control room. ByteOffice supplies <code>main()</code> and calls your <code>program(ByteBot bot)</code> method. You write normal Java, then control Byte through physical commands such as <code>bot.take()</code> and <code>bot.send()</code>.',button:'Show me the first instruction →',lockEditor:true},
+      {target:'#programList',kicker:'YOUR JAVA IDE',title:'This is Program.java',body:'This editor is your control room. ByteOffice supplies <code>main()</code> and calls your <code>program(ByteBot bot)</code> method. You write normal Java, then control Byte through physical commands such as <code>bot.take()</code> and <code>bot.send()</code>.',button:'Show me the first instruction →',advanceOnEdit:true},
       {target:'#byteMonaco',kicker:'STEP 1 · WRITE',title:'Pick up the box',body:'Click inside the highlighted <b>Program.java</b> editor and add this line inside <code>program(ByteBot bot)</code>. It tells Byte to walk to INBOX and take the next box into his hands.',code:'bot.take();',required:'bot.take();',condition:source=>/\bbot\s*\.\s*take\s*\(\s*\)\s*;/.test(source),waiting:'Add bot.take(); in Program.java, then I’ll point to the delivery move.'},
       {target:'#byteMonaco',kicker:'STEP 2 · WRITE',title:'Send it out',body:'Add the second instruction. It tells Byte to carry the box to OUTBOX and release it there.',code:'bot.send();',required:'bot.send();',condition:source=>/\bbot\s*\.\s*send\s*\(\s*\)\s*;/.test(source),waiting:'Add bot.send(); so Byte has somewhere to deliver the box.'},
-      {target:'#runBtn',kicker:'NEXT · RUN',title:'Start the machine',body:'Your two instructions are ready. Use the highlighted <b>RUN</b> control below to hand Program.java to the browser Java compiler, then watch Byte execute it.',on:'run',externalAction:true},
       {target:'#runBtn',phase:'compile',mode:'compile',kicker:'JAVA COMPILER',title:'Compiling your program…',body:'The browser is compiling Program.java now. The RUN control is showing its live loading state. This can take a moment the first time while the Java tools are prepared. Please wait here and do not click RUN again.',button:'Waiting for compiler…',locked:true},
       {target:'#runBtn',kicker:'STEP 3 · START',title:'Run the machine',body:'Compilation is ready. Now press the highlighted <b>RUN</b> control to start Byte and watch your two instructions become physical movement.',on:'run',externalAction:true},
       {target:'#workerWrap',runtime:true,follow:true,kicker:'BYTE IS READY',title:'Watch the code become motion',body:'The glowing execution marker in Program.java will stay synchronized with Byte. Each physical movement starts from the Java line highlighted in the IDE.',button:'Watching Byte…',locked:true}
@@ -262,9 +261,19 @@
       rect=target.getBoundingClientRect();
     }
     const pad=6;
-    focus.style.transition=currentStep()?.follow?'none':'';
+    // A new guide step must highlight its own target immediately. In
+    // particular, do not animate the focus rectangle from a previously
+    // followed Byte target to RUN while the RUN instructions are visible.
+    // The shield already switches holes synchronously, so animating only the
+    // outline also leaves a misleading stale highlight behind.
+    focus.style.transition=(step.follow||targetChanged)?'none':'';
     focus.style.left=`${Math.max(4,rect.left-pad)}px`;focus.style.top=`${Math.max(4,rect.top-pad)}px`;
     focus.style.width=`${Math.min(window.innerWidth-8,rect.width+pad*2)}px`;focus.style.height=`${Math.min(window.innerHeight-8,rect.height+pad*2)}px`;
+    if(targetChanged&&!step.follow){
+      requestAnimationFrame(()=>{
+        if(session&&activeTarget===target&&!currentStep()?.follow) focus.style.transition='';
+      });
+    }
     const secondaryTarget=step.extraTarget?document.querySelector(step.extraTarget):null;
     const secondaryRect=secondaryTarget?.getBoundingClientRect()||null;
     positionShield(rect,pad,secondaryRect);
@@ -293,6 +302,12 @@
     if(!session){removeLayer();return;}
     const steps=guides[session.levelId]||[], step=currentStep();
     if(!step){finish();return;}
+    // Drop callbacks belonging to the prior step before resolving this
+    // step's target. A queued follow/resize frame must never repaint Byte
+    // after the guide has moved on to RUN.
+    stopFollow();
+    cancelAnimationFrame(positionFrame);
+    positionFrame=0;
     // The program may start before the guide gets its next paint. Do not
     // leave the user on a stale RUN instruction once execution is underway.
     if(step.on==='run'&&window.byteOfficeJavaPhase==='run-start'){
@@ -431,6 +446,11 @@
   function sourceChanged(){
     if(!session) return;
     const value=source(), step=currentStep();
+    if(step?.advanceOnEdit){
+      session.stepIndex++;
+      session.stepIndex>=(guides[session.levelId]||[]).length?finish():render();
+      return;
+    }
     const enteredCount=step?.code?updateGuideCodeProgress(step.code,value):0;
     if(typingAdvanceTimer){
       if(stepSatisfied(step,value)) return;
