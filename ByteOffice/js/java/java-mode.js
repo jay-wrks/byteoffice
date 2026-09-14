@@ -272,6 +272,7 @@ public final class GameRunner {
     clearTimeout(setCompileUi.widthTimer);
     run.disabled=!!pending;
     run.classList.toggle('is-compiling',!!pending);
+    run.classList.remove('is-downloading');
     run.setAttribute('aria-busy',pending?'true':'false');
     run.dataset.compileState=state;
     const content=pending
@@ -293,6 +294,22 @@ public final class GameRunner {
     }else{
       run.innerHTML=content;
     }
+  }
+
+  function setDownloadUi(){
+    const run=document.querySelector('#runBtn');
+    window.byteOfficeCompiling=true;
+    if(!run) return;
+    if(!run.dataset.readyLabel) run.dataset.readyLabel=run.innerHTML;
+    clearTimeout(setCompileUi.timer);
+    clearTimeout(setCompileUi.widthTimer);
+    run.disabled=true;
+    run.classList.remove('is-compiling','is-running','compile-state-transition');
+    run.classList.add('is-downloading');
+    run.setAttribute('aria-busy','true');
+    run.dataset.compileState='downloading';
+    run.innerHTML='<span class="run-button-content"><span class="run-loading-spinner" aria-hidden="true"></span> DOWNLOADING…</span>';
+    run.style.width='';
   }
 
   function setRunUi(runningNow){
@@ -678,6 +695,7 @@ public final class GameRunner {
     // available to CheerpJ. Fetch the archive into /str/ once instead.
     await ensureCompilerJar({background});
     hideJavaLoadingScreen();
+    setCompileUi(true);
     updateJavaStatus('Compiling Program.java…','loading');
     els.footer.textContent='Compiling your Java source inside the browser…';
     const original={log:console.log,warn:console.warn,error:console.error};
@@ -729,6 +747,7 @@ public final class GameRunner {
     setCompileUi(true);
     updateTimingStatus('compile');
     try{
+      if(background) setDownloadUi();
       await ensureJavaRuntime({background});
       mountSources(instrumentJavaSource(source));
       const result=await runJavaCompiler({background});

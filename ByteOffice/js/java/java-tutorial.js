@@ -5,7 +5,7 @@
     1:[
       {target:'#scene',kicker:'WELCOME TO BYTE OFFICE',title:'Meet Byte.',body:'You are Byte’s new systems engineer. Your job is to write tiny Java instructions that make this physical worker complete each assignment.',button:'Start the tour →'},
       {target:'.objective-box',kicker:'YOUR FIRST ASSIGNMENT',title:'One box. One trip.',body:'The question is simple: take the first box from <b>INBOX</b> and deliver that same box to <b>OUTBOX</b>. Read the example values here; the machine will check your result exactly.',button:'Show me the workspace →'},
-      {target:'#programList',kicker:'YOUR JAVA IDE',title:'This is Program.java',body:'This editor is your control room. ByteOffice supplies <code>main()</code> and calls your <code>program(ByteBot bot)</code> method. You write normal Java, then control Byte through physical commands such as <code>bot.take()</code> and <code>bot.send()</code>.',button:'Show me the first instruction →',advanceOnEdit:true},
+      {target:'#programList',kicker:'YOUR JAVA IDE',title:'This is Program.java',body:'This editor is your control room. ByteOffice supplies <code>main()</code> and calls your <code>program(ByteBot bot)</code> method. You write normal Java, then control Byte through physical commands such as <code>bot.take()</code> and <code>bot.send()</code>.',button:'Show me the first instruction →',advanceOnIdeClick:true},
       {target:'#byteMonaco',kicker:'STEP 1 · WRITE',title:'Pick up the box',body:'Click inside the highlighted <b>Program.java</b> editor and add this line inside <code>program(ByteBot bot)</code>. It tells Byte to walk to INBOX and take the next box into his hands.',code:'bot.take();',required:'bot.take();',condition:source=>/\bbot\s*\.\s*take\s*\(\s*\)\s*;/.test(source),waiting:'Add bot.take(); in Program.java, then I’ll point to the delivery move.'},
       {target:'#byteMonaco',kicker:'STEP 2 · WRITE',title:'Send it out',body:'Add the second instruction. It tells Byte to carry the box to OUTBOX and release it there.',code:'bot.send();',required:'bot.send();',condition:source=>/\bbot\s*\.\s*send\s*\(\s*\)\s*;/.test(source),waiting:'Add bot.send(); so Byte has somewhere to deliver the box.'},
       {target:'#runBtn',phase:'compile',mode:'compile',kicker:'JAVA COMPILER',title:'Compiling your program…',body:'The browser is compiling Program.java now. The RUN control is showing its live loading state. This can take a moment the first time while the Java tools are prepared. Please wait here and do not click RUN again.',button:'Waiting for compiler…',locked:true},
@@ -60,6 +60,7 @@
   let activeTarget=null;
   let positionFrame=0;
   let followFrame=0;
+  let runReadyFrame=0;
   let targetRetryTimer=0;
   let targetResizeObserver=null;
   let typingAdvanceTimer=0;
@@ -159,6 +160,26 @@
   function stopFollow(){
     if(followFrame){cancelAnimationFrame(followFrame);followFrame=0;}
   }
+  function stopWaitingForRun(){
+    if(runReadyFrame){cancelAnimationFrame(runReadyFrame);runReadyFrame=0;}
+  }
+  function waitForRunButton(){
+    stopWaitingForRun();
+    const check=()=>{
+      runReadyFrame=0;
+      if(!session||currentStep()?.phase!=='compile') return;
+      const run=document.querySelector('#runBtn');
+      const label=run?.textContent?.replace(/\s+/g,' ').trim()||'';
+      if(run&&!run.disabled&&!run.matches('[aria-busy="true"]')&&/^(?:▶\s*)?RUN$/.test(label)){
+        session.stepIndex++;
+        session.runtimeCopy=null;
+        render();
+        return;
+      }
+      runReadyFrame=requestAnimationFrame(check);
+    };
+    runReadyFrame=requestAnimationFrame(check);
+  }
   function followTarget(){
     if(!session||!currentStep()?.follow){followFrame=0;return;}
     // Keep the explanation card readable while only the spotlight follows Byte.
@@ -172,6 +193,7 @@
   }
   function removeLayer(){
     stopFollow();
+    stopWaitingForRun();
     if(typingAdvanceTimer){clearTimeout(typingAdvanceTimer);typingAdvanceTimer=0;}
     if(targetRetryTimer){clearTimeout(targetRetryTimer);targetRetryTimer=0;}
     setEditorGuideLock(false);
@@ -362,13 +384,12 @@
     }
     if(phase==='compile-complete'){
       if(currentStep()?.phase==='compile'){
-        session.stepIndex++;
-        session.runtimeCopy=null;
-        render();
+        waitForRunButton();
       }
       return;
     }
     if(phase==='compile-error'){
+      stopWaitingForRun();
       if(currentStep()?.phase==='compile'){
         session.compileError=true;
         render();
@@ -438,11 +459,6 @@
   function sourceChanged(){
     if(!session) return;
     const value=source(), step=currentStep();
-    if(step?.advanceOnEdit){
-      session.stepIndex++;
-      session.stepIndex>=(guides[session.levelId]||[]).length?finish():render();
-      return;
-    }
     const enteredCount=step?.code?updateGuideCodeProgress(step.code,value):0;
     if(typingAdvanceTimer){
       if(stepSatisfied(step,value)) return;
@@ -481,10 +497,24 @@
       return;
     }
     session={levelId:id,stepIndex:0};render();
+    if(id===1){
+      // Compile the untouched starter after the workspace and first guide
+      // have painted. Background mode reports downloads in RUN and avoids
+      // the full-page Java loading curtain used by later levels.
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        if(session?.levelId===1) window.ByteOfficeJava?.compile?.(false,{quiet:true,background:true}).catch?.(()=>{});
+      }));
+    }
   }
   function levelPassed(id){if(session?.levelId===id) finish();}
 
   document.addEventListener('input',event=>{if(event.target?.id==='javaEditor')sourceChanged();});
+  document.addEventListener('pointerdown',event=>{
+    if(!session||!currentStep()?.advanceOnIdeClick) return;
+    if(!event.target?.closest?.('#byteMonaco,#javaEditor,.monaco-editor')) return;
+    session.stepIndex++;
+    session.stepIndex>=(guides[session.levelId]||[]).length?finish():render();
+  },true);
   function handleRunGuideClick(event){
     if(session?.levelId===4&&currentStep()?.openApiPanel){
       const apiTile=event.target?.closest?.('.java-api-card');
