@@ -22,7 +22,7 @@
   const app=firebase.initializeApp(firebaseConfig);
   const auth=firebase.auth(app), db=firebase.firestore(app);
   const provider=new firebase.auth.GoogleAuthProvider();
-  const LEADERBOARD_CACHE_KEY='byteOfficeLeaderboardCacheV2';
+  const LEADERBOARD_CACHE_KEY='byteOfficeLeaderboardCacheV3';
   const LEADERBOARD_CACHE_TTL=5*60*1000;
   const leaderboardRequests={};
   const leaderboardRowsByFilter={stars:null,steps:null,actions:null};
@@ -207,10 +207,17 @@
     }finally{ authButton.disabled=false; }
   }
 
+  const efficiencyMetric=(row,value,label)=>{
+    const clears=row.completedLevels||0;
+    return [value||0,`${label} · ${clears} ${clears===1?'level':'levels'}`];
+  };
   const leaderboardModes={
     stars:{rule:'STARS · CLEARS',where:true,primary:['totalStars','desc'],secondary:['completedLevels','desc'],metric:row=>[row.totalStars||0,'stars']},
-    steps:{rule:'STEPS · CLEARS',where:true,primary:['totalSteps','asc'],secondary:['completedLevels','desc'],metric:row=>[row.totalSteps||0,'steps']},
-    actions:{rule:'ACTIONS · CLEARS',where:true,primary:['totalSize','asc'],secondary:['completedLevels','desc'],metric:row=>[row.totalSize||0,'actions']}
+    // Cumulative totals are comparable only across equal campaign progress.
+    // Rank clears first so completing one cheap level cannot beat a player
+    // who has efficient results recorded across the full campaign.
+    steps:{rule:'CLEARS · STEPS',where:true,primary:['completedLevels','desc'],secondary:['totalSteps','asc'],metric:row=>efficiencyMetric(row,row.totalSteps,'steps')},
+    actions:{rule:'CLEARS · ACTIONS',where:true,primary:['completedLevels','desc'],secondary:['totalSize','asc'],metric:row=>efficiencyMetric(row,row.totalSize,'actions')}
   };
 
   function readLeaderboardCache(filter){

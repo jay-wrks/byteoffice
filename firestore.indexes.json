@@ -14,8 +14,8 @@
       "queryScope": "COLLECTION",
       "fields": [
         {"fieldPath": "hasScore", "order": "ASCENDING"},
-        {"fieldPath": "totalSteps", "order": "ASCENDING"},
-        {"fieldPath": "completedLevels", "order": "DESCENDING"}
+        {"fieldPath": "completedLevels", "order": "DESCENDING"},
+        {"fieldPath": "totalSteps", "order": "ASCENDING"}
       ]
     },
     {
@@ -23,8 +23,8 @@
       "queryScope": "COLLECTION",
       "fields": [
         {"fieldPath": "hasScore", "order": "ASCENDING"},
-        {"fieldPath": "totalSize", "order": "ASCENDING"},
-        {"fieldPath": "completedLevels", "order": "DESCENDING"}
+        {"fieldPath": "completedLevels", "order": "DESCENDING"},
+        {"fieldPath": "totalSize", "order": "ASCENDING"}
       ]
     }
   ],
