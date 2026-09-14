@@ -221,17 +221,6 @@ public final class GameRunner {
     if(el){ el.textContent=text; el.dataset.kind=kind; }
   }
 
-  function showJavaLoadingScreen(message){
-    const curtain=document.querySelector('#pageCurtain');
-    const label=document.querySelector('#curtainLabel');
-    if(!curtain||!label) return;
-    label.textContent=message;
-    curtain.dataset.javaLoading='true';
-    curtain.setAttribute('aria-hidden','false');
-    curtain.classList.remove('leaving');
-    curtain.classList.add('active','entering');
-  }
-
   function hideJavaLoadingScreen(){
     const curtain=document.querySelector('#pageCurtain[data-java-loading="true"]');
     if(!curtain) return;
@@ -614,8 +603,8 @@ public final class GameRunner {
   async function ensureJavaRuntime({background=false}={}){
     if(javaRuntimePromise) return javaRuntimePromise;
     javaRuntimePromise=(async()=>{
+      setDownloadUi();
       updateJavaStatus('Downloading Java runtime…','loading');
-      if(!background) showJavaLoadingScreen('Downloading Java runtime…');
       if(typeof cheerpjInit!=='function') throw new Error('CheerpJ loader is unavailable. Serve ByteOffice over HTTP/HTTPS and check your connection.');
       // The JVM and WASM assets are served by CheerpJ's external CDN, while
       // the compiler archive is mounted separately below.
@@ -634,8 +623,8 @@ public final class GameRunner {
   async function ensureCompilerJar({background=false}={}){
     if(compilerJarPromise) return compilerJarPromise;
     compilerJarPromise=(async()=>{
+      setDownloadUi();
       updateJavaStatus('Downloading Java compiler…','loading');
-      if(!background) showJavaLoadingScreen('Downloading Java compiler…');
       const compilerBase=window.__BYTE_OFFICE_JAVA_COMPILER_BASE__||window.__BYTE_OFFICE_JAVA_RUNTIME_BASE__||window.__BYTE_OFFICE_ASSET_BASE__||new URL('./',document.baseURI||window.location.href).href;
       const compilerAsset=new URL('java/tools.jar',compilerBase).href;
       const response=await fetch(compilerAsset,{cache:'force-cache'});
@@ -657,16 +646,17 @@ public final class GameRunner {
 
   async function warmCompiler(){
     try{
-      // Level 1 starts this after its guide has rendered. The runtime pill
-      // is the compact progress indicator; RUN remains available and the
-      // full loading curtain is reserved for a user-requested run.
+      // Level 1 starts this after its guide has rendered. Downloads use the
+      // same compact RUN-button progress indicator as every other level.
       await ensureJavaRuntime({background:true});
       await ensureCompilerJar({background:true});
+      setCompileUi(false);
       updateJavaStatus('Java compiler ready','ready');
       return true;
     }catch(err){
       // Preloading is opportunistic. RUN will retry through the normal,
       // blocking path if the connection or runtime is not ready yet.
+      setCompileUi(false);
       updateJavaStatus('Compiler downloads on RUN','idle');
       return false;
     }
@@ -747,7 +737,6 @@ public final class GameRunner {
     setCompileUi(true);
     updateTimingStatus('compile');
     try{
-      if(background) setDownloadUi();
       await ensureJavaRuntime({background});
       mountSources(instrumentJavaSource(source));
       const result=await runJavaCompiler({background});
